@@ -27,18 +27,15 @@
  *	Test function for creating AI.
  */
  ZFM_InitUnitSpawn = {
-	private ["_groupHQ","_skin","_person","_unit"];
+	private ["_groupHQ","_skin","_spawnAt","_person","_unit"];
 	
 	// Get the Group HQ
 	_groupHQ = _this select 0;
 	_skin = _this select 1;
-	_person = playableUnits select 0;
-
-	
-	diag_log(format["Skin! %1",_skin]);
+	_spawnAt = _this select 2;
 	
 	// Create a unit!
-	_unit = _groupHQ createUnit [_skin,getPos _person,[], 10, "PRIVATE"];
+	_unit = _groupHQ createUnit [_skin,_spawnAt,[], 10, "PRIVATE"];
 
 	diag_log(format["Spawned Unit at %1,%2",getPos _person,Position _person]);
 	titleText[format["Spawned Unit at %1,%2",getPos _person,Position _person],"PLAIN DOWN"];
@@ -48,7 +45,7 @@
 	
 	// Get rid of everything they're carrying.
 	removeAllWeapons _unit;
-	
+
 	_unit
 };
  
@@ -77,6 +74,9 @@ ZFM_AI_Get_View_Distance = {
 	
 	switch(_difficulty) do
 	{
+		case "DEADMEAT": {
+			_viewRange = 30;
+		};
 		case "EASY": {
 			_viewRange = 60;
 		};
@@ -251,6 +251,11 @@ ZFM_CheckExistingAI = {
 	_doExit
 };
 
+/*
+*	ZFM_EquipAIFromArray
+*
+*	Provide an array in the ZFM format, and equip the unit with the weapons proscribed.
+*/
 ZFM_EquipAIFromArray ={
 	private ["_ai","_equipArray","_primaryWeap","_numMagazines","_unitBackPk","_unitBackPack","_primaryWeapon","_magazineToAdd"];
 	
@@ -289,6 +294,65 @@ ZFM_EquipAIFromArray ={
 	_ai addBackpack _unitBackPack;
 };
 
+/*
+	This is a fairly heavy function, which 
+*/
+ZFM_CreateUnit_Sniper ={
+	private ["_aiGroup","_difficulty","_spawnAt","_equipArray"];
+
+	_aiGroup = _this select 0;
+	_difficulty = _this select 1;
+	_spawnAt = _this select 2;
+	
+	_equipArray = [];
+	
+	switch(_difficulty) do
+	{
+		case "DEADMEAT": {
+			_equipArray = ZFS_Equipment_Sniper_EASY;
+		};
+		case "EASY": {
+			_equipArray = ZFS_Equipment_Sniper_EASY;
+		};
+		case "MEDIUM": {
+			_equipArray = ZFS_Equipment_Sniper_MEDIUM;
+		};
+		case "HARD": {
+			_equipArray = ZFS_Equipment_Sniper_HARD;
+		};
+		case "WAR_MACHINE": {
+			_equipArray = ZFS_Equipment_Sniper_WAR_MACHINE;
+		};
+	};
+	
+	diag_log(format["EquipArray %1",_equipArray]);
+	
+	
+	// Get the skin out of the ZFM unit type
+	_skin = equipArray select 0;
+	
+	// Spawn the unit..
+	_unit = [_aiGroup,_skin,_spawnAt] call ZFM_InitUnitSpawn;
+	
+	if(_difficulty == "HARD" || _difficulty == "WAR_MACHINE") then
+	{
+		_unit globalChat "I'm in. Time to make some mess.";
+	};
+	
+	// Ad the relevant equipment from the EquipArray
+	[_unit,_equipArray] call ZFM_EquipAIFromArray;
+	
+	// Add variables to unit for ZFM
+	_unit setVariable ["ZFM_UnitType","SNIPER"];
+	_unit setVariable ["ZFM_UnitDifficulty",_difficulty];
+	
+	// Don't start running around.
+	doStop _unit;
+	
+	// Remove this for production -- debugging
+	_unit setSkill ["courage",1];
+};
+
 
 // Get the config stuff..
 ZFM_Includes_AI_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Config.sqf";
@@ -312,11 +376,7 @@ while{true} do
 		_playerPoop = getPos _playerPos;
 	
 		diag_log("Calling Unit Spawn..");
-		_unit = [_aiGroup,"Sniper1_DZ"] call ZFM_InitUnitSpawn;
-		_unit setSkill ["courage",1]; // Stop running away, you fucker!
-		//[_unit,ZFS_Equipment_Sniper_WAR_MACHINE] call ZFM_EquipAIFromArray;
-
-		
+		_unit = [_aiGroup,"EASY",_playerPoop] call ZFM_CreateUnit_Sniper;
 	};
 sleep 50;
 };
