@@ -12,7 +12,8 @@
  ZFM_GROUP_WEST = objNull;
  ZFM_GROUP_CIVILIAN = objNull;
  ZFM_GROUP_RESISTANCE = objNull;
-
+ 
+ 
  /*
  *	ZFM AI Types
  *
@@ -20,6 +21,21 @@
  */
  
  ZFM_AI_TYPE_SNIPER = "1x101010";
+ ZFM_AI_TYPE_RIFLEMAN = "1x101011";
+ ZFM_AI_TYPE_GRENADIER = "1x101012";
+ ZFM_AI_TYPE_COMMANDER = "1x101013";
+ ZFM_AI_TYPE_MEDIC = "1x101014";
+ ZFM_AI_TYPE_PILOT = "1x101015";
+ 
+ // Used for reference functions.
+ ZFM_AI_TYPES = [
+	ZFM_AI_TYPE_SNIPER,
+	ZFM_AI_TYPE_RIFLEMAN,
+	ZFM_AI_TYPE_GRENADIER,
+	ZFM_AI_TYPE_COMMANDER,
+	ZFM_AI_TYPE_MEDIC,
+	ZFM_AI_TYPE_PILOT
+ ];
  
  /*
  *	ZFM_InitUnitSpawn
@@ -29,17 +45,19 @@
  ZFM_InitUnitSpawn = {
 	private ["_groupHQ","_skin","_spawnAt","_person","_unit"];
 	
+	diag_log(format["Params %1",_this]);
+	
 	// Get the Group HQ
 	_groupHQ = _this select 0;
 	_skin = _this select 1;
 	_spawnAt = _this select 2;
 	
 	// Create a unit!
+	
+	diag_log(format["Skin %1,SpawnAt %2, GroupHQ %3",_skin,_spawnAt,_groupHQ]);
+	
 	_unit = _groupHQ createUnit [_skin,_spawnAt,[], 10, "PRIVATE"];
 
-	diag_log(format["Spawned Unit at %1,%2",getPos _person,Position _person]);
-	titleText[format["Spawned Unit at %1,%2",getPos _person,Position _person],"PLAIN DOWN"];
-	
 	// Join the group
 	[_unit] joinSilent _groupHQ;
 	
@@ -64,7 +82,11 @@ ZFM_CreateAIGroup = {
 	//Return the group
 	_createdGroup
 };
-
+/*
+*	ZFM_AI_Get_View_Distance
+*
+*	Determines the unit#'s
+*/
 ZFM_AI_Get_View_Distance = {
 	private ["_difficulty","_viewRange"];
 	
@@ -127,7 +149,6 @@ ZFM_AI_Find_Nearby_Cover = {
 		{
 			if(alive _x ) then 
 			{
-				
 				_objectName = _x call DZE_getModelName;
 				
 				diag_log(format["objectName: %1",_objectName]);
@@ -197,15 +218,16 @@ ZFM_DoBootStrap = {
 	ZFM_GROUP_RESISTANCE = createCenter resistance; // Vive Le Resistance!
 	
 	// unfriendly AI bandits
-	EAST setFriend [WEST, 0];
-	EAST setFriend [RESISTANCE, 0];
+	// TODO: SET TO 0 once debugging is completed :-)
+	EAST setFriend [WEST, 1];
+	EAST setFriend [RESISTANCE, 1];
 
 	// Players
-	WEST setFriend [EAST, 0];
+	WEST setFriend [EAST, 1];
 	WEST setFriend [RESISTANCE, 1];
 
 	// friendly AI
-	RESISTANCE setFriend [EAST, 0];
+	RESISTANCE setFriend [EAST, 1];
 	RESISTANCE setFriend [WEST, 1];
 };
 
@@ -294,11 +316,71 @@ ZFM_EquipAIFromArray ={
 	_ai addBackpack _unitBackPack;
 };
 
+ZFM_SetAISkills ={
+	private ["_unit","_difficulty"];
+	
+	_unit  = _this select 0;
+	_difficulty = _this select 1;
+	
+	_skillsArray = [];
+	
+	// Get the array of skills.
+	switch(_difficulty) do 
+	{
+		case "DEADMEAT": {
+			_skillsArray = ZFS_Skills_AI_DEADMEAT;
+		};
+		case "EASY": {
+			_skillsArray = ZFS_Skills_AI_EASY;
+		};
+		case "MEDIUM": {
+			_skillsArray = ZFS_Skills_AI_MEDIUM;
+		};
+		case "HARD": {
+			_skillsArray = ZFS_Skills_AI_HARD;
+		};
+		case "WAR_MACHINE": {
+			_skillsArray = ZFS_Skills_AI_WAR_MACHINE;
+		};
+	};
+	
+	_numSkills = count _skillsArray;
+	
+	// Now we have the skills array, loop through it and set the setSkill array
+	for [{_x =0},{_x <= _numSkills-1},{_x = _x +1} ] do
+	{
+		// Get the whole row..
+		_thisRow = _skillsArray select _x;
+		
+		// Get the items..
+		_skill = _thisRow select 0;
+		_maxBound = _thisRow select 1;
+		
+		_currSkill = random _maxBound;
+		
+		_unit setSkill [_skill,_currSkill];
+		
+		diag_log(format["Unit skill %1 set to %2",_skill,_currSkill]);
+	};
+};
+
+ZFM_Disable_Default_AI ={
+	private ["_unit"];
+	
+	_unit = _this select 0;
+	
+	_unit disableAI "TARGET";
+	_unit disableAI "AUTOTARGET";
+	_unit disableAI "FSM";
+};
+
 /*
-	This is a fairly heavy function, which 
+	ZFM_CreateUnit_Sniper
+	
+	Creates a ZFM-type sniper, and equips him/her with the equipment based on his 
 */
 ZFM_CreateUnit_Sniper ={
-	private ["_aiGroup","_difficulty","_spawnAt","_equipArray"];
+	private ["_aiGroup","_difficulty","_skin","_unit","_spawnAt","_equipArray"];
 
 	_aiGroup = _this select 0;
 	_difficulty = _this select 1;
@@ -325,22 +407,22 @@ ZFM_CreateUnit_Sniper ={
 		};
 	};
 	
-	diag_log(format["EquipArray %1",_equipArray]);
-	
-	
 	// Get the skin out of the ZFM unit type
-	_skin = equipArray select 0;
-	
+	_skin = _equipArray select 0;
+
 	// Spawn the unit..
 	_unit = [_aiGroup,_skin,_spawnAt] call ZFM_InitUnitSpawn;
 	
 	if(_difficulty == "HARD" || _difficulty == "WAR_MACHINE") then
 	{
-		_unit globalChat "I'm in. Time to make some mess.";
+		_unit globalChat "I'm in. Let's get busy.";
 	};
 	
 	// Ad the relevant equipment from the EquipArray
 	[_unit,_equipArray] call ZFM_EquipAIFromArray;
+	
+	// Set the skills for the unit..
+	[_unit,_difficulty] call ZFM_SetAISkills;
 	
 	// Add variables to unit for ZFM
 	_unit setVariable ["ZFM_UnitType","SNIPER"];
@@ -349,23 +431,146 @@ ZFM_CreateUnit_Sniper ={
 	// Don't start running around.
 	doStop _unit;
 	
+	// Don't shoot at me.. Please?
+	_unit enableAttack false;
+	
+	[_unit] call ZFM_Disable_Default_AI;
+	
+	// Remove this for production -- debugging
+	_unit setSkill ["courage",1];
+};
+
+/*
+*	ZFM_CreateUnit_Rifleman
+*
+*	These functions are in great need of replacement..
+*/
+ZFM_CreateUnit ={
+	private ["_aiGroup","_difficulty","_skin","_unit","_spawnAt","_equipArray"];
+
+	_aiGroup = _this select 0;
+	_difficulty = _this select 1;
+	_spawnAt = _this select 2;
+	_unitType = _this select 3;
+	
+	if(!_unitType in ZFM_AI_TYPES) exitWith { diag_log("ZFM_CreateUnit: Unit with unsupported type provided. Function exited.") }
+	
+	_equipArray = [];
+	
+	switch(_difficulty) do
+	{
+		case "DEADMEAT": {
+			switch(_unitType) do
+			{
+				case ZFM_AI_TYPE_SNIPER: {
+					_equipArray = ZFS_Equipment_Sniper_EASY;
+				};
+				
+				case ZFM_AI_TYPE_RIFLEMAN: {
+					_equipArray = ZFS_Equipment_Rifleman_EASY;
+				};
+			};
+		};
+		case "EASY": {
+			switch(_unitType) do
+			{
+				case ZFM_AI_TYPE_SNIPER: {
+					_equipArray = ZFS_Equipment_Sniper_EASY;
+				};
+				
+				case ZFM_AI_TYPE_RIFLEMAN: {
+					_equipArray = ZFS_Equipment_Rifleman_EASY;
+				};
+			};
+		};
+		case "MEDIUM": {
+			switch(_unitType) do
+			{
+				case ZFM_AI_TYPE_SNIPER: {
+					_equipArray = ZFS_Equipment_Sniper_MEDIUM;
+				};
+				
+				case ZFM_AI_TYPE_RIFLEMAN: {
+					_equipArray = ZFS_Equipment_Rifleman_MEDIUM;
+				};
+			};
+		};
+		case "HARD": {
+			switch(_unitType) do
+			{
+				case ZFM_AI_TYPE_SNIPER: {
+					_equipArray = ZFS_Equipment_Sniper_HARD;
+				};
+				
+				case ZFM_AI_TYPE_RIFLEMAN: {
+					_equipArray = ZFS_Equipment_Rifleman_HARD;
+				};
+			};
+		};
+		case "WAR_MACHINE": {
+			switch(_unitType) do
+			{
+				case ZFM_AI_TYPE_SNIPER: {
+					_equipArray = ZFS_Equipment_Sniper_WAR_MACHINE;
+				};
+				
+				case ZFM_AI_TYPE_RIFLEMAN: {
+					_equipArray = ZFS_Equipment_Rifleman_WAR_MACHINE;
+				};
+			};
+		};
+	};
+	
+	// Get the skin out of the ZFM unit type
+	_skin = _equipArray select 0;
+
+	// Spawn the unit..
+	_unit = [_aiGroup,_skin,_spawnAt] call ZFM_InitUnitSpawn;
+	
+	if(_difficulty == "HARD" || _difficulty == "WAR_MACHINE") then
+	{
+		_unit globalChat "I'm in. Let's get busy.";
+	};
+	
+	// Ad the relevant equipment from the EquipArray
+	[_unit,_equipArray] call ZFM_EquipAIFromArray;
+	
+	// Set the skills for the unit..
+	[_unit,_difficulty] call ZFM_SetAISkills;
+	
+	// Add variables to unit for ZFM
+	_unit setVariable ["ZFM_UnitType","RIFLEMAN"];
+	_unit setVariable ["ZFM_UnitDifficulty",_difficulty];
+	
+	// Don't start running around.
+	doStop _unit;
+	
+	// Don't shoot at me.. Please?
+	_unit enableAttack false;
+	
+	[_unit] call ZFM_Disable_Default_AI;
+	
 	// Remove this for production -- debugging
 	_unit setSkill ["courage",1];
 };
 
 
+
+
+
 // Get the config stuff..
 ZFM_Includes_AI_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Config.sqf";
+ZFM_Includes_AI_Units = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Units.sqf";
 
 // We need to get access to these functions..
 call compile preprocessFileLineNumbers ZFM_Includes_AI_Config;
+call compile preprocessFileLineNumbers ZFM_Includes_AI_Units;
 
 // Call AI bootstrap
 [] call ZFM_DoBootStrap;
 
 // Sample AI group
 _aiGroup = [east] call ZFM_CreateAIGroup;
-
 
 while{true} do
 {
@@ -376,7 +581,7 @@ while{true} do
 		_playerPoop = getPos _playerPos;
 	
 		diag_log("Calling Unit Spawn..");
-		_unit = [_aiGroup,"EASY",_playerPoop] call ZFM_CreateUnit_Sniper;
+		_unit = [_aiGroup,"EASY",_playerPoop,ZFM_AI_TYPE_SNIPER] call ZFM_CreateUnit;
 	};
 sleep 50;
 };
