@@ -291,6 +291,8 @@ ZFM_EquipAIFromArray ={
 	// What number of magazines will they spawn with? 
 	_numMagazines = _equipArray select 2;
 	
+	_numMagazines = _numMagazines +3; // Make sure they have at least 3 magazines to start with.
+	
 	// What backpack?
 	_unitBackPk = _equipArray select 3;
 	
@@ -373,6 +375,9 @@ ZFM_Disable_Default_AI ={
 	_unit disableAI "AUTOTARGET";
 	_unit disableAI "FSM";
 };
+
+ZFM_Create
+
 
 /*
 *	ZFM_CreateUnit_Rifleman
@@ -512,7 +517,8 @@ ZFM_CreateUnit ={
 	// Don't shoot at me.. Please?
 	_unit enableAttack false;
 	
-	[_unit] call ZFM_Disable_Default_AI;
+	// No need to enable this at the moment as it's for further AI.
+	//[_unit] call ZFM_Disable_Default_AI;
 	
 	// Remove this for production -- debugging
 	_unit setSkill ["courage",1];
