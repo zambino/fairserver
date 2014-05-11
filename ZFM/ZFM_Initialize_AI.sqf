@@ -22,7 +22,7 @@
  
  ZFM_AI_TYPE_SNIPER = "1x101010";
  ZFM_AI_TYPE_RIFLEMAN = "1x101011";
- ZFM_AI_TYPE_GRENADIER = "1x101012";
+ ZFM_AI_TYPE_HEAVY = "1x101012";
  ZFM_AI_TYPE_COMMANDER = "1x101013";
  ZFM_AI_TYPE_MEDIC = "1x101014";
  ZFM_AI_TYPE_PILOT = "1x101015";
@@ -31,7 +31,7 @@
  ZFM_AI_TYPES = [
 	ZFM_AI_TYPE_SNIPER,
 	ZFM_AI_TYPE_RIFLEMAN,
-	ZFM_AI_TYPE_GRENADIER,
+	ZFM_AI_TYPE_HEAVY,
 	ZFM_AI_TYPE_COMMANDER,
 	ZFM_AI_TYPE_MEDIC,
 	ZFM_AI_TYPE_PILOT
@@ -375,72 +375,6 @@ ZFM_Disable_Default_AI ={
 };
 
 /*
-	ZFM_CreateUnit_Sniper
-	
-	Creates a ZFM-type sniper, and equips him/her with the equipment based on his 
-*/
-ZFM_CreateUnit_Sniper ={
-	private ["_aiGroup","_difficulty","_skin","_unit","_spawnAt","_equipArray"];
-
-	_aiGroup = _this select 0;
-	_difficulty = _this select 1;
-	_spawnAt = _this select 2;
-	
-	_equipArray = [];
-	
-	switch(_difficulty) do
-	{
-		case "DEADMEAT": {
-			_equipArray = ZFS_Equipment_Sniper_EASY;
-		};
-		case "EASY": {
-			_equipArray = ZFS_Equipment_Sniper_EASY;
-		};
-		case "MEDIUM": {
-			_equipArray = ZFS_Equipment_Sniper_MEDIUM;
-		};
-		case "HARD": {
-			_equipArray = ZFS_Equipment_Sniper_HARD;
-		};
-		case "WAR_MACHINE": {
-			_equipArray = ZFS_Equipment_Sniper_WAR_MACHINE;
-		};
-	};
-	
-	// Get the skin out of the ZFM unit type
-	_skin = _equipArray select 0;
-
-	// Spawn the unit..
-	_unit = [_aiGroup,_skin,_spawnAt] call ZFM_InitUnitSpawn;
-	
-	if(_difficulty == "HARD" || _difficulty == "WAR_MACHINE") then
-	{
-		_unit globalChat "I'm in. Let's get busy.";
-	};
-	
-	// Ad the relevant equipment from the EquipArray
-	[_unit,_equipArray] call ZFM_EquipAIFromArray;
-	
-	// Set the skills for the unit..
-	[_unit,_difficulty] call ZFM_SetAISkills;
-	
-	// Add variables to unit for ZFM
-	_unit setVariable ["ZFM_UnitType","SNIPER"];
-	_unit setVariable ["ZFM_UnitDifficulty",_difficulty];
-	
-	// Don't start running around.
-	doStop _unit;
-	
-	// Don't shoot at me.. Please?
-	_unit enableAttack false;
-	
-	[_unit] call ZFM_Disable_Default_AI;
-	
-	// Remove this for production -- debugging
-	_unit setSkill ["courage",1];
-};
-
-/*
 *	ZFM_CreateUnit_Rifleman
 *
 *	These functions are in great need of replacement..
@@ -453,7 +387,7 @@ ZFM_CreateUnit ={
 	_spawnAt = _this select 2;
 	_unitType = _this select 3;
 	
-	if(!_unitType in ZFM_AI_TYPES) exitWith { diag_log("ZFM_CreateUnit: Unit with unsupported type provided. Function exited.") }
+	if not (_unitType in ZFM_AI_TYPES) exitWith { diag_log("ZFM_CreateUnit: Unit with unsupported type provided. Function exited.")};
 	
 	_equipArray = [];
 	
@@ -469,6 +403,12 @@ ZFM_CreateUnit ={
 				case ZFM_AI_TYPE_RIFLEMAN: {
 					_equipArray = ZFS_Equipment_Rifleman_EASY;
 				};
+				case ZFM_AI_TYPE_COMMANDER: {
+					_equipArray = ZFS_Equipment_Commander;
+				};
+				case ZFM_AI_TYPE_HEAVY: {
+					_equipArray = ZFS_Equipment_Heavy_EASY;
+				};
 			};
 		};
 		case "EASY": {
@@ -480,6 +420,12 @@ ZFM_CreateUnit ={
 				
 				case ZFM_AI_TYPE_RIFLEMAN: {
 					_equipArray = ZFS_Equipment_Rifleman_EASY;
+				};
+				case ZFM_AI_TYPE_COMMANDER: {
+					_equipArray = ZFS_Equipment_Commander;
+				};
+				case ZFM_AI_TYPE_HEAVY: {
+					_equipArray = ZFS_Equipment_Heavy_EASY;
 				};
 			};
 		};
@@ -493,6 +439,12 @@ ZFM_CreateUnit ={
 				case ZFM_AI_TYPE_RIFLEMAN: {
 					_equipArray = ZFS_Equipment_Rifleman_MEDIUM;
 				};
+				case ZFM_AI_TYPE_COMMANDER: {
+					_equipArray = ZFS_Equipment_Commander;
+				};
+				case ZFM_AI_TYPE_HEAVY: {
+					_equipArray = ZFS_Equipment_Heavy_MEDIUM;
+				};
 			};
 		};
 		case "HARD": {
@@ -505,6 +457,12 @@ ZFM_CreateUnit ={
 				case ZFM_AI_TYPE_RIFLEMAN: {
 					_equipArray = ZFS_Equipment_Rifleman_HARD;
 				};
+				case ZFM_AI_TYPE_COMMANDER: {
+					_equipArray = ZFS_Equipment_Commander;
+				};
+				case ZFM_AI_TYPE_HEAVY: {
+					_equipArray = ZFS_Equipment_Heavy_HARD;
+				};
 			};
 		};
 		case "WAR_MACHINE": {
@@ -516,6 +474,12 @@ ZFM_CreateUnit ={
 				
 				case ZFM_AI_TYPE_RIFLEMAN: {
 					_equipArray = ZFS_Equipment_Rifleman_WAR_MACHINE;
+				};
+				case ZFM_AI_TYPE_COMMANDER: {
+					_equipArray = ZFS_Equipment_Commander;
+				};
+				case ZFM_AI_TYPE_HEAVY: {
+					_equipArray = ZFS_Equipment_Heavy_WAR_MACHINE;
 				};
 			};
 		};
@@ -554,10 +518,6 @@ ZFM_CreateUnit ={
 	_unit setSkill ["courage",1];
 };
 
-
-
-
-
 // Get the config stuff..
 ZFM_Includes_AI_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Config.sqf";
 ZFM_Includes_AI_Units = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Units.sqf";
@@ -581,7 +541,11 @@ while{true} do
 		_playerPoop = getPos _playerPos;
 	
 		diag_log("Calling Unit Spawn..");
-		_unit = [_aiGroup,"EASY",_playerPoop,ZFM_AI_TYPE_SNIPER] call ZFM_CreateUnit;
+		_unit = [_aiGroup,"WAR_MACHINE",_playerPoop,ZFM_AI_TYPE_SNIPER] call ZFM_CreateUnit;
+		_unit = [_aiGroup,"WAR_MACHINE",_playerPoop,ZFM_AI_TYPE_RIFLEMAN] call ZFM_CreateUnit;
+		_unit = [_aiGroup,"WAR_MACHINE",_playerPoop,ZFM_AI_TYPE_HEAVY] call ZFM_CreateUnit;
+		_unit = [_aiGroup,"WAR_MACHINE",_playerPoop,ZFM_AI_TYPE_COMMANDER] call ZFM_CreateUnit;
+		
 	};
-sleep 50;
+sleep 100;
 };

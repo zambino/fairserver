@@ -93,9 +93,12 @@
 			["Item1","Item2"] // ARRAY only, MUST be magazines. 
 		]
 	*/
+	
+	
+  // Snipers
   ZFS_Equipment_Sniper_EASY = [
 	"Bandit1_DZ", 												// Skin (STRING)
-	["M21","SVD_CAMO"],														// Snipers from FixedLoot. (Random pick)
+	["SVD_CAMO"],														// Snipers from FixedLoot. (Random pick)
 	2,																	// Boundary for the maximum number of magazines
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],		// Backpacks from FixedLoot (Random pick)
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"] // Any medical supplies they should require.
@@ -124,16 +127,17 @@
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
  ];
  
-   ZFS_Equipment_Rifleman_EASY = [
+  // Riflemen
+  ZFS_Equipment_Rifleman_EASY = [
 	"Bandit1_DZ", 												// Skin
-	["M21","SVD_CAMO"],														// Snipers from FixedLoot. (Random pick)
+	["AK_47_M","AK_74","AKS_74_kobra","AKS_74_U","G36C","G36K_camo","M4A1","M249_DZ"],														// Snipers from FixedLoot. (Random pick)
 	2,																	// Boundary for the maximum number of magazines
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],		// Backpacks from FixedLoot (Random pick)
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"] // Any medical supplies they should require.
  ];
  ZFS_Equipment_Rifleman_MEDIUM = [
 	"GUE_Soldier_MG_DZ", 														// Skin
-	["SVD_CAMO","DMR_DZ","m107","SVD_des_EP1"],										// Snipers from FixedLoot. (Random pick)
+	["AK_47_M","AK_74","AKS_74_kobra","AKS_74_U","G36C","G36K_camo","M4A1","M249_DZ","G36A_camo","G36C_camo","M240_DZ"],										// Snipers from FixedLoot. (Random pick)
 	3,																				// Boundary for the maximum number of magazines
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],				// Backpacks from FixedLoot (Random pick)
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]	
@@ -141,7 +145,7 @@
  
  ZFS_Equipment_Rifleman_HARD = [
 	"GUE_Soldier_Crew_DZ", 											// Skin
-	["SCAR_H_LNG_Sniper_SD","SVD_CAMO","DMR_DZ"],						// Snipers from FixedLoot. (Random pick)
+	["AK_47_M","AK_74","AKS_74_kobra","AKS_74_U","G36C","G36K_camo","M4A1","M249_DZ","G36A_camo","G36C_camo","M240_DZ","MG36_camo"],						// Snipers from FixedLoot. (Random pick)
 	5,																	// Boundary for the maximum number of magazines
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],		// Backpacks from FixedLoot (Random pick)
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
@@ -149,11 +153,51 @@
 
  ZFS_Equipment_Rifleman_WAR_MACHINE = [
 	"Ins_Soldier_GL_DZ",
-	["KSVK_DZE","DMR_DZ","m107"],				// Will always have an awesome sniper rifle..
+	["FN_FAL","FN_FAL_ANPVS4","G36A_camo","G36C_camo","M240_DZ","MG36_camo","PK"],				// Will always have an awesome sniper rifle..
 	5,
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],				// Doesn't really matter.
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
  ];
  
+ // Commander is only used in hard or war machine, same model.
+ZFS_Equipment_Commander = [
+	"GUE_Commander_DZ",
+	["FN_FAL","FN_FAL_ANPVS4","SCAR_H_LNG_Sniper_SD","PK"],				// Will always have an awesome sniper rifle..
+	8,
+	["DZ_LargeGunBag_EP1"],				// Doesn't really matter.
+	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
+ ];
+ 
+ // Heavy machinegunners
+   ZFS_Equipment_Heavy_EASY = [
+	"Bandit1_DZ", 												// Skin
+	["M249_DZ"],														// Snipers from FixedLoot. (Random pick)
+	2,																	// Boundary for the maximum number of magazines
+	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],		// Backpacks from FixedLoot (Random pick)
+	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"] // Any medical supplies they should require.
+ ];
+ ZFS_Equipment_Heavy_MEDIUM = [
+	"Bandit2_DZ", 														// Skin
+	["Mk_48_DZ","M249_DZ"],										// Snipers from FixedLoot. (Random pick)
+	3,																				// Boundary for the maximum number of magazines
+	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],				// Backpacks from FixedLoot (Random pick)
+	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]	
+ ];
+ 
+ ZFS_Equipment_Heavy_HARD = [
+	"GUE_Soldier_CO_DZ", 											// Skin
+	["MG36_camo","M249_DZ","M240_DZ"],						// Snipers from FixedLoot. (Random pick)
+	5,																	// Boundary for the maximum number of magazines
+	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],		// Backpacks from FixedLoot (Random pick)
+	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
+ ];
+
+ ZFS_Equipment_Heavy_WAR_MACHINE = [
+	"GUE_Soldier_CO_DZ",
+	["PK"],				// Will always have an awesome sniper rifle..
+	5,
+	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],				// Doesn't really matter.
+	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
+ ];
  
  
