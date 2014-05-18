@@ -21,6 +21,8 @@ ZFM_Admin_UIDs =[
 	["239539334",[ZFM_Admin_All_Permissions]]
 ];
 
+ZFM_Cached_No_Online_Players = 0;
+
 /*
 * 	Permissions
 *
@@ -65,3 +67,5 @@ ZFM_Admin_All_Permissions = [
 	ZFM_Admin_Permissions_Actions_Blood,
 	ZFM_Admin_Permissions_Actions_Teleport 
 ];
+
+

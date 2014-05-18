@@ -14,6 +14,9 @@
  ZFM_GROUP_RESISTANCE = objNull;
  
  
+ 
+ 
+ 
  /*
  *	ZFM AI Types
  *
@@ -37,6 +40,16 @@
 	ZFM_AI_TYPE_PILOT
  ];
  
+ // Used for generation of AI missions (i.e. select at random from this list for difficulty)
+ ZFM_DIFFICULTIES =[
+	"DEADMEAT",
+	"EASY",
+	"MEDIUM",
+	"HARD",
+	"WAR_MACHINE"
+ ];
+ 
+
  /*
  *	ZFM_InitUnitSpawn
  *
@@ -376,9 +389,6 @@ ZFM_Disable_Default_AI ={
 	_unit disableAI "FSM";
 };
 
-ZFM_Create
-
-
 /*
 *	ZFM_CreateUnit_Rifleman
 *
@@ -524,6 +534,227 @@ ZFM_CreateUnit ={
 	_unit setSkill ["courage",1];
 };
 
+ZFM_CreateCrashMarker ={
+	private ["_location","_difficulty","_markerText","_markerCreated","_markerColor","_markerSize","_markerType"];
+	
+	_location = _this select 0;
+	_difficulty = _this select 1;
+	_markerText =_this select 2;
+	
+	// Create the marker
+	_markerCreated = createMarker[format["%1",random 10000],(visiblePosition _createdVehicle)];
+	_markerColor = "ColorWhite";
+	_markerSize = 150;
+	_markerType = "Flag1";
+	
+	_markerCreated setMarkerShape "ELLIPSE";
+	_markerCreated setMarkerBrush "Solid";
+	
+	switch(_difficulty) do
+	{
+		case "DEADMEAT": {
+			_markerColor = "ColorYellow";
+			_markerSize = 95;
+		};		
+		case "EASY": {
+			_markerColor = "ColorGreen";
+			_markerSize = 105;
+		};		
+		case "MEDIUM": {
+			_markerColor = "ColorOrange";
+			_markerSize = 115;
+		};		
+		case "HARD": {
+			_markerColor = "ColorRed";
+			_markerSize = 125;
+		};		
+		case "WAR_MACHINE": {
+			_markerColor = "ColorBlack";
+			_markerSize = 200;
+			_markerType = "Warning";
+		};
+	};
+	
+	_markerCreated setMarkerSize [_markerSize,_markerSize];
+	_markerCreated setMarkerColor _markerColor;
+	_markerCreated setMarkerType _markerType;
+	_markerCreated setMarkerText _markerText;	
+	
+};
+
+ZFM_GetVehicleWreckClass ={
+	private ["_vehicleClass"];
+	
+	_vehicleClass = _this select 0;
+	
+	_wreckClass = false;
+	
+	switch(_vehicleClass) do
+	{
+	
+		// PLANE WRECKS
+		case "AV8B": {
+			_wreckClass = "AV8BWreck";
+		};
+		case "AV8B2": {
+			_wreckClass = "AV8BWreck";
+		};
+		case "C130J": {
+			_wreckClass = "C130J_wreck_EP1";
+		};
+		case "C130J_US_EP1": {
+			_wreckClass = "C130J_wreck_EP1";
+		};
+		case "F35B": {
+			_wreckClass = "F35bWreck";
+		};
+		case "MQ9PredatorB_US_EP1": {
+			_wreckClass = "MQ9PredatorWreck";
+		};		
+		case "MV22": {
+			_wreckClass = "MV22Wreck";
+		};		
+		case "Su25_CDF": {
+			_wreckClass = "SU25Wreck";
+		};
+		case "Su25_TK_EP1": {
+			_wreckClass = "SU25Wreck";
+		};
+		case "Su34": {
+			_wreckClass = "SU34Wreck";
+		};		
+
+		// HELICOPTER WRECKS
+		case "AH1Z": {
+			_wreckClass = "AH1ZWreck";
+		};
+		case "MH60S": {
+			_wreckClass = "MH60Wreck";
+		};
+		case "Mi17_Civilian": {
+			_wreckClass = "Mi17Wreck";
+		};
+		case "Mi17_TK_EP1": {
+			_wreckClass = "Mi17Wreck";
+		};
+		case "Mi17_medevac_Ins": {
+			_wreckClass = "Mi17Wreck";
+		};
+		case "Mi17_medevac_CDF": {
+			_wreckClass = "Mi17Wreck";
+		};
+		case "Mi17_medevac_RU": {
+			_wreckClass = "Mi17Wreck";
+		};
+		case "Mi17_Ins": {
+			_wreckClass = "Mi17Wreck";
+		};		
+		case "Mi17_CDF": {
+			_wreckClass = "Mi17Wreck";
+		};		
+		case "Mi17_rockets_RU": {
+			_wreckClass = "Mi17Wreck";
+		};		
+		case "Mi17_Civilian": {
+			_wreckClass = "Mi17Wreck";
+		};		
+		case "Mi17_UN_CDF_EP1": {
+			_wreckClass = "Mi17Wreck";
+		};		
+		case "Mi171Sh_rockets_CZ_EP1": {
+			_wreckClass = "Mi17Wreck";
+		};		
+		case "Mi171Sh_CZ_EP1": {
+			_wreckClass = "Mi17Wreck";
+		};		
+		case "Mi17_TK_EP1": {
+			_wreckClass = "Mi17Wreck";
+		};		
+		case "Mi24_V": {
+			_wreckClass = "Mi24Wreck";
+		};		
+		case "Mi24_P": {
+			_wreckClass = "Mi24Wreck";
+		};	
+		case "Mi24_D": {
+			_wreckClass = "Mi24Wreck";
+		};	
+		case "Mi24_D_TK_EP1": {
+			_wreckClass = "Mi24Wreck";
+		};			
+		case "Ka52": {
+			_wreckClass = "Ka52Wreck";
+		};
+		case "Ka52Black": {
+			_wreckClass = "Ka52Wreck";
+		};
+		case "UH1Y": {
+			_wreckClass = "UH1YWreck";
+		};		
+	};
+	
+	_wreckClass
+};
+
+
+
+ZFM_CreateCrashVehicle ={
+	private["_vehicleType","_difficulty","_markerText","_playerLocation","_location","_markerCreated","_crashPos"];
+	
+	_vehicleType = _this select 0;
+	_difficulty = _this select 1;
+	_markerText = _this select 2;
+	
+	// Set it first, hope it isn't in the water.
+	_location = [(round random 12000),(round random 12000),2000];
+	
+	diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Crash location found..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
+
+	// Create a vehicle!
+	_createdVehicle = createVehicle [_vehicleType,_location,[],0,"FLY"]; 
+	
+	diag_log(format["Created vehicle %1 at location %2",_vehicleType,_location]);
+	
+	_crashPos = visiblePosition _createdVehicle;
+	
+	while{alive _createdVehicle} do
+	{
+		diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Vehicle created, currently waiting for crash..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
+		sleep 10;
+	};
+	
+	// Get the position of the crash.
+	_crashPos = visiblePosition _createdVehicle;
+
+	// Create the marker for the vehicle.
+	_markerCreated = [_location,_difficulty,_markerText] call ZFM_CreateCrashMarker;
+	
+	// Find out if there's a crash replacement class for the vehicle created..
+	_crashRepClass = [_vehicleType] call ZFM_GetVehicleWreckClass;
+	
+	// IF the _crashRepClass is a string and not BOOL, then continue
+	if(typeName _crashRepClass == "STRING") then
+	{
+		diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Vehicle crashed, has a crash model replacement - Replacing with wreck, which looks better...",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
+		_crashDir = getDir _createdVehicle;
+		deleteVehicle _createdVehicle;	
+		
+		// Manipulate the location so that Z is always 0, so we don't have wrecks sitting on the top of trees.
+		_crashPosOne = _crashPos select 0;
+		_crashPosTwo = _crashPos select 1;
+		_newCrashPos = [_crashPosOne,_crashPosTwo,0];		
+	
+		// Create a wreck with the corresponding replacement class
+		_createdVehicle = createVehicle [_crashRepClass,_newCrashPos,[],0,"NONE"]; 
+			
+	};
+	
+	diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Marker set..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
+	
+	[_createdVehicle,_markerCreated]
+};
+
+
 // Get the config stuff..
 ZFM_Includes_AI_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Config.sqf";
 ZFM_Includes_AI_Units = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Units.sqf";
@@ -535,23 +766,17 @@ call compile preprocessFileLineNumbers ZFM_Includes_AI_Units;
 // Call AI bootstrap
 [] call ZFM_DoBootStrap;
 
-// Sample AI group
-_aiGroup = [east] call ZFM_CreateAIGroup;
 
 while{true} do
 {
-	if(count playableUnits >0) then
-	{
-		_playerz = playableUnits;
-		_playerPos = _playerz select 0;
-		_playerPoop = getPos _playerPos;
+	_vehiclezType = "C130J_US_EP1";
+	_playerz = playableUnits;
+	_playerPos = _playerz select 0;
+	_playerPoop = getPos _playerPos;	
+	_thisVehicle = [_vehiclezType,"WAR_MACHINE","DIS BE A TEST"] call ZFM_CreateCrashVehicle;
 	
-		diag_log("Calling Unit Spawn..");
-		_unit = [_aiGroup,"WAR_MACHINE",_playerPoop,ZFM_AI_TYPE_SNIPER] call ZFM_CreateUnit;
-		_unit = [_aiGroup,"WAR_MACHINE",_playerPoop,ZFM_AI_TYPE_RIFLEMAN] call ZFM_CreateUnit;
-		_unit = [_aiGroup,"WAR_MACHINE",_playerPoop,ZFM_AI_TYPE_HEAVY] call ZFM_CreateUnit;
-		_unit = [_aiGroup,"WAR_MACHINE",_playerPoop,ZFM_AI_TYPE_COMMANDER] call ZFM_CreateUnit;
-		
-	};
-sleep 100;
+	diag_log("CREATED VEHICLE!");
+	
+	sleep 30;
+	
 };

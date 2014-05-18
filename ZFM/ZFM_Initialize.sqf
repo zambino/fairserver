@@ -16,6 +16,7 @@ ZFSS_Installed = true;
 ZFM_Name = "Zambino FairMission System [ZFM] ";
 ZFM_Version = "v0.4.5";
 
+
 diag_log(format["%1 %2 - Waiting for INITIALIZATION..",ZFM_Name,ZFM_Version]);
 waitUntil{initialized};
 
@@ -26,6 +27,7 @@ ZFM_Includes_Functions_File = "\z\addons\dayz_server\ZFM\ZFM_Functions.sqf";
 ZFM_Includes_Loot_File = "\z\addons\dayz_server\ZFM\ZFM_LootHandler.sqf";
 ZFM_Includes_AI_File = "\z\addons\dayz_server\ZFM\ZFM_Initialize_AI.sqf";
 ZFM_Includes_Admin_file = "\z\addons\dayz_server\ZFM\ZFM_Admin.sqf";
+
 
 [] execVM ZFM_Includes_Functions_File;
 [] execVM ZFM_Includes_Loot_File;
