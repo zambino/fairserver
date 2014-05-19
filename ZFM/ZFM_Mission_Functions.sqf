@@ -1,66 +1,15 @@
 /*
 	ZFSS - Zambino's FairServer System v0.5
-	A DayZ epoch script to limit the impact of assholes on servers.  Very loosely based on the "Safezone commander" script by AlienX.
+	A Dayz Epoch server solution proving a dynamic mission system and fun, more interesting missions and a more equitable way of doing them. 
+	Not messing with the bandit/hero dynamic, just making the game a little less rage-inducing :)
 	Copyright (C) 2014 Jordan Ashley Craw
 
 	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
- private["_aiGroup","_playerz","_playerPos","_playerPoop","_unit"];
- 
- ZFM_GROUP_EAST = objNull;
- ZFM_GROUP_WEST = objNull;
- ZFM_GROUP_CIVILIAN = objNull;
- ZFM_GROUP_RESISTANCE = objNull;
  
  
  
- 
- 
- /*
- *	ZFM AI Types
- *
- *	These are simple constants used for AI types.
- */
- 
- ZFM_AI_TYPE_SNIPER = "1x101010";
- ZFM_AI_TYPE_RIFLEMAN = "1x101011";
- ZFM_AI_TYPE_HEAVY = "1x101012";
- ZFM_AI_TYPE_COMMANDER = "1x101013";
- ZFM_AI_TYPE_MEDIC = "1x101014";
- ZFM_AI_TYPE_PILOT = "1x101015";
- 
- // Used for reference functions.
- ZFM_AI_TYPES = [
-	ZFM_AI_TYPE_SNIPER,
-	ZFM_AI_TYPE_RIFLEMAN,
-	ZFM_AI_TYPE_HEAVY,
-	ZFM_AI_TYPE_COMMANDER,
-	ZFM_AI_TYPE_MEDIC,
-	ZFM_AI_TYPE_PILOT
- ];
- 
- // Used for generation of AI missions (i.e. select at random from this list for difficulty)
- ZFM_DIFFICULTIES =[
-	"DEADMEAT",
-	"EASY",
-	"MEDIUM",
-	"HARD",
-	"WAR_MACHINE"
- ];
- 
-ZFM_CrashVehicles_Planes =[
-	"AV8B","AV8B2","C130J","C130J_US_EP1","F35B","MQ9PredatorB_US_EP1","MV22",
-	"Su25_CDF","Su25_TK_EP1","Su34"
-];
-ZFM_CrashVehicles_Helicopters =[
-	"AH1Z","MH60S","Mi17_Civilian","Mi17_TK_EP1","Mi17_medevac_Ins","Mi17_medevac_CDF","Mi17_medevac_RU",
-	"Mi17_Ins","Mi17_CDF","Mi17_rockets_RU","Mi17_Civilian","Mi17_UN_CDF_EP1","Mi171Sh_rockets_CZ_EP1",
-	"Mi17_TK_EP1","Mi24_V","Mi24_P","Mi24_D","Mi24_D_TK_EP1","Ka52","Ka52Black","UH1Y"
-];
- 
- 
-
  /*
  *	ZFM_InitUnitSpawn
  *
@@ -412,9 +361,9 @@ ZFM_Disable_Default_AI ={
 };
 
 /*
-*	ZFM_CreateUnit_Rifleman
+*	ZFM_CreateUnit
 *
-*	These functions are in great need of replacement..
+*	Create a ZFM_typed unit.
 */
 ZFM_CreateUnit ={
 	private ["_aiGroup","_difficulty","_skin","_unit","_spawnAt","_equipArray"];
@@ -528,11 +477,6 @@ ZFM_CreateUnit ={
 	// Spawn the unit..
 	_unit = [_aiGroup,_skin,_spawnAt] call ZFM_InitUnitSpawn;
 	
-	if(_difficulty == "HARD" || _difficulty == "WAR_MACHINE") then
-	{
-		_unit globalChat "I'm in. Let's get busy.";
-	};
-	
 	// Ad the relevant equipment from the EquipArray
 	[_unit,_equipArray] call ZFM_EquipAIFromArray;
 	
@@ -576,24 +520,28 @@ ZFM_CreateUnitGroup ={
 			//Create AI group..
 			_unitGroup = [_side] call ZFM_CreateAIGroup;
 			
-			// Log how many units being created
-			diag_log(format["%1 %2 - ZFM_CreateUnitGroup - Group of %3 units being created..",ZFM_NAME,ZFM_VERSION,]);
-
 			for [{_x =0},{_x <= _unitsArrayCount-1},{_x = _x +1} ] do
 			{
 				_aiType = _unitsArray select _x;
 				
 				if(_aiType in ZFM_AI_TYPES) then
 				{
+					// Stagger them so they aren't just crushed or what have you.
+					_staggerSpawnAt = [_crashPos,(round random 15)] call ZFM_Create_OffsetPosition;
+				
 					diag_log(format["%1 %2 - ZFM_CreateUnitGroup - Unit %3 of %4  (type %5) created..",ZFM_NAME,ZFM_VERSION,_x,(_unitsArrayCount-1),_aiType]);
-					_uArrayReturn = _uArrayReturn + [([_unitGroup,_difficulty,_spawnAt,_aiType] call ZFM_CreateUnit)];
+					_uArrayReturn = _uArrayReturn + [([_unitGroup,_difficulty,_staggerSpawnAt,_aiType] call ZFM_CreateUnit)];
 				};
 			};
+			
+			// Stops them from killing eachother when they fire..s
+			_unitGroup setFormation "ECH LEFT";
+			
 		};
 	};
 	
 	// Return the units so we can muck around with them, tell them to get in cars, etc. 
-	_uArrayReturn	
+	[_unitGroup,_uArrayReturn]
 };
 
 /*
@@ -640,13 +588,11 @@ ZFM_CreateCrashMarker ={
 		};
 	};
 
-	_markerCreated = createMarker["ZFM_CrashMarker",_location];
+	_markerCreated = createMarker[format["%1",(round random 999999)],_location];
 	_markerCreated setMarkerShape "ELLIPSE";
 	_markerCreated setMarkerBrush "Solid";
 	_markerCreated setMarkerSize [_markerSize,_markerSize];
 	_markerCreated setMarkerColor _markerColor;
-	
-	diag_log(format["MARKERCREATED %1",_markerCreated]);
 };
 
 /*
@@ -768,7 +714,52 @@ ZFM_GetVehicleWreckClass ={
 };
 
 /*
-	ZFM_CreateCrashBehicle
+	ZFM_CreateCrashVehicle_Sub
+	
+	We want to make sure that if there's a crash in water, we re-crash it on land
+*/
+ZFM_CreateCrashVehicle_NoWater ={
+	
+	private ["_vehicleType","_location","_createdVehicle","_crashPos"];
+	
+	_vehicleType = _this select 0;
+	_location = _this select 1;
+
+
+	_location = [(round random 12000),(round random 12000),3000];
+	_continueLoop = true;
+	
+	while{_continueLoop} do
+	{
+		if(!surfaceIsWater _location) then
+		{
+			_continueLoop = false;
+		};
+		_location = [(round random 12000),(round random 12000),3000]; // Plenty of distance to crash..
+	};
+	
+	// Create a vehicle!
+	_createdVehicle = createVehicle [_vehicleType,_location,[],0,"FLY"]; 
+	diag_log(format["Created vehicle %1 at location %2",_vehicleType,_location]);
+	
+	while{alive _createdVehicle} do
+	{
+		diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Vehicle created, currently waiting for crash..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
+		
+		// Bugfix -- To absolutely ensure it's going to explode and fall.
+		_createdVehicle setDamage 1;
+		
+		// Wait then exit.
+		sleep 10;
+	};
+	
+	// Return pos of crash
+	visiblePosition _createdVehicle	
+	
+};
+
+/*
+	ZFM_CreateCrashVehicle
 	
 	Spawns a vehicle that will explode and then optionally, replaces it with a nicer-looking wreck model.
 	This is because usually when the vehicle bites the big one, it looks like a raisin. Not much to defend!
@@ -781,28 +772,10 @@ ZFM_CreateCrashVehicle ={
 	_markerText = _this select 2;
 	
 	// Set it first, hope it isn't in the water.
-	_location = [(round random 12000),(round random 12000),3000]; // Plenty of distance to crash..
-	
 	diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Crash location found..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
 
-	// Create a vehicle!
-	_createdVehicle = createVehicle [_vehicleType,_location,[],0,"FLY"]; 
-
-	diag_log(format["Created vehicle %1 at location %2",_vehicleType,_location]);
-	
-	_crashPos = visiblePosition _createdVehicle;
-	
-	while{alive _createdVehicle} do
-	{
-		diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Vehicle created, currently waiting for crash..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
-		
-		// Bugfix -- To absolutely ensure it's going to explode and fall.
-		_createdVehicle setDamage 1;
-		sleep 10;
-	};
-	
-	// Get the position of the crash.
-	_crashPos = visiblePosition _createdVehicle;
+	// Create a crash, but not over water.
+	_crashPos = [_vehicleType] call ZFM_CreateCrashVehicle_NoWater;
 
 	// Find out if there's a crash replacement class for the vehicle created..
 	_crashRepClass = [_vehicleType] call ZFM_GetVehicleWreckClass;
@@ -836,72 +809,50 @@ ZFM_CreateCrashVehicle ={
 	[_createdVehicle,_markerCreatedThis, _crashPos]
 };
 
-ZFM_UnitGroup_GetInVehicle_Goto ={
-	private ["_unitGroup","_vehicle","_gotoLocation","_x"];
+/*
+	ZFM_CrashSite_OffsetPosition
 	
-	_unitGroup = _this select 0;
+	Offsets the Position on x axis.
+*/
+ZFM_Create_OffsetPosition ={
+
+	private["_position","_x","_y","_z","_newX"];
+	
+	_position = _this select 0;
+	_offset = _this select 1;
+	
+	_x = _position select 0;
+	_y = _position select 1;
+	_z = _position select 2;
+	
+	_newX = _x -_offset;
+	
+	// Return the position
+	[_newX,_y,_z]
+};
+
+/*
+ZFM_UnitGroup_GetInVehicle_Goto ={
+	private ["_group","_vehicle","_gotoLocation","_x"];
+	
+	_group = _this select 0; // Side group
 	_vehicle = _this select 1;
 	_gotoLocation = _this select 2;
 	
 	if(typeName _unitGroup == "ARRAY") then
 	{
-		_unitGroupCount = count _unitGroup;
+		_group setFormation "DIAMOND"; // Just for a laugh
+	
+		// Firstly tell the group to get into the car..
+		_gotoCarWP = _group addWaypoint[position _vehicle, 0];
+		_gotoCarWP setWaypointType "GETIN";
 		
-		for [{_x =0},{_x <= _unitGroupCount-1},{_x = _x +1} ] do
-		{
-			// The unit is in an array to prevent typecasting error
-			_row = _unitGroup select _x;
-			_ai = _row select 0;
-			
-			
-		};
-
-		// UNFINISHED!
+		// Wait for that..
+		sleep 50;
+		
+		// Now move to the _gotoLocation
+		_gotoCarWP setWaypointType "MOVE";
+		_gotoCarWP setWaypointPosition [_gotoLocation,0];
 	};
-	
 };
-
-
-// Get the config stuff..
-ZFM_Includes_AI_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Config.sqf";
-ZFM_Includes_AI_Units = "\z\addons\dayz_server\ZFM\Config\ZFM_AI_Units.sqf";
-
-// We need to get access to these functions..
-call compile preprocessFileLineNumbers ZFM_Includes_AI_Config;
-call compile preprocessFileLineNumbers ZFM_Includes_AI_Units;
-
-// Call AI bootstrap
-[] call ZFM_DoBootStrap;
-
-
-while{true} do
-{
-	_vehiclezType = "C130J_US_EP1";
-	_playerz = playableUnits;
-	_playerPos = _playerz select 0;
-	_playerPoop = getPos _playerPos;	
-	
-	_randomVehicle = ZFM_CrashVehicles_Helicopters call BIS_fnc_selectRandom;
-	
-	_thisVehicle = [_randomVehicle,"WAR_MACHINE","DIS BE A TEST"] call ZFM_CreateCrashVehicle;
-	_crashPos = _thisVehicle select 2;
-	
-	_createUnitsArray = [
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN
-	];
-	
-	[_createUnitsArray,"WAR_MACHINE",east,_crashPos] call ZFM_CreateUnitGroup;
-	
-	
-	diag_log("CREATED VEHICLE!");
-	
-	sleep 100;
-	
-};
+*/

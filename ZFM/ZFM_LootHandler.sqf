@@ -1,6 +1,8 @@
 /*
 	ZFSS - Zambino's FairServer System v0.5
-	A DayZ epoch script to limit the impact of assholes on servers.  Very loosely based on the "Safezone commander" script by AlienX.
+	A Dayz Epoch server solution proving a dynamic mission system and fun, more interesting missions and a more equitable way of doing them. 
+	Not messing with the bandit/hero dynamic, just making the game a little less rage-inducing :)
+
 	Copyright (C) 2014 Jordan Ashley Craw
 
 	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
