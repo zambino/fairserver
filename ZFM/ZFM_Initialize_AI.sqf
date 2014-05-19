@@ -49,6 +49,17 @@
 	"WAR_MACHINE"
  ];
  
+ZFM_CrashVehicles_Planes =[
+	"AV8B","AV8B2","C130J","C130J_US_EP1","F35B","MQ9PredatorB_US_EP1","MV22",
+	"Su25_CDF","Su25_TK_EP1","Su34"
+];
+ZFM_CrashVehicles_Helicopters =[
+	"AH1Z","MH60S","Mi17_Civilian","Mi17_TK_EP1","Mi17_medevac_Ins","Mi17_medevac_CDF","Mi17_medevac_RU",
+	"Mi17_Ins","Mi17_CDF","Mi17_rockets_RU","Mi17_Civilian","Mi17_UN_CDF_EP1","Mi171Sh_rockets_CZ_EP1",
+	"Mi17_TK_EP1","Mi24_V","Mi24_P","Mi24_D","Mi24_D_TK_EP1","Ka52","Ka52Black","UH1Y"
+];
+ 
+ 
 
  /*
  *	ZFM_InitUnitSpawn
@@ -86,6 +97,7 @@
 *	Create a group for a group of AI.
 */
 ZFM_CreateAIGroup = {
+
 	private ["_sideType","_createdGroup"];
 	_sideType = _this select 0;
 
@@ -95,6 +107,7 @@ ZFM_CreateAIGroup = {
 	//Return the group
 	_createdGroup
 };
+
 /*
 *	ZFM_AI_Get_View_Distance
 *
@@ -292,7 +305,7 @@ ZFM_CheckExistingAI = {
 *	Provide an array in the ZFM format, and equip the unit with the weapons proscribed.
 */
 ZFM_EquipAIFromArray ={
-	private ["_ai","_equipArray","_primaryWeap","_numMagazines","_unitBackPk","_unitBackPack","_primaryWeapon","_magazineToAdd"];
+	private ["_ai","_equipArray","_primaryWeap","_numMagazines","_unitBackPk","_unitBackPack","_primaryWeapon","_magazineToAdd","_x"];
 	
 	_ai = _this select 0;
 	_equipArray = _this select 1;
@@ -304,7 +317,7 @@ ZFM_EquipAIFromArray ={
 	// What number of magazines will they spawn with? 
 	_numMagazines = _equipArray select 2;
 	
-	_numMagazines = _numMagazines +3; // Make sure they have at least 3 magazines to start with.
+	_numMagazines = _numMagazines +5; // Make sure they have at least 5 magazines to start with.
 	
 	// What backpack?
 	_unitBackPk = _equipArray select 3;
@@ -318,8 +331,7 @@ ZFM_EquipAIFromArray ={
 	// Get the magazine for the weapon out of the config file. DZMS is fun, but why always give them the first one? 
 	_magazineToAdd = getArray(configFile >> "CfgWeapons" >> _primaryWeapon >> "magazines") select 0;	
 		
-	diag_log(format["Skin %1, PrimaryWeap %2, NumMagazines %3,Primary Weapon %4,Backpack %5 ,AI %6, magazine %7",_skin,_primaryWeap,_numMagazines,_primaryWeapon,_unitBackPack,_ai,_magazineToAdd
-	]);
+	diag_log(format["Skin %1, PrimaryWeap %2, NumMagazines %3,Primary Weapon %4,Backpack %5 ,AI %6, magazine %7",_skin,_primaryWeap,_numMagazines,_primaryWeapon,_unitBackPack,_ai,_magazineToAdd]);
 		
 	// This is messy; I should join the magazines array and the med supplies array and loop through them all, but fuck it. 
 	for [{_x =1},{_x <= _numMagazines},{_x = _x +1} ] do
@@ -331,8 +343,13 @@ ZFM_EquipAIFromArray ={
 	_ai addBackpack _unitBackPack;
 };
 
+/*
+	ZFM_SetAISkills
+	
+	Sets AI skills based on config arrays. 
+*/
 ZFM_SetAISkills ={
-	private ["_unit","_difficulty"];
+	private ["_unit","_difficulty","_skillsArray","_numSkills","_thisRow","_skill","_currSkill","_x"];
 	
 	_unit  = _this select 0;
 	_difficulty = _this select 1;
@@ -379,6 +396,11 @@ ZFM_SetAISkills ={
 	};
 };
 
+/*
+	ZFM_Disable_Default_AI
+	
+	Disables default AI for debugging purposes.
+*/
 ZFM_Disable_Default_AI ={
 	private ["_unit"];
 	
@@ -518,7 +540,7 @@ ZFM_CreateUnit ={
 	[_unit,_difficulty] call ZFM_SetAISkills;
 	
 	// Add variables to unit for ZFM
-	_unit setVariable ["ZFM_UnitType","RIFLEMAN"];
+	_unit setVariable ["ZFM_UnitType",_unitType];
 	_unit setVariable ["ZFM_UnitDifficulty",_difficulty];
 	
 	// Don't start running around.
@@ -527,13 +549,58 @@ ZFM_CreateUnit ={
 	// Don't shoot at me.. Please?
 	_unit enableAttack false;
 	
-	// No need to enable this at the moment as it's for further AI.
-	//[_unit] call ZFM_Disable_Default_AI;
-	
-	// Remove this for production -- debugging
-	_unit setSkill ["courage",1];
+	_unit
 };
 
+/*
+	ZFM_CreateUnitGroup
+	
+	Takes an array input and other requirements to generate groups of AI at once. Returns in an array for convenience.
+*/
+ZFM_CreateUnitGroup ={
+	private["_unitsArray","_difficulty","_side","_spawnAt","_uArrayReturn","_unitGroup","_unitsArrayCount","_aiType","_thisUnit","_x"];
+
+	_unitsArray = _this select 0;
+	_difficulty = _this select 1;
+	_side = _this select 2;
+	_spawnAt = _this select 3;
+	
+	_uArrayReturn = [];
+	
+	if(typeName _unitsArray =="ARRAY") then
+	{
+		_unitsArrayCount = count _unitsArray; 
+	
+		if(_unitsArrayCount > 0) then
+		{
+			//Create AI group..
+			_unitGroup = [_side] call ZFM_CreateAIGroup;
+			
+			// Log how many units being created
+			diag_log(format["%1 %2 - ZFM_CreateUnitGroup - Group of %3 units being created..",ZFM_NAME,ZFM_VERSION,]);
+
+			for [{_x =0},{_x <= _unitsArrayCount-1},{_x = _x +1} ] do
+			{
+				_aiType = _unitsArray select _x;
+				
+				if(_aiType in ZFM_AI_TYPES) then
+				{
+					diag_log(format["%1 %2 - ZFM_CreateUnitGroup - Unit %3 of %4  (type %5) created..",ZFM_NAME,ZFM_VERSION,_x,(_unitsArrayCount-1),_aiType]);
+					_uArrayReturn = _uArrayReturn + [([_unitGroup,_difficulty,_spawnAt,_aiType] call ZFM_CreateUnit)];
+				};
+			};
+		};
+	};
+	
+	// Return the units so we can muck around with them, tell them to get in cars, etc. 
+	_uArrayReturn	
+};
+
+/*
+	ZFM_CreateCrashMarker
+	
+	Creates a marker for a crash
+*/
 ZFM_CreateCrashMarker ={
 	private ["_location","_difficulty","_markerText","_markerCreated","_markerColor","_markerSize","_markerType"];
 	
@@ -542,13 +609,12 @@ ZFM_CreateCrashMarker ={
 	_markerText =_this select 2;
 	
 	// Create the marker
-	_markerCreated = createMarker[format["%1",random 10000],(visiblePosition _createdVehicle)];
+	
 	_markerColor = "ColorWhite";
 	_markerSize = 150;
-	_markerType = "Flag1";
+
+	diag_log(format["Crash Marker. Location %1, Difficulty %2, MarkerText %3",_location,_difficulty,_markerText]);
 	
-	_markerCreated setMarkerShape "ELLIPSE";
-	_markerCreated setMarkerBrush "Solid";
 	
 	switch(_difficulty) do
 	{
@@ -570,18 +636,24 @@ ZFM_CreateCrashMarker ={
 		};		
 		case "WAR_MACHINE": {
 			_markerColor = "ColorBlack";
-			_markerSize = 200;
-			_markerType = "Warning";
+			_markerSize = 400;
 		};
 	};
-	
+
+	_markerCreated = createMarker["ZFM_CrashMarker",_location];
+	_markerCreated setMarkerShape "ELLIPSE";
+	_markerCreated setMarkerBrush "Solid";
 	_markerCreated setMarkerSize [_markerSize,_markerSize];
 	_markerCreated setMarkerColor _markerColor;
-	_markerCreated setMarkerType _markerType;
-	_markerCreated setMarkerText _markerText;	
 	
+	diag_log(format["MARKERCREATED %1",_markerCreated]);
 };
 
+/*
+	ZFM_GetVehicleWreckClass
+	
+	Gets the analogous wreck class for a vehicle.
+*/
 ZFM_GetVehicleWreckClass ={
 	private ["_vehicleClass"];
 	
@@ -591,7 +663,6 @@ ZFM_GetVehicleWreckClass ={
 	
 	switch(_vehicleClass) do
 	{
-	
 		// PLANE WRECKS
 		case "AV8B": {
 			_wreckClass = "AV8BWreck";
@@ -623,7 +694,7 @@ ZFM_GetVehicleWreckClass ={
 		case "Su34": {
 			_wreckClass = "SU34Wreck";
 		};		
-
+			
 		// HELICOPTER WRECKS
 		case "AH1Z": {
 			_wreckClass = "AH1ZWreck";
@@ -696,23 +767,27 @@ ZFM_GetVehicleWreckClass ={
 	_wreckClass
 };
 
-
-
+/*
+	ZFM_CreateCrashBehicle
+	
+	Spawns a vehicle that will explode and then optionally, replaces it with a nicer-looking wreck model.
+	This is because usually when the vehicle bites the big one, it looks like a raisin. Not much to defend!
+*/
 ZFM_CreateCrashVehicle ={
-	private["_vehicleType","_difficulty","_markerText","_playerLocation","_location","_markerCreated","_crashPos"];
+	private["_vehicleType","_difficulty","_markerText","_playerLocation","_location","_markerCreatedThis","_crashPos"];
 	
 	_vehicleType = _this select 0;
 	_difficulty = _this select 1;
 	_markerText = _this select 2;
 	
 	// Set it first, hope it isn't in the water.
-	_location = [(round random 12000),(round random 12000),2000];
+	_location = [(round random 12000),(round random 12000),3000]; // Plenty of distance to crash..
 	
 	diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Crash location found..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
 
 	// Create a vehicle!
 	_createdVehicle = createVehicle [_vehicleType,_location,[],0,"FLY"]; 
-	
+
 	diag_log(format["Created vehicle %1 at location %2",_vehicleType,_location]);
 	
 	_crashPos = visiblePosition _createdVehicle;
@@ -720,15 +795,15 @@ ZFM_CreateCrashVehicle ={
 	while{alive _createdVehicle} do
 	{
 		diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Vehicle created, currently waiting for crash..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
+		
+		// Bugfix -- To absolutely ensure it's going to explode and fall.
+		_createdVehicle setDamage 1;
 		sleep 10;
 	};
 	
 	// Get the position of the crash.
 	_crashPos = visiblePosition _createdVehicle;
 
-	// Create the marker for the vehicle.
-	_markerCreated = [_location,_difficulty,_markerText] call ZFM_CreateCrashMarker;
-	
 	// Find out if there's a crash replacement class for the vehicle created..
 	_crashRepClass = [_vehicleType] call ZFM_GetVehicleWreckClass;
 	
@@ -737,21 +812,53 @@ ZFM_CreateCrashVehicle ={
 	{
 		diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Vehicle crashed, has a crash model replacement - Replacing with wreck, which looks better...",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
 		_crashDir = getDir _createdVehicle;
+		
+		// Give the vehicle a short while to burn, explode or do whatever
+		sleep 20;
+		
+		// Get rid of the wreckage and replace it with nicer looking wreckage
 		deleteVehicle _createdVehicle;	
 		
 		// Manipulate the location so that Z is always 0, so we don't have wrecks sitting on the top of trees.
 		_crashPosOne = _crashPos select 0;
 		_crashPosTwo = _crashPos select 1;
-		_newCrashPos = [_crashPosOne,_crashPosTwo,0];		
+		_crashPos = [_crashPosOne,_crashPosTwo,0];		
 	
 		// Create a wreck with the corresponding replacement class
-		_createdVehicle = createVehicle [_crashRepClass,_newCrashPos,[],0,"NONE"]; 
-			
+		_createdVehicle = createVehicle [_crashRepClass,_crashPos,[],0,"NONE"]; 
 	};
+	
+	// Create the marker for the vehicle.
+	_markerCreatedThis = [_crashPos,_difficulty,_markerText] call ZFM_CreateCrashMarker;
 	
 	diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Marker set..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
 	
-	[_createdVehicle,_markerCreated]
+	[_createdVehicle,_markerCreatedThis, _crashPos]
+};
+
+ZFM_UnitGroup_GetInVehicle_Goto ={
+	private ["_unitGroup","_vehicle","_gotoLocation","_x"];
+	
+	_unitGroup = _this select 0;
+	_vehicle = _this select 1;
+	_gotoLocation = _this select 2;
+	
+	if(typeName _unitGroup == "ARRAY") then
+	{
+		_unitGroupCount = count _unitGroup;
+		
+		for [{_x =0},{_x <= _unitGroupCount-1},{_x = _x +1} ] do
+		{
+			// The unit is in an array to prevent typecasting error
+			_row = _unitGroup select _x;
+			_ai = _row select 0;
+			
+			
+		};
+
+		// UNFINISHED!
+	};
+	
 };
 
 
@@ -773,10 +880,28 @@ while{true} do
 	_playerz = playableUnits;
 	_playerPos = _playerz select 0;
 	_playerPoop = getPos _playerPos;	
-	_thisVehicle = [_vehiclezType,"WAR_MACHINE","DIS BE A TEST"] call ZFM_CreateCrashVehicle;
+	
+	_randomVehicle = ZFM_CrashVehicles_Helicopters call BIS_fnc_selectRandom;
+	
+	_thisVehicle = [_randomVehicle,"WAR_MACHINE","DIS BE A TEST"] call ZFM_CreateCrashVehicle;
+	_crashPos = _thisVehicle select 2;
+	
+	_createUnitsArray = [
+		ZFM_AI_TYPE_RIFLEMAN,
+		ZFM_AI_TYPE_RIFLEMAN,
+		ZFM_AI_TYPE_RIFLEMAN,
+		ZFM_AI_TYPE_RIFLEMAN,
+		ZFM_AI_TYPE_RIFLEMAN,
+		ZFM_AI_TYPE_RIFLEMAN,
+		ZFM_AI_TYPE_RIFLEMAN,
+		ZFM_AI_TYPE_RIFLEMAN
+	];
+	
+	[_createUnitsArray,"WAR_MACHINE",east,_crashPos] call ZFM_CreateUnitGroup;
+	
 	
 	diag_log("CREATED VEHICLE!");
 	
-	sleep 30;
+	sleep 100;
 	
 };
