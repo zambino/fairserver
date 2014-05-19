@@ -5,7 +5,8 @@ A Dayz Epoch server solution proving a dynamic mission system and fun, more inte
 
 I love open source. Get stuck in if you want to help. 
 
-== About == 
+About
+==========
 This is a step-by-step development of a one-size-fits all solution for someone running a DayZ epoch server. It currently consists of
 ZFM which is the Zambino FairMission System, and ZFSS which is the client-side files for ZFM. It was created as the 
 next step in the mission systems, and to provide some variability in content. 
