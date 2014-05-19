@@ -9,6 +9,9 @@
  */
  private["_aiGroup","_playerz","_playerPos","_playerPoop","_unit"];
  
+ // Used for Global chat
+ZFM_ChatLogic = "Logic" createVehicleLocal [0,0,0];
+ 
  
  // Get the config stuff..
 ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
@@ -74,11 +77,12 @@ ZFM_GenerateMissionTitle ={
 	_vehicleName = _this select 1;
 	_difficulty = _this select 2;
 	
-	if(typeName _missionType != "STRING") exitWith {};
 	
-	switch(_missionType) then
+	switch(_missionType) do
 	{
 		case ZFM_MISSION_TYPE_CRASH: {
+		
+			diag_log("CRASH MISSION TYPE UYA");
 		
 			// ... to
 			_onTheWayTo = ZFM_OnTheWayTo call BIS_fnc_selectRandom;
@@ -93,12 +97,15 @@ ZFM_GenerateMissionTitle ={
 			_securedBy = ZFM_BanditGroup_Names call BIS_fnc_selectRandom;
 		
 			// One for each line on the screen
-			_crashTextOne = format["A %1 %2 %3 %4",_vehicleName,_onTheWayTo,_onTheWayToPlace,_deathType];
+			_crashTextOne = format["A %1 %2 %3 %4. We suspect %5 have secured the site.",_vehicleName,_onTheWayTo,_onTheWayToPlace,_deathType,_securedBy];
 			_crashTextTwo = format["Secured by %1 [Difficulty %2]",_securedBy,_difficulty];
 	
-			// Far more lovely than anything we've seen before, no?
-			titleText[_crashTextOne,"PLAIN",10];
-			cutText[_crashTextTwo,"PLAIN DOWN",10];
+			diag_log(_crashTextOne);
+			diag_log(_crashTextTwo);
+			
+			// Call TitleText as REMOTE EXECUTE (RE) -- Seems that TitleText is local?
+			ZFM_ChatLogic sideChat _crashTextOne;
+			ZFM_ChatLogic sideChat _crashTextTwo;
 		};
 	};
 
@@ -132,13 +139,13 @@ while{true} do
 		ZFM_AI_TYPE_RIFLEMAN
 	];
 	
-	wait 40;
+	sleep 40;
 
 	// Offset by 5 so they're not crushed by spawning vehicles
 	_newPozz = [_crashPos,2] call ZFM_Create_OffsetPosition;
 	
-	_unitsArrayz = [_createUnitsArray,"WAR_MACHINE",east,_newPozz] call ZFM_CreateUnitGroup;
-	_groupArrayz = _unitsArrayz select 0; // Get the group
+	//_unitsArrayz = [_createUnitsArray,"WAR_MACHINE",east,_newPozz] call ZFM_CreateUnitGroup;
+	//_groupArrayz = _unitsArrayz select 0; // Get the group
 	
 	// Do the title thang, right?
 	[ZFM_MISSION_TYPE_CRASH,_randomVehicle,"WAR_MACHINE"] call ZFM_GenerateMissionTitle;

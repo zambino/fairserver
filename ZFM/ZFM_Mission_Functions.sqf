@@ -487,11 +487,14 @@ ZFM_CreateUnit ={
 	_unit setVariable ["ZFM_UnitType",_unitType];
 	_unit setVariable ["ZFM_UnitDifficulty",_difficulty];
 	
-	// Don't start running around.
-	doStop _unit;
-	
-	// Don't shoot at me.. Please?
-	_unit enableAttack false;
+	// Turn all the switches on, baby.
+	_unit enableAI "TARGET";
+	_unit enableAI "AUTOTARGET";
+	_unit enableAI "MOVE";
+	_unit enableAI "ANIM";
+	_unit enableAI "FSM";
+	_unit setCombatMode "RED";
+	_unit setBehaviour "COMBAT";
 	
 	_unit
 };
@@ -530,6 +533,7 @@ ZFM_CreateUnitGroup ={
 					_staggerSpawnAt = [_crashPos,(round random 15)] call ZFM_Create_OffsetPosition;
 				
 					diag_log(format["%1 %2 - ZFM_CreateUnitGroup - Unit %3 of %4  (type %5) created..",ZFM_NAME,ZFM_VERSION,_x,(_unitsArrayCount-1),_aiType]);
+					
 					_uArrayReturn = _uArrayReturn + [([_unitGroup,_difficulty,_staggerSpawnAt,_aiType] call ZFM_CreateUnit)];
 				};
 			};
