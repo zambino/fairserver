@@ -727,39 +727,42 @@ ZFM_CreateCrashVehicle_NoWater ={
 	private ["_vehicleType","_location","_createdVehicle","_crashPos"];
 	
 	_vehicleType = _this select 0;
-	_location = _this select 1;
-
-
-	_location = [(round random 12000),(round random 12000),3000];
+	//_location = _this select 1;
+	
 	_continueLoop = true;
 	
 	while{_continueLoop} do
 	{
-		if(!surfaceIsWater _location) then
+		// Generate a random location
+		_location = [(round random 12000),(round random 12000),3000];
+		
+		// Make it fly
+		_createdVehicle = createVehicle [_vehicleType,_location,[],0,"FLY"]; 
+		diag_log(format["%1 %2 - ZFM_CreateCrashVehicle_NoWater - Creating crash, hopefully not in water..",ZFM_NAME,ZFM_VERSION]);
+					
+		// Watch it crash, see if it's in water, then if it is, no thanks, try again.
+		while{alive _createdVehicle} do
+		{
+			diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Vehicle created, currently waiting for crash..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
+			
+			// Bugfix -- To absolutely ensure it's going to explode and fall.
+			_createdVehicle setDamage 1;
+			
+			// Wait then exit.
+			sleep 10;
+		};
+		
+		_crashPos = getPosATL _createdVehicle;
+		
+		if(!surfaceIsWater _crashPos) then
 		{
 			_continueLoop = false;
 		};
-		_location = [(round random 12000),(round random 12000),3000]; // Plenty of distance to crash..
+		
+		deleteVehicle _createdVehicle;
 	};
 	
-	// Create a vehicle!
-	_createdVehicle = createVehicle [_vehicleType,_location,[],0,"FLY"]; 
-	diag_log(format["Created vehicle %1 at location %2",_vehicleType,_location]);
-	
-	while{alive _createdVehicle} do
-	{
-		diag_log(format["%1 %2 - ZFM_CreateCrashVehicle - Vehicle created, currently waiting for crash..",ZFM_NAME,ZFM_VERSION,(visiblePosition _createdVehicle)]);
-		
-		// Bugfix -- To absolutely ensure it's going to explode and fall.
-		_createdVehicle setDamage 1;
-		
-		// Wait then exit.
-		sleep 10;
-	};
-	
-	// Return pos of crash
-	visiblePosition _createdVehicle	
-	
+	visiblePosition _createdVehicle
 };
 
 /*

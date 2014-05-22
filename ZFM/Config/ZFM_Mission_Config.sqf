@@ -7,6 +7,63 @@
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
  
+ ZFM_MINIMUM_AI_PER_MISSION = 8;
+  
+ ZFM_GROUP_EAST = objNull;
+ ZFM_GROUP_WEST = objNull;
+ ZFM_GROUP_CIVILIAN = objNull;
+ ZFM_GROUP_RESISTANCE = objNull;
+ 
+ ZFM_AI_TYPE_SNIPER = "1x101010";
+ ZFM_AI_TYPE_RIFLEMAN = "1x101011";
+ ZFM_AI_TYPE_HEAVY = "1x101012";
+ ZFM_AI_TYPE_COMMANDER = "1x101013";
+ ZFM_AI_TYPE_MEDIC = "1x101014";
+ ZFM_AI_TYPE_PILOT = "1x101015";
+ 
+ ZFM_AI_TYPES = [
+	ZFM_AI_TYPE_SNIPER,
+	ZFM_AI_TYPE_RIFLEMAN,
+	ZFM_AI_TYPE_HEAVY,
+	ZFM_AI_TYPE_COMMANDER
+	// Not adding Medic or Pilot yet, for later version
+ ];
+ 
+ // Used for generation of AI missions (i.e. select at random from this list for difficulty)
+ ZFM_DIFFICULTIES =[
+	"DEADMEAT",
+	"EASY",
+	"MEDIUM",
+	"HARD",
+	"WAR_MACHINE"
+ ];
+ 
+ // Methods for generating missions
+ ZFM_MISSION_METHOD_RANDOM = "3x101011";
+ 
+ // Used for basic mission types. If someone were to help maintain or expand this, more can be added here. 
+ ZFM_MISSION_TYPE_CRASH = "2x101011";
+ ZFM_MISSION_TYPE_CRASH_GOTO = "2x101012";
+ ZFM_MISSION_TYPE_CRASH_AMBUSH = "2x101013";
+ 
+ ZFM_MISSION_TYPES =[
+	ZFM_MISSION_TYPE_CRASH
+ ];
+ 
+ZFM_CrashVehicles_Planes =[
+	"AV8B","AV8B2","C130J","C130J_US_EP1","F35B","MQ9PredatorB_US_EP1","MV22",
+	"Su25_CDF","Su25_TK_EP1","Su34"
+];
+ZFM_CrashVehicles_Helicopters =[
+	"AH1Z","MH60S","Mi17_Civilian","Mi17_TK_EP1","Mi17_medevac_Ins","Mi17_medevac_CDF","Mi17_medevac_RU",
+	"Mi17_Ins","Mi17_CDF","Mi17_rockets_RU","Mi17_Civilian","Mi17_UN_CDF_EP1","Mi171Sh_rockets_CZ_EP1",
+	"Mi17_TK_EP1","Mi24_V","Mi24_P","Mi24_D","Mi24_D_TK_EP1","Ka52","Ka52Black","UH1Y"
+];
+ 
+ 
+ 
+ 
+ 
   ZFS_Skills_AI_DEADMEAT = [
 	// ARMA Skill type, Max Skill Value
     ["aimingAccuracy",0.1],

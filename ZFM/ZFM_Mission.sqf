@@ -12,7 +12,6 @@
  // Used for Global chat
 ZFM_ChatLogic = "Logic" createVehicleLocal [0,0,0];
  
- 
  // Get the config stuff..
 ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
 ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Functions.sqf";
@@ -20,55 +19,59 @@ ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Function
 // We need to get access to these functions..
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
- 
- ZFM_GROUP_EAST = objNull;
- ZFM_GROUP_WEST = objNull;
- ZFM_GROUP_CIVILIAN = objNull;
- ZFM_GROUP_RESISTANCE = objNull;
- 
- ZFM_AI_TYPE_SNIPER = "1x101010";
- ZFM_AI_TYPE_RIFLEMAN = "1x101011";
- ZFM_AI_TYPE_HEAVY = "1x101012";
- ZFM_AI_TYPE_COMMANDER = "1x101013";
- ZFM_AI_TYPE_MEDIC = "1x101014";
- ZFM_AI_TYPE_PILOT = "1x101015";
- 
- ZFM_AI_TYPES = [
-	ZFM_AI_TYPE_SNIPER,
-	ZFM_AI_TYPE_RIFLEMAN,
-	ZFM_AI_TYPE_HEAVY,
-	ZFM_AI_TYPE_COMMANDER
-	// Not adding Medic or Pilot yet, for later version
- ];
- 
- // Used for generation of AI missions (i.e. select at random from this list for difficulty)
- ZFM_DIFFICULTIES =[
-	"DEADMEAT",
-	"EASY",
-	"MEDIUM",
-	"HARD",
-	"WAR_MACHINE"
- ];
- 
- // Used for basic mission types. If someone were to help maintain or expand this, more can be added here. 
- ZFM_MISSION_TYPE_CRASH = "2x101011";
- ZFM_MISSION_TYPE_CRASH_GOTO = "2x101012";
- ZFM_MISSION_TYPE_CRASH_AMBUSH = "2x101013";
- 
- ZFM_MISSION_TYPES =[
-	ZFM_MISSION_TYPE_CRASH
- ];
- 
- 
-ZFM_CrashVehicles_Planes =[
-	"AV8B","AV8B2","C130J","C130J_US_EP1","F35B","MQ9PredatorB_US_EP1","MV22",
-	"Su25_CDF","Su25_TK_EP1","Su34"
-];
-ZFM_CrashVehicles_Helicopters =[
-	"AH1Z","MH60S","Mi17_Civilian","Mi17_TK_EP1","Mi17_medevac_Ins","Mi17_medevac_CDF","Mi17_medevac_RU",
-	"Mi17_Ins","Mi17_CDF","Mi17_rockets_RU","Mi17_Civilian","Mi17_UN_CDF_EP1","Mi171Sh_rockets_CZ_EP1",
-	"Mi17_TK_EP1","Mi24_V","Mi24_P","Mi24_D","Mi24_D_TK_EP1","Ka52","Ka52Black","UH1Y"
-];
+
+ZFM_GenerateMission ={
+	
+	private ["_missionMethod"];
+	_missionMethod = _this select 0;
+
+	// Array passed to generator function.
+	_missionGenArray = [];
+	
+	switch(_missionMethod) do
+	{
+		// As of 23/05/2014 - One of two supported methods. Random means random.
+		case ZFM_MISSION_METHOD_RANDOM: {
+		
+			// Random difficulty..
+			_missionDifficulty = ZFM_DIFFICULTIES call BIS_fnc_selectRandom;
+			
+			switch(_missionDifficulty) do
+			{
+				case "DEADMEAT": {
+					
+					_missionGenArray = [
+						[], // The units that are going to be spawned..
+						[], // The vehicles that will spawn alongside the units
+						[], // The support weaponry that will be spawned near them
+						2, // The number of loot crates that are going to be spawned..
+						[],// The items which will be scattered around the crash site
+						[],
+					];
+					
+					
+				};
+				case "EASY": {
+					
+				};
+				case "MEDIUM": {
+					
+				};
+				case "HARD": {
+					
+				};
+				case "WAR_MACHINE": {
+					
+				};
+			};
+		};
+	};
+	
+};
+
+
+
+
  
 ZFM_GenerateMissionTitle ={
 	private["_missionType","_vehicleName","_difficulty","_onTheWayTo","_onTheWayToPlace","_deathType","_securedBy","_crashTextOne","_crashTextTwo"];
@@ -76,7 +79,6 @@ ZFM_GenerateMissionTitle ={
 	_missionType = _this select 0;
 	_vehicleName = _this select 1;
 	_difficulty = _this select 2;
-	
 	
 	switch(_missionType) do
 	{
@@ -97,15 +99,10 @@ ZFM_GenerateMissionTitle ={
 			_securedBy = ZFM_BanditGroup_Names call BIS_fnc_selectRandom;
 		
 			// One for each line on the screen
-			_crashTextOne = format["A %1 %2 %3 %4. We suspect %5 have secured the site.",_vehicleName,_onTheWayTo,_onTheWayToPlace,_deathType,_securedBy];
-			_crashTextTwo = format["Secured by %1 [Difficulty %2]",_securedBy,_difficulty];
-	
+			[nil,nil,rTitleText,format["A %1 %2 %3 %4. Looks like %5 have secured the site.",_vehicleName,_onTheWayTo,_onTheWayToPlace,_deathType,_securedBy],"PLAIN",30] call RE;
+
 			diag_log(_crashTextOne);
 			diag_log(_crashTextTwo);
-			
-			// Call TitleText as REMOTE EXECUTE (RE) -- Seems that TitleText is local?
-			ZFM_ChatLogic sideChat _crashTextOne;
-			ZFM_ChatLogic sideChat _crashTextTwo;
 		};
 	};
 
