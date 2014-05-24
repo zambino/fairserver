@@ -8,18 +8,28 @@
  */
  
  ZFM_MINIMUM_AI_PER_MISSION = 8;
+ ZFM_MINIMUM_LOOT_CONTAINERS_PER_MISSION = 2;
+  
+ ZFM_MAXIMUM_MISSIONS = 1;
+ ZFM_MAXIMUM_CRASH_MISSIONS = 1;
   
  ZFM_GROUP_EAST = objNull;
  ZFM_GROUP_WEST = objNull;
  ZFM_GROUP_CIVILIAN = objNull;
  ZFM_GROUP_RESISTANCE = objNull;
  
+ // Global ZFM constants
  ZFM_AI_TYPE_SNIPER = "1x101010";
  ZFM_AI_TYPE_RIFLEMAN = "1x101011";
  ZFM_AI_TYPE_HEAVY = "1x101012";
  ZFM_AI_TYPE_COMMANDER = "1x101013";
  ZFM_AI_TYPE_MEDIC = "1x101014";
  ZFM_AI_TYPE_PILOT = "1x101015";
+ ZFM_MISSION_METHOD_RANDOM = "3x101011";
+ ZFM_MISSION_TYPE_CRASH = "2x101011";
+ ZFM_MISSION_TYPE_CRASH_GOTO = "2x101012";
+ ZFM_MISSION_TYPE_CRASH_AMBUSH = "2x101013";
+ 
  
  ZFM_AI_TYPES = [
 	ZFM_AI_TYPE_SNIPER,
@@ -38,14 +48,6 @@
 	"WAR_MACHINE"
  ];
  
- // Methods for generating missions
- ZFM_MISSION_METHOD_RANDOM = "3x101011";
- 
- // Used for basic mission types. If someone were to help maintain or expand this, more can be added here. 
- ZFM_MISSION_TYPE_CRASH = "2x101011";
- ZFM_MISSION_TYPE_CRASH_GOTO = "2x101012";
- ZFM_MISSION_TYPE_CRASH_AMBUSH = "2x101013";
- 
  ZFM_MISSION_TYPES =[
 	ZFM_MISSION_TYPE_CRASH
  ];
@@ -60,11 +62,10 @@ ZFM_CrashVehicles_Helicopters =[
 	"Mi17_TK_EP1","Mi24_V","Mi24_P","Mi24_D","Mi24_D_TK_EP1","Ka52","Ka52Black","UH1Y"
 ];
  
+//All crash vehicles
+ZFM_CrashVehicles = ZFM_CrashVehicles_Planes + ZFM_CrashVehicles_Helicopters;
  
- 
- 
- 
-  ZFS_Skills_AI_DEADMEAT = [
+ZFS_Skills_AI_DEADMEAT = [
 	// ARMA Skill type, Max Skill Value
     ["aimingAccuracy",0.1],
     ["aimingShake",1],

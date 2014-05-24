@@ -6,7 +6,18 @@
 	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
-
+ ZFS_Loot_Type_Fixed = "4x10101A";
+ ZFS_Loot_Type_Probabilty = "4x10101B";
+ 
+ 
+ //Todo : Change to ZFM, not ZFS! ;-)
+ 
+ ZFM_LOOT_MODE_TYPES = [
+	ZFS_Loot_Type_Fixed,
+	ZFS_Loot_Type_Probability
+ ];
+ 
+ 
  ZFS_Loot_Pistol_Magazines = [
 	["7Rnd_45ACP_1911","magazine"], // M1911
 	["8Rnd_9x18_MakarovSD","magazine"],
@@ -60,6 +71,8 @@
  ];
  
  ZFS_Loot_ALL_Magazines = ZFS_Loot_Pistol_Magazines + ZFS_Loot_Sniper_Magazines + ZFS_Loot_MachineGun_Magazines + ZFS_Loot_MainRifles_Magazines;
+ 
+
  
  /*
  *	Variable loot spawns
@@ -183,6 +196,30 @@ ZFS_LootTable_MedicalSupplies =
 
 // Create a table with ALL the weapons in one array.
 ZFS_LootTable_Main =ZFS_LootTable_Main_Pistols + ZFS_LootTable_Main_Snipers + ZFS_LootTable_Main_MachineGuns + ZFS_LootTable_Main_Rifles +ZFS_LootTable_ToolItems + ZFS_LootTable_BuildingSupplies + ZFS_LootTable_BackPacks + ZFS_LootTable_MedicalSupplies;
+ 
+ // For random selection of loot types
+ZFS_LootTable_Types =[
+	ZFS_LootTable_Main_Pistols,
+	ZFS_LootTable_Main_Snipers,
+	ZFS_LootTable_Main_MachineGuns,
+	ZFS_LootTable_Main_Rifles,
+	ZFS_LootTable_ToolItems,
+	ZFS_LootTable_BuildingSupplies,
+	ZFS_LootTable_BackPacks,
+	ZFS_LootTable_MedicalSupplies
+ ];
+ 
+// For random selection of loot types
+ZFS_FixedLoot_Types =[
+	ZFS_FixedLoot_Pistols,
+	ZFS_FixedLoot_Snipers,
+	ZFS_FixedLoot_MachineGuns,
+	ZFS_FixedLoot_Main_Rifles,
+	ZFS_FixedLoot_ToolItems,
+	ZFS_FixedLoot_BuildingSupplies,
+	ZFS_FixedLoot_BackPacks,
+	ZFS_FixedLoot_MedicalSupplies
+];
  
  /*
 	Fixed loot spawns (without rare drop probabilities, etc)

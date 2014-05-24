@@ -212,7 +212,6 @@ ZFM_Create_LootCrate ={
 	
 	diag_log(format["Crate Item = %1",_crateItem]);
 	
-	
 	//Fill the crate..
 	_crateFill = [_crateItem,_probable,_difficulty,_polyArray] call ZFM_Fill_Loot_Item_AutoFill;
 };
