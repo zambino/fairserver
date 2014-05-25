@@ -9,16 +9,19 @@
  */
  private["_aiGroup","_playerz","_playerPos","_playerPoop","_unit"];
  
- // Used for Global chat
-ZFM_ChatLogic = "Logic" createVehicleLocal [0,0,0];
+diag_log("MISSION FILE INIT");
  
  // Get the config stuff..
 ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
 ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Functions.sqf";
+ZFM_Includes_Loot_Functions = "\z\addons\dayz_server\ZFM\ZFM_LootHandler.sqf";
 
 // We need to get access to these functions..
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
+call compile preprocessFileLineNumbers ZFM_Includes_Loot_Functions;
+
+diag_log("COMPILES CALLED INIT");
 
 /*
 	ZFM Mission-In-Progress variables
@@ -28,6 +31,9 @@ ZFM_HAS_COMPLETED_MISSION = false;
 ZFM_CURRENT_LOOT_CRATES =[];
 ZFM_CURRENT_MISSION_STATUS =[];
 ZFM_CURRENT_MISSION_UNITS=[];
+
+
+diag_log("MISSION FILES CALLED INIT");
 
 /*
 	ZFM_CanAddNewMission
@@ -47,45 +53,55 @@ ZFM_CanAddNewMission ={
 		_numExistingMissions = count ZFM_MISSIONS;
 		
 		// Are we at the maximum?
-		if((_numExistingMissions+1) <= ZFM_MAXIMUM_MISSIONS) then
+		if(_numExistingMissions <= ZFM_MAXIMUM_MISSIONS) then
 		{
 			// Horrible, and I know -- it's hacky, but I can't think how we can more easily store this. Global array? Bah.
 			_numCrashMissions = 0;
 		
-			// Make sure we've got missions as an array still. 
-			for [{_x =0},{_x <= _numberExistingMissions-1},{_x = _x +1} ] do
+			if(_numExistingMissions > 0) then
 			{
-				_row = ZFM_MISSIONS select _x;
-				
-				if(typeName _row == "ARRAY") then
+				diag_log(format["ZFM_CanAddNewMission - NUMEXISTINGMISSIONS %1",_numExistingMissions]);
+			
+				// Make sure we've got missions as an array still. 
+				for [{_x =0},{_x <= _numberExistingMissions-1},{_x = _x +1} ] do
 				{
-					_missionType = _row select 0;
-					_missionTitle = _row select 1;
+					_row = ZFM_MISSIONS select _x;
 					
-					switch(_missionType) do
+					diag_log(format["ZFM_CanAddNewMission - MISSION ROW %1",_numCrashMissions]);
+					
+					if(typeName _row == "ARRAY") then
 					{
-						case ZFM_MISSION_TYPE_CRASH: {
-							_numCrashMissions = _numCrashMissions +1;
+						_missionType = _row select 0;
+						_missionTitle = _row select 1;
+						
+						switch(_missionType) do
+						{
+							case ZFM_MISSION_TYPE_CRASH: {
+								_numCrashMissions = _numCrashMissions +1;
+							};
 						};
 					};
 				};
 			};
+			diag_log(format["ZFM_CanAddNewMission - NUMCRASHMISSIONS %1",_numCrashMissions]);
 			
 			// Loop has gotten us how many different types of missions we have
 			switch(_missionType) do
 			{
 				case ZFM_MISSION_TYPE_CRASH: {
 					
-					if((_numCrashMissions+1) <= ZFM_MAXIMUM_CRASH_MISSIONS) then
+					if((_numCrashMissions) <= ZFM_MAXIMUM_CRASH_MISSIONS) then
 					{
-						_canAddNewMision = true;
+						diag_log(format["ZFM_CanAddNewMission - MAX CRASH MISSIONS %1",ZFM_MAXIMUM_CRASH_MISSIONS]);
+						_canAddNewMission = true;
 					};
 				};
 			};
+			_canAddNewMission
 		};
 	};
 
-	_canAddNewMission
+	
 
 };
 
@@ -111,7 +127,7 @@ ZFM_AddNewMissionItem ={
 };
 
 ZFM_RemoveMissionItem ={
-	private ["_missionID"];
+	private ["_missionID","_numExistingMissions"];
 	
 	_missionID = _this select 0;
 
@@ -129,24 +145,30 @@ ZFM_RemoveMissionItem ={
 	Executes a "crash mission"
 */
 ZFM_ExecuteCrashMission ={
-	private ["_missionGenArray","_difficulty","_title","_crashVehicle","_unitsToSpawn","_vehiclesToSpawn","_unitSupportWeaponry","_numberLootCrates","_lootCrateMode","_scatterItems","_actCrashVehicle","_crashPos","_offsetGroupPosition","_actCrashGroup"];
+	private ["_missionGenArray","_difficulty","_title","_x","_lootContents","_thisLootCrate","_lootItemPos","_isProbabilityBased","_crashVehicle","_unitsToSpawn","_vehiclesToSpawn","_unitSupportWeaponry","_numberLootCrates","_lootCrateMode","_scatterItems","_actCrashVehicle","_crashPos","_offsetGroupPosition","_actCrashGroup"];
 	_missionGenArray = _this select 0;
 	
-	_canCreateMission = [ZFM_MISSION_TYPE_CRASH] call ZFM_CanAddNewMission;
+	_lootContents = ZFS_FixedLoot_Types call BIS_fnc_selectRandom;
 	
-	if(!_canCreateMission) exitWith { diag_log(format["%1 %2 - ZFM_ExecuteCrashMission - Too many missions running, exiting..",ZFM_NAME,ZFM_VERSION]);
+	_canCreateMission = [ZFM_MISSION_TYPE_CRASH] call ZFM_CanAddNewMission;
+	diag_log(format["CANCREATEMISSION %1",_canCreateMission]);
+	
+	
+	if(!_canCreateMission) exitWith { diag_log(format["%1 %2 - ZFM_ExecuteCrashMission - Too many missions running, exiting..",ZFM_NAME,ZFM_VERSION])};
 
 	if(typeName _missionGenArray == "ARRAY") then
 	{
 		_difficulty = _missionGenArray select 0;
 		_title = _missionGenArray select 1;
-		_crashVehicle = _missionGenArray select 2;
+		_crashVehicle = _missionGenArray select 2 select 0;
 		_unitsToSpawn = _missionGenArray select 3;
 		_vehiclesToSpawn = _missionGenArray select 4; // Not yet being supported
 		_unitSupportWeaponry = _missionGenArray select 5; // Not yet being supported
 		_numberLootCrates = _missionGenArray select 6;
 		_lootCrateMode = _missionGenArray select 7;
 		_scatterItems = _missionGenArray select 8;
+	
+		diag_log(format["CRASHVEHICLE %1",_crashVehicle]);
 	
 		// Now we've got the crash vehicle
 		_actCrashVehicle = [_crashVehicle,_difficulty,"UNUSED"] call ZFM_CreateCrashVehicle;
@@ -161,36 +183,41 @@ ZFM_ExecuteCrashMission ={
 		if(_lootCrateMode != ZFS_Loot_Type_Fixed) then
 		{
 			_isProbabilityBased = true;
-		}
+		};
+		
+		diag_log(format["%1",_missionGenArray]);
 		
 		// Loop the number of loot crates
 		for [{_x =0},{_x <= _numberLootCrates-1},{_x = _x +1} ] do
 		{
+		
 			if(_isProbabilityBased) then
 			{
 				_lootContents = ZFS_LootTable_Types call BIS_fnc_selectRandom;
-			}
-			else
-			{
-				_lootContents = ZFS_FixedLoot_Types call BIS_fnc_selectRandom;
 			};
-		
+			
+			diag_log(format["PROBABILITYBASED %1",_isProbabilityBased]);
+			
+
 			// Randomise the distance from the crash to make it a little bit more believable. Not too far, though.. :)
-			_lootItemPos = [_crashPos,(round random 4)] call ZFM_Create_OffsetPosition;
+			// LootCrates spawning within re-generated wrecks #1  - FIX (further offset)
+			_lootItemPos = [_crashPos,(round random 4)+6] call ZFM_Create_OffsetPosition;
+			
+			diag_log(format["THISLOOTCRATE %1, %2,%3,%4",_lootItemPos,_difficulty,_lootContents,_isProbabilityBased]);
 			
 			// Create the crate, of course..
-			_thisLootCrate = [_lootItemPos,_difficulty,_lootContents,_isProbabilityBased,] call ZFM_Create_LootCrate;
+			_thisLootCrate = [_lootItemPos,_difficulty,_lootContents,_isProbabilityBased] call ZFM_Create_LootCrate;
 			
 			// Add it to the current loot crate.
-			ZFM_CURRENT_LOOT_CRATES = ZFM_CURRENT_LOOT_CRATES + [_thisLootCrate];
-			
+			ZFM_CURRENT_LOOT_CRATES set [(count ZFM_CURRENT_LOOT_CRATES+1),_thisLootCrate];
 		};
 	
 		// TODO: Spawn vehicles before, so they don't crush the AI or what have you.. ;-)
 	
 		// Offset the position as at times, the AI can end up slightly dead from wreckage
+		
 		_offsetGroupPosition = [_crashPos,5] call ZFM_Create_OffsetPosition;
-	
+		diag_log(format["_offsetGroupPosition %1",_offsetGroupPosition]);
 		// Create a group of units based on the missionGenArray
 		_actCrashGroup = [_unitsToSpawn,_difficulty,east,_offsetGroupPosition] call ZFM_CreateUnitGroup;
 		
@@ -230,7 +257,7 @@ ZFM_GenerateRandomUnits ={
 	_initRandSeed = (round random _maxBound);
 	
 	// We don't want just ONE unit, do we? 
-	if(initRandSeed < ZFM_MINIMUM_AI_PER_MISSION) then 
+	if(_initRandSeed < ZFM_MINIMUM_AI_PER_MISSION) then 
 	{
 		_initRandSeed = ZFM_MINIMUM_AI_PER_MISSION; 
 	};
@@ -273,18 +300,17 @@ ZFM_GenerateMissionTitle ={
 		
 			// One for each line on the screen
 			[nil,nil,rTitleText,format["A %1 %2 %3 %4. Looks like %5 have secured the site.",_vehicleName,_onTheWayTo,_onTheWayToPlace,_deathType,_securedBy],"PLAIN",30] call RE;
-
-			diag_log(_crashTextOne);
-			diag_log(_crashTextTwo);
 		};
 	};
 
 };
 
 ZFM_GenerateMission ={
-	private ["_missionMethod","_missionGenArray","_missionDifficulty","_lootMode","_missionType","_missionVariables"];
+	private ["_missionMethod","_missionGenArray","_missionUnits","_missionTitle","_missionDifficulty","_lootMode","_missionType","_missionVariables"];
 	_missionMethod = _this select 0;
 
+	diag_log("GENERATEMISSION - NOW THE FUNCTION WAS CALLED.");
+	
 	// Array passed to generator function.
 	_missionGenArray = [];
 	
@@ -327,7 +353,7 @@ ZFM_GenerateMission ={
 				(round random 3)+1, 	// The number of loot crates that are going to be spawned
 				_lootMode,				// The mode that the loot crates will be spawned with.
 				[]						// The items which will be scattered around the crash site
-			]
+			];
 			
 			switch(_missionType) do
 			{
@@ -343,47 +369,17 @@ ZFM_GenerateMission ={
 	
 };
 
+diag_log("BOOTSTRAP NOT YET CALLED INIT 8");
+
 // Call AI bootstrap
 [] call ZFM_DoBootStrap;
 
+diag_log("BOOTSTRAP CALLED INIT");
+
+
 while{true} do
 {
-	_vehiclezType = "C130J_US_EP1";
-	_playerz = playableUnits;
-	_playerPos = _playerz select 0;
-	_playerPoop = getPos _playerPos;	
-/*	
-	_randomVehicle = ZFM_CrashVehicles_Helicopters call BIS_fnc_selectRandom;
-	
-	_thisVehicle = [_randomVehicle,"WAR_MACHINE","DIS BE A TEST"] call ZFM_CreateCrashVehicle;
-	_crashPos = _thisVehicle select 2;
-	
-	_createUnitsArray = [
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN,
-		ZFM_AI_TYPE_RIFLEMAN
-	];
-	
-	sleep 40;
-
-	// Offset by 5 so they're not crushed by spawning vehicles
-	_newPozz = [_crashPos,2] call ZFM_Create_OffsetPosition;
-	
-	unitsArrayz = [_createUnitsArray,"WAR_MACHINE",east,_newPozz] call ZFM_CreateUnitGroup;
-	//_groupArrayz = _unitsArrayz select 0; // Get the group
-	
-	// Do the title thang, right?
-	[ZFM_MISSION_TYPE_CRASH,_randomVehicle,"WAR_MACHINE"] call ZFM_GenerateMissionTitle;
-	*/
-
-	// Simple as that to generate a mission. Pretty sexy, right?
 	[ZFM_MISSION_METHOD_RANDOM] call ZFM_GenerateMission;
-	
 	diag_log("CREATED VEHICLE!");
 	
 	sleep 100;

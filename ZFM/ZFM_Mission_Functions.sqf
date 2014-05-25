@@ -597,6 +597,7 @@ ZFM_CreateCrashMarker ={
 	_markerCreated setMarkerBrush "Solid";
 	_markerCreated setMarkerSize [_markerSize,_markerSize];
 	_markerCreated setMarkerColor _markerColor;
+	_markerCreated setMarkerText _markerText;
 };
 
 /*

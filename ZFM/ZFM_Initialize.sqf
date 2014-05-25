@@ -16,7 +16,7 @@ if(!isServer) exitWith { diag_log("ZFM: This shouldn't be run by anything other 
 */
 ZFSS_Installed = true;
 ZFM_Name = "Zambino FairMission System [ZFM] ";
-ZFM_Version = "v0.8.5";
+ZFM_Version = "v0.3.2";
 
 diag_log(format["%1 %2 - Waiting for INITIALIZATION..",ZFM_Name,ZFM_Version]);
 waitUntil{initialized};

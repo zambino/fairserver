@@ -84,8 +84,8 @@ ZFM_Walk_LootTable ={
 		// Get the relevant boundary for the probability of the item.
 		_itemBoundary = _item select _selectItem;
 	
-		// Get the probability of the 
-		_itemProbability = abs (random 100 / 100);
+		// Fix - always add 1 to the probability so it will never be 0..
+		_itemProbability = abs ((round random 100)+1 / 100);
 		_metProbability = _itemProbability >= _itemBoundary;
 		diag_log(format["%1 - ZFM_Walk_LootTable - Item probability %2, Boundary %3, MetBoundary %3",_outputMessage,_itemProbability,_itemBoundary,_metProbability]);
 		
