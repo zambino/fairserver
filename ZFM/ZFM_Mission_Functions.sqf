@@ -550,7 +550,7 @@ ZFM_CreateUnitGroup ={
 					
 					
 					// Add to the array return
-					_uArrayRezurn = _uArrayReturn + [_thisUnit];
+					_uArrayReturn = _uArrayReturn + [_thisUnit];
 				};
 			};
 			
@@ -881,8 +881,6 @@ ZFM_CreateCrash_Accoutrements ={
 	
 	switch(_difficulty) do
 	{
-		// Deadmeat has nothing.
-		
 		case "EASY" : {
 			_accoutObjects = ZFM_Accoutrements_Minor;
 			_accoutObjAmount = 6;
@@ -901,22 +899,24 @@ ZFM_CreateCrash_Accoutrements ={
 		};
 	};
 	
-	for [{_x =1},{_x <= _accoutObjAmount},{_x = _x +1} ] do
+	if(_difficulty != "DEADMEAT") then
 	{
-		_doRandLoc = [_crashLocation,(round random 25),(round random 25)] call ZFM_Create_OffsetPosition;
-		
-		diag_log(format["ACCOUT OBJECTS %1, RANDLOC %2",_accoutObjects,_doRandLoc]);
-		
-		// Get the object name from the list set above..
-		_thisAccObject = _accoutObjects call BIS_fnc_selectRandom;
-		
-		diag_log(format["THIS ACCOBJECT %1",_thisAccObject]);
-		
-		// Create the accoutrements..
-		_createdAccout = createVehicle [_thisAccObject,_doRandLoc,[],0,"CAN_COLLIDE"];
-		_createdAccObjects set[_x,_createdAccout];
+		for [{_x =1},{_x <= _accoutObjAmount},{_x = _x +1} ] do
+		{
+			_doRandLoc = [_crashLocation,(round random 25),(round random 25)] call ZFM_Create_OffsetPosition;
+			
+			diag_log(format["ACCOUT OBJECTS %1, RANDLOC %2",_accoutObjects,_doRandLoc]);
+			
+			// Get the object name from the list set above..
+			_thisAccObject = _accoutObjects call BIS_fnc_selectRandom;
+			
+			diag_log(format["THIS ACCOBJECT %1",_thisAccObject]);
+			
+			// Create the accoutrements..
+			_createdAccout = createVehicle [_thisAccObject,_doRandLoc,[],0,"CAN_COLLIDE"];
+			_createdAccObjects set[_x,_createdAccout];
+		};
 	};
-	
 	_createdAccObjects
 };
 

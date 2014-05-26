@@ -112,11 +112,126 @@ ZFM_CanAddNewMission ={
 
 };
 
+ZFM_Get_MissionArray ={
+	private ["_missionID","_missionRow"];
+	
+	_missionID = _this select 0;
+
+	_missionRow = false;
+	
+	if((count ZFM_MISSIONS) >0) then
+	{
+		_missionRow = ZFM_MISSIONS select _missionID;
+	};
+	
+	_missionRow
+};
+
+/*
+	ZFM_Add_MissionArray_Units
+
+	Add the unit array to the mission array
+*/
+ZFM_Add_MissionArray_Units ={
+	private["_missionID","_missionArray","_units"];
+	
+	_missionID = _this select 0;
+	_units = _this select 1;
+	
+	if(typeName _units == "ARRAY") then
+	{
+		// Get the array with the units in it..
+		_missionArray = [_missionID] call ZFM_Get_MissionArray;
+		
+		// TODO: Get better exception handling code for retvals
+		if(typeName _missionArray == "ARRAY") then
+		{
+			// Add the units to the missionarray..
+			_missionArray set[3,_units];
+			ZFM_MISSIONS set[_missionID,_missionArray];
+		};
+	};
+
+};
+
+
+ZFM_Add_MissionArray_Unit_Killed ={
+	private ["_missionID","_unitType","_unitsKilledArray","_unitsKilled","_missionArray"];
+	
+	_missionID = _this select 0;
+	_unitType = _this select 1;
+	
+	// Get the missionArray
+	_missionArray = [_missionID] call ZFM_Get_MissionArray;
+	
+	if(typeName _missionArray == "ARRAY") then
+	{
+		_unitsKilledArray = _missionArray select 4;
+		
+		if(typeName _unitsKilledArray != "ARRAY") then
+		{
+			(ZFM_MISSION_ID select _missionID) set[4,[]];
+		};
+		
+		// For brevity & readability
+		_unitsKilled = (ZFM_MISSION_ID select _missionID) select 4;
+		
+		// Add to the Unit killed thing..
+		(ZFM_MISSION_ID select _missionID) set [4,_unitsKilled + [_unitType]];
+	};
+	
+};
+
+
+ZFM_Check_MissionArray_Units_Remaining ={
+	private ["_missionID","_missionArray","_countTotal","_countKilled","_retVal"];
+	
+	_missionID = _this select 0;
+	
+	// Get the missionArray
+	_missionArray = [_missionID] call ZFM_Get_MissionArray;
+	
+	// Default value
+	_retVal = [0,0];
+	
+	if(typeName _missionArray == "ARRAY") then
+	{
+		_countTotal = count (ZFM_MISSIONS select _missionID select 3);
+		
+		if(typeName _countTotal != "ARRAY") then
+		{
+			_countTotal = 0;
+		};
+		
+		_countKilled = count (ZFM_MISSIONS select _missionID select 4);
+		
+		if(typeName _countKilled != "ARRAY") then
+		{
+			_countKilled = 0;
+		};
+		
+		_remainingTotal = _countTotal - _countKilled;
+		
+		if(_remainingTotal < 0) then
+		{
+			_remainingTotal = 0;
+		};
+		
+		_retVal = [_remainingTotal,_countTotal];
+	};
+	
+	_retVal
+	
+};
+
+
 ZFM_Handle_MissionUnitKilled ={
-	private ["_unit","_killer","_missionID"];
+	private ["_unit","_killer","_missionID","_remainingUnits","_unitType","_deathText"];
 	
 	_unit = _this select 0;
 	_killer = _this select 1;
+	
+	_outputText = "";
 	
 	if(typeName _unit == "OBJECT") then
 	{
@@ -124,7 +239,19 @@ ZFM_Handle_MissionUnitKilled ={
 		
 		if(typeName _missionID != "ARRAY") then
 		{
-			[nil,nil,rTitleText,format["Unit killed! %1 by %2",_unit,_killer],"PLAIN",30] call RE;
+			_unitType = _unit getVariable["ZFM_UnitType",[]];
+			
+			if(typeName _unitType != "ARRAY") then
+			{
+
+				[_missionID,_unitType] call ZFM_Add_MissionArray_Unit_Killed;
+				_remainingUnits = [_missionID] call ZFM_Check_MissionArray_Units_Remaining;
+				_deathText = ZFM_DeathPhrases call BIS_fnc_selectRandom;
+	
+				[nil,nil,rTitleText,format["That bandit %1! Killed by %2 [%3 / %4 killed]",_deathText,(name _killer),(_remainingUnits select 0),(_remainingUnits select 1)],"PLAIN",30] call RE;
+			};
+		
+			
 		};
 	};
 };
@@ -249,6 +376,14 @@ ZFM_ExecuteCrashMission ={
 		
 		// Create a group of units based on the missionGenArray
 		_actCrashGroup = [_unitsToSpawn,_difficulty,east,_offsetGroupPosition,_missionID] call ZFM_CreateUnitGroup;
+		
+		diag_log(format["ACT CRASH GROUP %1",_actCrashGroup]);
+		
+		// Add the group's units to MissionArray
+		[_missionID,(_actCrashGroup select 1)] call ZFM_Add_MissionArray_Units;
+		
+		// DEBUGGING
+		diag_log(format["MISSION ARRAY %1",ZFM_MISSIONS]);
 		
 		// Use remote execution to do the mission information
 		[nil,nil,rTitleText,format["%1 [Difficulty: %2]",_title,_difficulty],"PLAIN",30] call RE;
@@ -411,9 +546,6 @@ while{true} do
 	
 	// do some logging.
 	diag_log(format["ZFM MISSIONS %1, LOOT CRATES %2, STATUS %3, MISSION UNITS %4, COUNT MISSIONS %5",ZFM_MISSIONS,ZFM_CURRENT_LOOT_CRATES,ZFM_CURRENT_MISSION_STATUS,ZFM_CURRENT_MISSION_UNITS,(count ZFM_MISSIONS)]);
-	
-	
-	
 	diag_log("CREATED VEHICLE!");
 	
 	sleep 10000;
