@@ -178,12 +178,14 @@ ZFM_DoBootStrap = {
     private["_checkAI","_outputMessage","_checkAI"];
     
 	// Check to see if any AI is already set. 
-	_checkAI = [] call ZFM_CheckExistingAI;
+	
+	// Issue #5 - Raised by BetterDeadThanZed - Disable ZFM-skip until ZAI is released.
+	//_checkAI = [] call ZFM_CheckExistingAI;
 	
 	// Consistency with error or information logging.
 	_outputMessage = ZFM_Name + ZFM_Version;
 	
-	if(!_checkAI) exitWith { diag_log(_outputMessage + "CheckExistingAI - No other AI is installed. Proceeding with initialization steps for ZFM") };	
+	//if(!_checkAI) exitWith { diag_log(_outputMessage + "CheckExistingAI - No other AI is installed. Proceeding with initialization steps for ZFM") };	
 
 	diag_log(_outputMessage + "DoBootStrap - Adding Centers for AI to congregate around..");
 	
@@ -240,7 +242,7 @@ ZFM_CheckExistingAI = {
 	/*
 	*	Check for DZ AI
 	*/
-	if(!isNil(DZAI_isActive)) then
+	if(typeName ZAI_isActive == "BOOLEAN") then
 	{
 		diag_log(_outputMessage + "CheckExistingAI - DZ AI discovered. This will interfere with ZFM, and must be disabled before ZFM can run. Exiting.");
 		_doExit = true;	
