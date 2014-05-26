@@ -170,14 +170,16 @@ ZFM_Add_MissionArray_Unit_Killed ={
 		
 		if(typeName _unitsKilledArray != "ARRAY") then
 		{
-			(ZFM_MISSION_ID select _missionID) set[4,[]];
+			(ZFM_MISSION select _missionID) set[4,[]];
 		};
 		
 		// For brevity & readability
-		_unitsKilled = (ZFM_MISSION_ID select _missionID) select 4;
+		_unitsKilled = (ZFM_MISSION select _missionID) select 4;
 		
 		// Add to the Unit killed thing..
-		(ZFM_MISSION_ID select _missionID) set [4,_unitsKilled + [_unitType]];
+		(ZFM_MISSION select _missionID) set [4,_unitsKilled + [_unitType]];
+		
+		diag_log(format["MISSIONARRAY UNIT KILLED %1",ZFM_MISSION select _missionID select 4]);
 	};
 	
 };
@@ -197,18 +199,17 @@ ZFM_Check_MissionArray_Units_Remaining ={
 	if(typeName _missionArray == "ARRAY") then
 	{
 		_countTotal = count (ZFM_MISSIONS select _missionID select 3);
-		
-		if(typeName _countTotal != "ARRAY") then
-		{
-			_countTotal = 0;
-		};
+	
+		diag_log(format["COUNT TOTAL %1",_countTotal]);
 		
 		_countKilled = count (ZFM_MISSIONS select _missionID select 4);
+		diag_log(format["THIS MISSION ARRAY %1",(ZFM_MISSIONS select _missionID)]);
 		
 		if(typeName _countKilled != "ARRAY") then
 		{
 			_countKilled = 0;
 		};
+		
 		
 		_remainingTotal = _countTotal - _countKilled;
 		
@@ -248,6 +249,12 @@ ZFM_Handle_MissionUnitKilled ={
 				_remainingUnits = [_missionID] call ZFM_Check_MissionArray_Units_Remaining;
 				_deathText = ZFM_DeathPhrases call BIS_fnc_selectRandom;
 	
+				// Per-unit-killed humanity.
+				if(ZFM_HUMANITY_FOR_BANDIT_KILLS) then
+				{
+					[_killer] call ZFM_Alter_Humanity;
+				};
+				
 				[nil,nil,rTitleText,format["That bandit %1! Killed by %2 [%3 / %4 killed]",_deathText,(name _killer),(_remainingUnits select 0),(_remainingUnits select 1)],"PLAIN",30] call RE;
 			};
 		

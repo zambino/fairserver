@@ -914,13 +914,40 @@ ZFM_CreateCrash_Accoutrements ={
 			
 			// Create the accoutrements..
 			_createdAccout = createVehicle [_thisAccObject,_doRandLoc,[],0,"CAN_COLLIDE"];
+			
+			// So we can then do cleanup of all accoutrements if necessary
+			_createdAccout setVariable["ZFM_Accoutrement",true];
 			_createdAccObjects set[_x,_createdAccout];
 		};
 	};
 	_createdAccObjects
 };
 
-
+/*
+	ZFM_Alter_Humanity
+	
+	Add/Remove humanity for a given player.
+*/
+ZFM_Alter_Humanity ={
+	private ["_player","_currentHumanity","_humanityToAdd"];
+	
+	_player = _this select 0;
+	_humanityToAdd = ZFM_HUMANITY_AMOUNT_PER_BANDIT;
+	
+	if(typeName _player == "OBJECT") then
+	{
+		_currentHumanity = _player getVariable["humanity",0];
+		
+		if(ZFM_HUMANITY_AMOUNT_PER_BANDIT >0) then
+		{
+			if(!ZFM_HUMANITY_AMOUNT_FIXED) then
+			{
+				_humanityToAdd = round random ZFM_HUMANITY_AMOUNT;
+			};
+			_player setVariable["humanity",_currentHumanity + _humanityToAdd];
+		};
+	};
+};
 
 
 
