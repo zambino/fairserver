@@ -8,6 +8,7 @@
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
  
+
  
  
  /*
@@ -477,6 +478,9 @@ ZFM_CreateUnit ={
 	// Spawn the unit..
 	_unit = [_aiGroup,_skin,_spawnAt] call ZFM_InitUnitSpawn;
 	
+	// "I was never given a name.."
+	[_unit] call ZFM_GiveUnitName;
+	
 	// Ad the relevant equipment from the EquipArray
 	[_unit,_equipArray] call ZFM_EquipAIFromArray;
 	
@@ -484,6 +488,7 @@ ZFM_CreateUnit ={
 	[_unit,_difficulty] call ZFM_SetAISkills;
 	
 	// Add variables to unit for ZFM
+	_unit setVariable ["ZFM_Unit",true]; // For mission checking
 	_unit setVariable ["ZFM_UnitType",_unitType];
 	_unit setVariable ["ZFM_UnitDifficulty",_difficulty];
 	
@@ -505,12 +510,13 @@ ZFM_CreateUnit ={
 	Takes an array input and other requirements to generate groups of AI at once. Returns in an array for convenience.
 */
 ZFM_CreateUnitGroup ={
-	private["_unitsArray","_difficulty","_side","_spawnAt","_uArrayReturn","_unitGroup","_unitsArrayCount","_aiType","_thisUnit","_x"];
+	private["_unitsArray","_difficulty","_side","_thisUnit","_spawnAt","_uArrayReturn","_unitGroup","_unitsArrayCount","_aiType","_thisUnit","_x"];
 
 	_unitsArray = _this select 0;
 	_difficulty = _this select 1;
 	_side = _this select 2;
 	_spawnAt = _this select 3;
+	_missionID = _this select 4;
 	
 	_uArrayReturn = [];
 	
@@ -533,8 +539,18 @@ ZFM_CreateUnitGroup ={
 					_staggerSpawnAt = [_crashPos,(round random 15)] call ZFM_Create_OffsetPosition;
 				
 					diag_log(format["%1 %2 - ZFM_CreateUnitGroup - Unit %3 of %4  (type %5) created..",ZFM_NAME,ZFM_VERSION,_x,(_unitsArrayCount-1),_aiType]);
+					_thisUnit = [_unitGroup,_difficulty,_staggerSpawnAt,_aiType] call ZFM_CreateUnit;
+				
+					// Lets us find out which mission the unit is attached to.
+					_thisUnit setVariable ["ZFM_MISSION_ID",_missionID];
 					
-					_uArrayReturn = _uArrayReturn + [([_unitGroup,_difficulty,_staggerSpawnAt,_aiType] call ZFM_CreateUnit)];
+					_thisUnit addMPEventHandler["MPKilled",{
+						[(_this select 0),(_this select 1)] call ZFM_Handle_MissionUnitKilled;
+					}];
+					
+					
+					// Add to the array return
+					_uArrayRezurn = _uArrayReturn + [_thisUnit];
 				};
 			};
 			
@@ -572,23 +588,23 @@ ZFM_CreateCrashMarker ={
 	{
 		case "DEADMEAT": {
 			_markerColor = "ColorYellow";
-			_markerSize = 95;
+			_markerSize = 400;
 		};		
 		case "EASY": {
 			_markerColor = "ColorGreen";
-			_markerSize = 105;
+			_markerSize = 410;
 		};		
 		case "MEDIUM": {
 			_markerColor = "ColorOrange";
-			_markerSize = 115;
+			_markerSize = 420;
 		};		
 		case "HARD": {
 			_markerColor = "ColorRed";
-			_markerSize = 125;
+			_markerSize = 440;
 		};		
 		case "WAR_MACHINE": {
 			_markerColor = "ColorBlack";
-			_markerSize = 400;
+			_markerSize = 600;
 		};
 	};
 
@@ -597,7 +613,14 @@ ZFM_CreateCrashMarker ={
 	_markerCreated setMarkerBrush "Solid";
 	_markerCreated setMarkerSize [_markerSize,_markerSize];
 	_markerCreated setMarkerColor _markerColor;
-	_markerCreated setMarkerText _markerText;
+	
+	// Bugfix: Add marker text (requires another marker)
+	_textMarkerCreated = createMarker[format["%1",(round random 999999)],_location];
+	_textMarkerCreated setMarkerColor "ColorBlack";
+	_textMarkerCreated setMarkerType "Warning";
+	_textMarkerCreated setMarkerText format["%1 (%2)",_markerText,_difficulty];
+	
+	[_markerCreated,_textMarkerCreated]
 };
 
 /*
@@ -818,6 +841,62 @@ ZFM_CreateCrashVehicle ={
 };
 
 /*
+	ZFM_CreateCrash_Accoutrements
+	
+	Create nice little additions around the crash..
+*/
+ZFM_CreateCrash_Accoutrements ={
+	private["_crashLocation","_difficulty","_thisAccObject","_doRandLoc","_createdAccout","_randomFort","_createdAccObjects","_accoutObjects","_accoutObjAmount"];
+	
+	_crashLocation = _this select 0;
+	_difficulty = _this select 1;
+	
+	_createdAccObjects = [];
+	_accoutObjects = [];
+	_accoutObjAmount = 2;
+	
+	switch(_difficulty) do
+	{
+		// Deadmeat has nothing.
+		
+		case "EASY" : {
+			_accoutObjects = ZFM_Accoutrements_Minor;
+			_accoutObjAmount = 6;
+		};
+		case "MEDIUM" : {
+			_accoutObjects = ZFM_Accoutrements_Medium;
+			_accoutObjAmount = 5;
+		};
+		case "HARD" : {
+			_accoutObjects = ZFM_Accoutrements_Ridiculous;
+			_accoutObjAmount = 3;
+		};
+		case "WAR_MACHINE" : {
+			_accoutObjects = ZFM_Accoutrements_Ridiculous;
+			_accoutObjAmount = 3;
+		};
+	};
+	
+	for [{_x =1},{_x <= _accoutObjAmount},{_x = _x +1} ] do
+	{
+		_doRandLoc = [_crashLocation,(round random 25),(round random 25)];
+		
+		diag_log(format["ACCOUT OBJECTS %1, RANDLOC %2",_accoutObjects,_doRandLoc]);
+		
+		// Get the object name from the list set above..
+		_thisAccObject = _accoutObjects call BIS_fnc_selectRandom;
+		
+		// Create the accoutrements..
+		_createdAccout = createVehicle [_thisAccObject,_doRandLoc,[],0,"CAN_COLLIDE"];
+		_createdAccObjects set[_x,_createdAccout];
+	};
+	
+	_createdAccObjects
+};
+
+
+
+/*
 	ZFM_CrashSite_OffsetPosition
 	
 	Offsets the Position on x axis.
@@ -827,16 +906,18 @@ ZFM_Create_OffsetPosition ={
 	private["_position","_x","_y","_z","_newX"];
 	
 	_position = _this select 0;
-	_offset = _this select 1;
-	
+	_offsetX = _this select 1;
+	_offsetY = _this select 2;
+
 	_x = _position select 0;
 	_y = _position select 1;
 	_z = _position select 2;
 	
-	_newX = _x -_offset;
+	_newX = _x -_offsetY;
+	_newY = _y - _offsetY;
 	
 	// Return the position
-	[_newX,_y,_z]
+	[_newX,_newY,_z]
 };
 
 /*

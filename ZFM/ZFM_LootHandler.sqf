@@ -15,16 +15,15 @@
 *	Creates a crate, in which, items can be spawned.
 */
 ZFM_Create_Loot_Item ={
-	private ["_locationToSpawn"];
+	private ["_locationToSpawn","_outputText","_actualCrate"];
+	_locationToSpawn = _this select 0; 
 	
-	_locationToSpawn = _this select 0; // Type: Location /Array - Where to place it.
+	// Create this vehicle box
 	
-	_outputText = ZFM_Name + ZFM_Version;
+	_crateTypes = ZFM_Loot_Crates call BIS_fnc_selectRandom;
 	
-	diag_log(_outputText + " - Create_Loot_Item - Created box..");
-	
-	// For some reason, ARMA2 considers the crate a vehicle? It must have a killer top speed.
-	_actualCrate = createVehicle["USVehicleBox",_locationToSpawn,[],0,"CAN_COLLIDE"];
+	// Creates the crate.
+	_actualCrate = createVehicle[_crateTypes,_locationToSpawn,[],0,"CAN_COLLIDE"];
 	
 	// Remove whatever is in the crate.
 	clearWeaponCargoGlobal _actualCrate;
@@ -46,7 +45,7 @@ ZFM_Create_Loot_Item ={
 *	Walks through a supplied loot table and creates an array for that item
 */
 ZFM_Walk_LootTable ={
-	private ["_arrayIn","_difficulty","_probable"];
+	private ["_arrayIn","_difficulty","_probable","_availableItems","_outputMessage","_arrayOut","_item","_itemClass","_itemType","_itemProbability","_metProbability","_itemOut","_arrayOut"];
 	
 	_arrayIn = _this select 0;
 	_difficulty = _this select 1;
@@ -71,16 +70,19 @@ ZFM_Walk_LootTable ={
 		_itemType = _item select 1;
 		_selectItem = 2;
 		
-		if(_difficulty == "MEDIUM") then
+		// Fix if non-probability
+		if(count _item >2) then
 		{
-			_selectItem = 3;
+			if(_difficulty == "MEDIUM") then
+			{
+				_selectItem = 3;
+			};
+			
+			if(_difficulty == "HARD") then
+			{
+				_selectItem = 4;
+			};
 		};
-		
-		if(_difficulty == "HARD") then
-		{
-			_selectItem = 4;
-		};
-		
 		// Get the relevant boundary for the probability of the item.
 		_itemBoundary = _item select _selectItem;
 	
@@ -112,6 +114,7 @@ ZFM_Walk_LootTable ={
 /*
 *	ZFM_Fill_QuickerFilter
 *
+*	TODO: Replace using CfgWeapons
 *	A fill function a little quicker (and a lot less obfuscated) as the DayZ function
 */
 ZFM_QuickerFiller = {
@@ -147,7 +150,7 @@ ZFM_QuickerFiller = {
 *	Fills a pre-supplied crate with random loot.
 */
 ZFM_Fill_Loot_Item_AutoFill ={
-	private ["_container","_probable","_difficulty","_lootArray"];
+	private ["_container","_probable","_difficulty","_lootArray","_outputArray","_count","_rowItem","_className","_classType","_randAmt"];
 	
 	_container = _this select 0;	// What are we adding it to?
 	_probable = _this select 1; 	//Is this probability based?
@@ -200,7 +203,7 @@ ZFM_Fill_Loot_Item_AutoFill ={
 *	Creates a random crate. The type of items in the crate are specified by the user.
 */
 ZFM_Create_LootCrate ={
-	private ["_locationToSpawn","_difficulty","_polyArray","_probable"];
+	private ["_locationToSpawn","_difficulty","_polyArray","_probable","_crateItem","_crateFill"];
 	
 	_locationToSpawn = _this select 0;
 	_difficulty = _this select 1;
@@ -214,6 +217,8 @@ ZFM_Create_LootCrate ={
 	
 	//Fill the crate..
 	_crateFill = [_crateItem,_probable,_difficulty,_polyArray] call ZFM_Fill_Loot_Item_AutoFill;
+	
+	_createItem
 };
  
 // Get the config stuff..

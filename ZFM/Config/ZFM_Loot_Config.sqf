@@ -10,6 +10,16 @@
  ZFS_Loot_Type_Probabilty = "4x10101B";
  
  
+ ZFM_Loot_Crates =[
+	"TKSpecialWeapons_EP1",
+	"CZBasicWeapons_EP1",
+	"TKVehicleBox_EP1",
+	"USVehicleBox_EP1",
+	"USSpecialWeapons_EP1"
+ ];
+ 
+ 
+ 
  //Todo : Change to ZFM, not ZFS! ;-)
  
  ZFM_LOOT_MODE_TYPES = [
@@ -245,7 +255,6 @@ ZFS_FixedLoot_Snipers =
 	["SCAR_H_LNG_Sniper_SD","weapon"],
 	["SVD_CAMO","weapon"],
 	["SVD_des_EP1","weapon"],
-	["M14","weapon"],
 	["M24","weapon"]
 ];
  
