@@ -205,7 +205,7 @@ ZFM_ExecuteCrashMission ={
 		
 		// Get the crashPos
 		_crashPos = _actCrashVehicle select 2;
-		_lootItemPos = [_crashPos,(round random 3)] call ZFM_Create_OffsetPosition;
+		_lootItemPos = [_crashPos,(round random 3),(round random 3)] call ZFM_Create_OffsetPosition;
 		// Spawn the loot items
 		
 		_isProbabilityBased = false;
@@ -229,7 +229,7 @@ ZFM_ExecuteCrashMission ={
 
 			// Randomise the distance from the crash to make it a little bit more believable. Not too far, though.. :)
 			// LootCrates spawning within re-generated wrecks #1  - FIX (further offset)
-			_lootItemPos = [_crashPos,(round random 3)+6] call ZFM_Create_OffsetPosition;
+			_lootItemPos = [_crashPos,(round random 3)+6,(round random 3)] call ZFM_Create_OffsetPosition;
 			
 			diag_log(format["THISLOOTCRATE %1, %2,%3,%4",_lootItemPos,_difficulty,_lootContents,_isProbabilityBased]);
 			
@@ -245,7 +245,7 @@ ZFM_ExecuteCrashMission ={
 	
 		// TODO: Spawn vehicles before, so they don't crush the AI or what have you.. ;-)
 		// Offset the position as at times, the AI can end up slightly dead from wreckage
-		_offsetGroupPosition = [_crashPos,25] call ZFM_Create_OffsetPosition;
+		_offsetGroupPosition = [_crashPos,5,5] call ZFM_Create_OffsetPosition;
 		
 		// Create a group of units based on the missionGenArray
 		_actCrashGroup = [_unitsToSpawn,_difficulty,east,_offsetGroupPosition,_missionID] call ZFM_CreateUnitGroup;

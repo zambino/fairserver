@@ -536,7 +536,7 @@ ZFM_CreateUnitGroup ={
 				if(_aiType in ZFM_AI_TYPES) then
 				{
 					// Stagger them so they aren't just crushed or what have you.
-					_staggerSpawnAt = [_crashPos,(round random 15)] call ZFM_Create_OffsetPosition;
+					_staggerSpawnAt = [_crashPos,(round random 10),(round random 10)] call ZFM_Create_OffsetPosition;
 				
 					diag_log(format["%1 %2 - ZFM_CreateUnitGroup - Unit %3 of %4  (type %5) created..",ZFM_NAME,ZFM_VERSION,_x,(_unitsArrayCount-1),_aiType]);
 					_thisUnit = [_unitGroup,_difficulty,_staggerSpawnAt,_aiType] call ZFM_CreateUnit;
@@ -841,6 +841,30 @@ ZFM_CreateCrashVehicle ={
 };
 
 /*
+	ZFM_CrashSite_OffsetPosition
+	
+	Offsets the Position on x axis.
+*/
+ZFM_Create_OffsetPosition ={
+
+	private["_position","_x","_y","_z","_newX"];
+	
+	_position = _this select 0;
+	_offsetX = _this select 1;
+	_offsetY = _this select 2;
+
+	_x = _position select 0;
+	_y = _position select 1;
+	_z = _position select 2;
+	
+	_newX = _x -_offsetY;
+	_newY = _y - _offsetY;
+	
+	// Return the position
+	[_newX,_newY,_z]
+};
+
+/*
 	ZFM_CreateCrash_Accoutrements
 	
 	Create nice little additions around the crash..
@@ -879,12 +903,14 @@ ZFM_CreateCrash_Accoutrements ={
 	
 	for [{_x =1},{_x <= _accoutObjAmount},{_x = _x +1} ] do
 	{
-		_doRandLoc = [_crashLocation,(round random 25),(round random 25)];
+		_doRandLoc = [_crashLocation,(round random 25),(round random 25)] call ZFM_Create_OffsetPosition;
 		
 		diag_log(format["ACCOUT OBJECTS %1, RANDLOC %2",_accoutObjects,_doRandLoc]);
 		
 		// Get the object name from the list set above..
 		_thisAccObject = _accoutObjects call BIS_fnc_selectRandom;
+		
+		diag_log(format["THIS ACCOBJECT %1",_thisAccObject]);
 		
 		// Create the accoutrements..
 		_createdAccout = createVehicle [_thisAccObject,_doRandLoc,[],0,"CAN_COLLIDE"];
@@ -896,29 +922,7 @@ ZFM_CreateCrash_Accoutrements ={
 
 
 
-/*
-	ZFM_CrashSite_OffsetPosition
-	
-	Offsets the Position on x axis.
-*/
-ZFM_Create_OffsetPosition ={
 
-	private["_position","_x","_y","_z","_newX"];
-	
-	_position = _this select 0;
-	_offsetX = _this select 1;
-	_offsetY = _this select 2;
-
-	_x = _position select 0;
-	_y = _position select 1;
-	_z = _position select 2;
-	
-	_newX = _x -_offsetY;
-	_newY = _y - _offsetY;
-	
-	// Return the position
-	[_newX,_newY,_z]
-};
 
 /*
 ZFM_UnitGroup_GetInVehicle_Goto ={
