@@ -224,7 +224,7 @@ ZFM_CheckExistingAI = {
 	/*
 	* 	 Check For WickedAI.
 	*/
-	if(!isNil(WAIconfigloaded)) then
+	if(typeName WAIconfigloaded == "BOOLEAN") then
 	{
 		diag_log(_outputMessage + "CheckExistingAI - WickedAI discovered. This will interfere with ZFM, and must be disabled before ZFM can run. Exiting.");
 		_doExit = true;
@@ -242,7 +242,7 @@ ZFM_CheckExistingAI = {
 	/*
 	*	Check for DZ AI
 	*/
-	if(typeName ZAI_isActive == "BOOLEAN") then
+	if(typeName DZAI_isActive == "BOOLEAN") then
 	{
 		diag_log(_outputMessage + "CheckExistingAI - DZ AI discovered. This will interfere with ZFM, and must be disabled before ZFM can run. Exiting.");
 		_doExit = true;	
