@@ -18,6 +18,10 @@ ZFM_MISSION_VARIABLE_MISSION_OBJECTS = "6x101018";
 ZFM_MISSION_VARIABLE_MISSION_PARTICIPANTS = "6x101019";
 ZFM_MISSION_VARIABLE_MISSION_PARTICIPANT_KILLS = "6x101020";
 
+
+ZFM_MISSION_START_TYPE_TIMED_RANDOM = "6x102011"; // For alpha, only supported mechanism
+
+
 /*
 	ZFM_CURRENT_MISSIONS
 	
@@ -37,6 +41,34 @@ ZFM_CURRENT_MISSIONS =[];
 */
 ZFM_COMPLETED_MISSIONS=[];
 
+/*
+*	Cached last version of the playableUnits
+*/
+ZFM_CONNECTED_PLAYERS =[];
+
+/*
+	ZFM_CAN_CREATE_NEW_MISSION
+	
+	Used to tell the main loop to stop if there are the max number of missions running
+*/
+ZFM_CAN_CREATE_NEW_MISSION = true;
+
+/*
+	ZFM_MISSIONS_MISSION_HANDLER_STARTED
+	
+	Used to check if the mission handler has started. 
+*/
+ZFM_MISSIONS_MISSION_HANDLER_STARTED = false;
+
+/*
+	TODO: Move to global config file..
+*/
+ZFM_MISSIONS_START_MISSIONS_WHILE_SERVER_EMPTY = false;
+ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS = 3;
+ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS_CRASH = 3;
+ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE = ZFM_MISSION_START_TYPE_TIMED_RANDOM;
+ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN = 15; // Minutes
+ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MAX = 45; // Minutes (Means randomly, missions will fire between 15 and 45 minutes)
 
 /*
 *	ZFM_MissionArray_Free
@@ -66,6 +98,44 @@ ZFM_Mission_Free ={
 
 };
 
+ZFM_Mission_Get_Missions_ByType ={
+	private["_missionType"];
+	
+	// Two distinct types as we want to make sure it's an array before we count it, to stop errors.
+	if(typeName ZFM_CURRENT_MISSION != "ARRAY") exitWith{};
+	if(count ZFM_CURRENT_MISSION == 0) exitWith{};
+	
+	if(count ZFM_CURRENT_MISSION ==1) then
+	{
+	
+	
+	}
+	else
+	{
+	
+	};
+	
+	
+};
+
+
+ZFM_Mission_Can_Add = {
+	private["_currentMissions"];
+	
+	_currentMissions = count ZFM_CURRENT_MISSIONS;
+
+	if(_currentMissions < ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS) then
+	{
+		ZFM_CAN_CREATE_NEW_MISSION = true;
+	}	
+	else
+	{
+		ZFM_CAN_CREATE_NEW_MISSION = false;
+	};
+	
+	ZFM_CAN_CREATE_NEW_MISSION
+	
+};
 
 /*
 *	ZFM_MissionArray_AddMissionArray
@@ -73,13 +143,21 @@ ZFM_Mission_Free ={
 *	Adds a pre-generated mission array to ZFM_CURRENT_MISSIONS.
 */
 ZFM_Mission_Add ={
-	private ["_missionArray"];
+	private ["_missionArray","_missionType"];
 	
 	_missionArray = _this select 0;
 	
 	if(typeName ZFM_CURRENT_MISSIONS == "ARRAY" && typeName _missionArray == "ARRAY") then
 	{
-		ZFM_CURRENT_MISSIONS set[(count ZFM_CURRENT_MISSIONS),[(count ZFM_CURRENT_MISSIONS)] + _missionArray];
+		// Get the mission type
+		_missionType = _missionArray select 1;
+		_canAdd = [] call ZFM_Mission_Can_Add;
+	
+		if(_canAdd) then
+		{
+			// Todo: Count by crash missions
+			ZFM_CURRENT_MISSIONS set[(count ZFM_CURRENT_MISSIONS),[(count ZFM_CURRENT_MISSIONS)] + _missionArray]
+		};
 	};
 	
 };
@@ -154,6 +232,8 @@ ZFM_Mission_GetMissionByID ={
 ZFM_Mission_Set ={
 	private["_missionID","_missionVariableType","_missionVariable","_missionArray","_currentUnits"];
 	
+	
+	
 	_missionID = _this select 0;
 	_missionVariableType = _this select 1;
 	_missionVariable = _this select 2;
@@ -162,11 +242,12 @@ ZFM_Mission_Set ={
 	
 	_missionArray = [_missionID] call ZFM_Mission_GetMissionByID;
 	
-	diag_log(format["MISSION ARRAY %1",_missionArray]);
-	if(!typeName _missionArray == "ARRAY") exitWith{};
-	
 	switch(_missionVariableType) do
 	{
+		default {
+			diag_log("Something wrong with the cases");
+		};
+	
 		case ZFM_MISSION_VARIABLE_MISSION_TYPE: {
 			diag_log("Mission type fired");
 			_missionArray set[1,_missionVariable];
@@ -177,12 +258,12 @@ ZFM_Mission_Set ={
 			_missionArray set[2,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
-		case ZFM_MISSION_VARIABLE_HUMANITY_TYPE: {
+		case ZFM_MISSION_VARIABLE_MISSION_HUMANITY_TYPE: {
 			diag_log("Humanity type fired");
 			_missionArray set[3,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
-		case ZFM_MISSION_VARIABLE_LOOTSHARE_TYPE: {
+		case ZFM_MISSION_VARIABLE_MISSION_LOOTSHARE_TYPE: {
 			diag_log("Loot share type fired");
 			_missionArray set[4,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
@@ -203,12 +284,12 @@ ZFM_Mission_Set ={
 			_missionArray set [5,_currentUnits];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
-		case ZFM_MISSION_VARIABLE_UNITS_TOTAL: {
+		case ZFM_MISSION_VARIABLE_MISSION_UNITS_TOTAL: {
 			diag_log("Units fired");
 			_missionArray set[6,(_missionArray select 6) +1];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
-		case ZFM_MISSION_VARIABLE_UNITS_KILLED: {
+		case ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED: {
 			diag_log("Units killed fired");
 			_missionArray set[7,(_missionArray select 7) +1];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
@@ -234,7 +315,7 @@ ZFM_Mission_Set ={
 			_missionArray set[9,(_missionArray select 9)+[_missionVariable]];
 			ZFM_CURRENT_MISSIONS set[_missionID,_missionArray];
 		};		
-		case ZFM_MISSION_VARIABLE_MISSION_PARTICIPANTS_KILLS: {
+		case ZFM_MISSION_VARIABLE_MISSION_PARTICIPANT_KILLS: {
 			diag_log("Kills fired");
 			_unit = _missionVariable select 0;
 			_killer = _missionVariable select 1;
@@ -245,6 +326,53 @@ ZFM_Mission_Set ={
 	};
 	
 
+};
+
+/*
+*	ZFM_Mission_Handler_Start
+*
+*	Starts the mission loop and mission handler
+*/
+ZFM_Mission_Handler_Start ={
+	private ["_continueExecution"];
+
+	if(ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS == 0) exitWith {diag_log(format["%1 %2 - Maximum concurrent missions is set to 0. You do want missions, right?",ZFM_NAME,ZFM_VERSION])};
+	if((count ZFM_CURRENT_MISSIONS) || ZFM_MISSIONS_MISSION_HANDLER_STARTED) exitWith {diag_log(format["%1 %2 - Mission handler is already running. Exiting..",ZFM_NAME,ZFM_VERSION])};
+
+	_continueExecution = true;
+	
+	while(_continueExecution) do
+	{
+		if(ZFM_MISSIONS_START_MISSIONS_WHILE_SERVER_EMPTY && (count playableUnits) ==0) then
+		{
+			waitUntil{(count playableUnits) != 0};
+		};
+
+		if(ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE == ZFM_MISSION_START_TYPE_TIMED_RANDOM) then
+		{
+			// sets and gets the ZFM_CAN_CREATE_NEW_MISSION variable
+			_canAdd = [] call ZFM_Mission_Can_Add;
+			
+			// If we can't, then wait!
+			if(!_canAdd) then
+			{
+				waitUntil{ZFM_CAN_CREATE_NEW_MISSION};
+			};
+			
+			// Get the random amount based on max-min
+			_minutesRandSeed = (ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MAX-ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN);
+			
+			// Get the rounded amount 
+			_minutesToWait = (ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN + (round random _minutesRandSeed))*60;
+			
+			// Sleep for the specified interval in minutes
+			sleep (_minutesToWait*60);
+			
+		};
+		
+	};
+	
+	
 };
 
 /*
@@ -284,12 +412,44 @@ ZFM_Mission_Init ={
 	_thisMissionArray
 };
 
+/*
+	ZFM_Mission_Generate_New
+	
+	Houses the mission generation function (puts ll the ZFM_Mission elements into play.
+*/
+ZFM_Mission_Generate_New ={
+
+};
+
+
+
 private ["_myMission"];
 
 while{true} do
 {
 	_myMission = [ZFM_MISSION_TYPE_CRASH,"TEST","TEST1","TEST3"] call ZFM_Mission_Init;
 	[_myMission] call ZFM_Mission_Add;
+	
+	/*
+		Max missions by type
+		Max missions total : tested
+		Mission array structure: tested
+		Mission array updating internal elements : INCOMPLETE
+	
+		Intended result? - Test data
+	*	1 = Mission type - NOT TESTED
+	*	2 = Mission title - NOT TESTED
+	*	3 = Humanity type - NOT TESTED
+	*	4 = LootShare type - NOT TESTED
+	*	5 = Units - NOT TESTED
+	*	6 = Units total - NOT TESTED
+	*	7 = Units killed = TESTED
+	*	8 = Mission objects = NOT TESTED
+	*	9 = Mission participants = NOT TESTED
+	*	10 = Participants->Kills = NOT TESTED
+
+
+	*/
 	
 	// Test 0
 	[0,ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED,"any"] call ZFM_Mission_Set;
@@ -302,4 +462,5 @@ while{true} do
 
 
 };
+
 
