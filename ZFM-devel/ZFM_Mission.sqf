@@ -9,8 +9,7 @@
  */
  private["_aiGroup","_playerz","_playerPos","_playerPoop","_unit"];
  
-diag_log("MISSION FILE INIT");
- 
+diag_log(format["%1 %2 - ZFM_Mission.sqf - File loaded",ZFM_NAME,ZFM_VERSION]);
 
 /*
 *	ZFM_Includes_Mission_Config
@@ -19,7 +18,6 @@ diag_log("MISSION FILE INIT");
 */ 
 ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
-
 
 /*
 *	ZFM_Includes_Mission_Functions
@@ -30,12 +28,13 @@ ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Function
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
 
 /*
-*	ZFM_Includes_Mission_Functions
+*	ZFM_Includes_Mission_Handler
 *	
-*	Contains functions for handling currently running missions
+*	Contains functions for executing the main loop and mission handler.
 */
 ZFM_Includes_Mission_Handler = "\z\addons\dayz_server\ZFM\ZFM_Mission_Handler.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Handler;
+
 /*
 *	ZFM_Includes_Mission_Functions
 *	
@@ -93,13 +92,9 @@ ZFM_ExecuteCrashMission ={
 	_missionGenArray = _this select 0;
 	
 	_lootContents = ZFS_FixedLoot_Types call BIS_fnc_selectRandom;
-	
-	_canCreateMission = [ZFM_MISSION_TYPE_CRASH] call ZFM_CanAddNewMission;
-	diag_log(format["CANCREATEMISSION %1",_canCreateMission]);
-	
-	
-	if(!_canCreateMission) exitWith { diag_log(format["%1 %2 - ZFM_ExecuteCrashMission - Too many missions running, exiting..",ZFM_NAME,ZFM_VERSION])};
 
+	diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_ExecuteCrashMission - Executing.",ZFM_Name,ZFM_Version]);
+	
 	if(typeName _missionGenArray == "ARRAY") then
 	{
 		_difficulty = _missionGenArray select 0;
@@ -114,8 +109,9 @@ ZFM_ExecuteCrashMission ={
 	
 		// Add to the mission array.. [TODO]
 	
-		diag_log(format["MISSIONGENARRAY %1",_missionGenArray]);
-		diag_log(format["NUMBERLOOTCRATES %1",_numberLootCrates]);
+		diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_ExecuteCrashMission - MissionGenArray %3.",ZFM_Name,ZFM_Version,_missionGenArray]);
+		diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_ExecuteCrashMission - MissionGenArray %3.",ZFM_Name,ZFM_Version,_missionGenArray]);
+		diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_ExecuteCrashMission - NumberLootCrates %3.",ZFM_Name,ZFM_Version,_numberLootCrates]);
 	
 		// Now we've got the crash vehicle
 		_actCrashVehicle = [_crashVehicle,_difficulty,format["Crashed %1",_crashVehicle]] call ZFM_CreateCrashVehicle;
@@ -142,7 +138,9 @@ ZFM_ExecuteCrashMission ={
 				_lootContents = ZFS_LootTable_Types call BIS_fnc_selectRandom;
 			};
 			
-			diag_log(format["PROBABILITYBASED %1",_isProbabilityBased]);
+			
+			diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_ExecuteCrashMission - ProbabilityBased %3.",ZFM_Name,ZFM_Version,_isProbabilityBased]);
+	
 
 			// Randomise the distance from the crash to make it a little bit more believable. Not too far, though.. :)
 			// LootCrates spawning within re-generated wrecks #1  - FIX (further offset)
@@ -166,11 +164,6 @@ ZFM_ExecuteCrashMission ={
 		
 		// Create a group of units based on the missionGenArray
 		_actCrashGroup = [_unitsToSpawn,_difficulty,east,_offsetGroupPosition,_missionID] call ZFM_CreateUnitGroup;
-		
-		diag_log(format["ACT CRASH GROUP %1",_actCrashGroup]);
-		
-		// DEBUGGING
-		diag_log(format["MISSION ARRAY %1",ZFM_MISSIONS]);
 		
 		// Use remote execution to do the mission information
 		[nil,nil,rTitleText,format["%1 [Difficulty: %2]",_title,_difficulty],"PLAIN",30] call RE;
@@ -238,9 +231,7 @@ ZFM_GenerateMissionTitle ={
 	switch(_missionType) do
 	{
 		case ZFM_MISSION_TYPE_CRASH: {
-		
-			diag_log("CRASH MISSION TYPE UYA");
-		
+			
 			// ... to
 			_onTheWayTo = ZFM_OnTheWayTo call BIS_fnc_selectRandom;
 		
@@ -264,12 +255,10 @@ ZFM_GenerateMission ={
 	private ["_missionMethod","_missionGenArray","_missionUnits","_missionArray","_missionTitle","_missionDifficulty","_lootMode","_missionType","_missionVariables"];
 	_missionMethod = _this select 0;
 
-	diag_log("GENERATEMISSION - NOW THE FUNCTION WAS CALLED.");
-	
+	diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_GenerateMission - Executed. Mission method %1",ZFM_Name,ZFM_Version,_missionMethod]);
+
 	// Array passed to generator function.
 	_missionGenArray = [];
-	
-	diag_log(format["MISSION METHOD: %1",_missionMethod]);			
 			
 	switch(_missionMethod) do
 	{
@@ -315,7 +304,8 @@ ZFM_GenerateMission ={
 			{
 				// Only available mission type at present
 				case ZFM_MISSION_TYPE_CRASH: {
-					diag_log("CRASH MISSION BEING GENERATED");
+					diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_GenerateMission - ZFM_MISSION_METHOD_RANDOM & ZFM_MISSION_TYPE_CRASH",ZFM_Name,ZFM_Version]);
+
 					_missionArray = [_missionGenArray] call ZFM_ExecuteCrashMission;
 					_missionGenArray set[9,_missionArray select 0];
 					_missionGenArray set[10,_missionArray select 1];
@@ -331,22 +321,3 @@ ZFM_GenerateMission ={
 	};
 	
 };
-
-// Call AI bootstrap
-[] call ZFM_DoBootStrap;
-
-
-
-/*while{true} do
-{
-	// TEST: Generate Mission
-	[ZFM_MISSION_METHOD_RANDOM] call ZFM_GenerateMission;
-	
-	// do some logging.
-	diag_log(format["ZFM MISSIONS %1, LOOT CRATES %2, STATUS %3, MISSION UNITS %4, COUNT MISSIONS %5",ZFM_MISSIONS,ZFM_CURRENT_LOOT_CRATES,ZFM_CURRENT_MISSION_STATUS,ZFM_CURRENT_MISSION_UNITS,(count ZFM_MISSIONS)]);
-	diag_log("CREATED VEHICLE!");
-	
-	sleep 10000;
-	
-};
-*/

@@ -7,6 +7,7 @@
 	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
+
 ZFM_MISSION_VARIABLE_MISSION_TYPE = "6x101011";
 ZFM_MISSION_VARIABLE_MISSION_TITLE = "6x101012";
 ZFM_MISSION_VARIABLE_MISSION_HUMANITY_TYPE = "6x101013";
@@ -327,70 +328,6 @@ ZFM_Mission_Set ={
 };
 
 /*
-*	ZFM_Mission_Handler_Start
-*
-*	Starts the mission loop and mission handler
-*/
-ZFM_Mission_Handler_Start ={
-	private ["_continueExecution"];
-
-	diag_log("MISSION HANDLER STARTED");
-	
-	if(ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS == 0) exitWith {diag_log(format["%1 %2 - Maximum concurrent missions is set to 0. You do want missions, right?",ZFM_NAME,ZFM_VERSION])};
-	if((count ZFM_CURRENT_MISSIONS) >0 || ZFM_MISSIONS_MISSION_HANDLER_STARTED) exitWith {diag_log(format["%1 %2 - Mission handler is already running. Exiting..",ZFM_NAME,ZFM_VERSION])};
-
-	diag_log("MISSION HANDLER PASSED CHECK");
-	
-	_continueExecution = true;
-	
-	while{_continueExecution} do
-	{
-		diag_log("MISSION HANDLER LOOP STARTED");
-		
-		diag_log(format["COUNT PLAYABLE UNITS",(count playableUnits)]);
-		
-		if(ZFM_MISSIONS_START_MISSIONS_WHILE_SERVER_EMPTY && (count playableUnits) ==0) then
-		{
-			diag_log(format["%1 %2 - Nobody is on the server and ZFM_MISSIONS_START_WHILE_SERVER_EMPTY is set to TRUE. Waiting until a player joins.",ZFM_NAME,ZFM_VERSION]);
-			waitUntil{(count playableUnits) != 0};
-		};
-
-		diag_log(format["START TYPE %1,RANDOM %2",ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE,ZFM_MISSION_START_TYPE_TIMED_RANDOM]);
-		
-		if(ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE == ZFM_MISSION_START_TYPE_TIMED_RANDOM) then
-		{
-			diag_log("TIMED RANDOM FIRED");
-		
-			// sets and gets the ZFM_CAN_CREATE_NEW_MISSION variable
-			_canAdd = [] call ZFM_Mission_Can_Add;
-			
-			// If we can't, then wait!
-			if(!_canAdd) then
-			{
-				waitUntil{ZFM_CAN_CREATE_NEW_MISSION};
-			};
-			
-			[] call ZFM_Mission_Generate_New;
-			
-			// Get the random amount based on max-min
-			_minutesRandSeed = (ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MAX-ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN);
-			
-			// Get the rounded amount 
-			_minutesToWait = (ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN + (round random _minutesRandSeed))*60;
-			
-			diag_log(format["WAITING %1 SECONDS",_minutesToWait]);
-			
-			// Sleep for the specified interval in minutes
-			sleep (_minutesToWait);
-			
-		};
-		
-	};
-	
-	
-};
-
-/*
 *	ZFM_Init_MissionArray
 *	
 *	Creates the missionArray for the mission, which contains all information on a given mission.
@@ -452,7 +389,72 @@ ZFM_Mission_Generate_New ={
 	
 };
 
+/*
+*	ZFM_Mission_Handler_Start
+*
+*	Starts the mission loop and mission handler
+*/
+ZFM_Mission_Handler_Start ={
+	private ["_continueExecution"];
 
-[] call ZFM_Mission_Handler_Start;
+	diag_log("MISSION HANDLER STARTED");
+	
+	if(ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS == 0) exitWith {diag_log(format["%1 %2 - Maximum concurrent missions is set to 0. You do want missions, right?",ZFM_NAME,ZFM_VERSION])};
+	if((count ZFM_CURRENT_MISSIONS) >0 || ZFM_MISSIONS_MISSION_HANDLER_STARTED) exitWith {diag_log(format["%1 %2 - Mission handler is already running. Exiting..",ZFM_NAME,ZFM_VERSION])};
 
+	diag_log("MISSION HANDLER PASSED CHECK");
+	
+	// Bootstrap the AI first..
+	[] call ZFM_DoBootStrap;
+	
+	_continueExecution = true;
+	
+	while{_continueExecution} do
+	{
+		diag_log("MISSION HANDLER LOOP STARTED");
+		
+		diag_log(format["COUNT PLAYABLE UNITS",(count playableUnits)]);
+		
+		if(ZFM_MISSIONS_START_MISSIONS_WHILE_SERVER_EMPTY && (count playableUnits) ==0) then
+		{
+			diag_log(format["%1 %2 - Nobody is on the server and ZFM_MISSIONS_START_WHILE_SERVER_EMPTY is set to TRUE. Waiting until a player joins.",ZFM_NAME,ZFM_VERSION]);
+			waitUntil{(count playableUnits) != 0};
+		};
 
+		diag_log(format["START TYPE %1,RANDOM %2",ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE,ZFM_MISSION_START_TYPE_TIMED_RANDOM]);
+		
+		if(ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE == ZFM_MISSION_START_TYPE_TIMED_RANDOM) then
+		{
+			diag_log("TIMED RANDOM FIRED");
+		
+			// sets and gets the ZFM_CAN_CREATE_NEW_MISSION variable
+			_canAdd = [] call ZFM_Mission_Can_Add;
+			
+			diag_log(format["CAN ADD %1",_canAdd]);
+			
+			// If we can't, then wait!
+			if(!_canAdd) then
+			{
+				diag_log(format["WAITING UNTIL %1",_canAdd]);
+				waitUntil{ZFM_CAN_CREATE_NEW_MISSION};
+			};
+			
+			[] call ZFM_Mission_Generate_New;
+			
+			// Get the random amount based on max-min
+			_minutesRandSeed = (ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MAX-ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN);
+			
+			// Get the rounded amount 
+			_minutesToWait = (ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN + (round random _minutesRandSeed))*60;
+			
+			diag_log(format["WAITING %1 SECONDS",_minutesToWait]);
+			
+			// Sleep for the specified interval in minutes
+			sleep (_minutesToWait);
+			
+		};
+		
+	};
+	
+	
+};
