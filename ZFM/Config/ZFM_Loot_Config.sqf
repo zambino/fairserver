@@ -107,7 +107,6 @@ ZFS_LootTable_Main_Snipers =
 	["SCAR_H_LNG_Sniper_SD","weapon",0.1,0.2,0.3],
 	["SVD_CAMO","weapon",0.4,0.5,0.6],
 	["SVD_des_EP1","weapon",0.4,0.5,0.6],
-	["M14","weapon",0.8,0.9,1],
 	["M24","weapon",0.8,0.9,1]	
 ];
 

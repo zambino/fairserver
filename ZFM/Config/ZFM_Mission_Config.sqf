@@ -294,8 +294,6 @@ ZFS_Equipment_Commander = [
  ];
  
  
- 
- 
  /*
 	ZFM BanditGroup Names
 
@@ -576,6 +574,93 @@ ZFM_DeathPhrases =[
 	"is pining for the fjords",
 	"said YES to death"
 ]; 
+
+ZFM_BanditGroup_Names_NL =[
+"goed getrainde huurlingen",
+"goed getrainde ex soldaten",
+"special forces",
+"opportunistische dieven",
+"verzamelde zwervers",
+"gewapende sekteleden",
+"Chernarussische separatisten",
+"koudbloedige moordenaars",
+"koudbloedige criminelen",
+"meedogenloze moordenaars",
+"getrainde moordenaars",
+"corrupte politieagenten",
+"corrupte ambtenaren",
+"oorlog criminelen",
+"ontsnapte gevangenen",
+"ruige overlevenden",
+"nabijgelegen overlevenden",
+"nabijgelegen saboteurs",
+"meedogenloze kluizenaar",
+"dodelijke huurlingen",
+"kwaadaardige psychopaten",
+"boze overlevenden",
+"koudbloedige moordenaars",
+"for-profit bandieten",
+"macht beluste bandieten",
+"plaatselijke bandieten",
+"omslachtige overlevenden",
+"omslachtige bandieten",
+"meedogenloze bandieten",
+"hebzuchtige bandieten",
+"wanhopige bandieten",
+"boze bandieten",
+"meedogenloze bandieten",
+"goed getrainde bandieten",
+"opportunistische bandieten",
+"een groep gangsters",
+"een groep ex-gangsters",
+"een groep moordenaars",
+"ontsnapte veroordeelden"
+ ];
+ 
+//
+ZFM_OnTheWayTo_NL =[
+"op weg naar",
+"op doorreis naar",
+"transport van medisch personeel naar",
+"op een routine reis naar",
+"op een reddingsmissie naar",
+"onderweg als steun naar",
+"op een dringende reddingmissie naar",
+"op een humanitaire missie naar",
+"onderweg om overlevenden te redden van",
+"op een wanhopige missie naar",
+"maken van een levering aan",
+"maakt een ammo drop te",
+"maken van een humanitaire drop te",
+"maakt zijn weg naar"
+];
+ 
+ZFM_OnTheWayToDeath_NL =[
+"is gecrashed",
+"is verwoest",
+"is gedecimeerd",
+"is vernietigd",
+"lijkt te zijn neergestort",
+"lijkt in ernstige problemen te zitten",
+"lijkt fucked te zijn",
+"lijkt dat ze het niet halen",
+"lijkt te zijn neergestort",
+"lijkt te zijn gesaboteerd",
+"lijkt dat de piloot een crash landing heeft gemaakt",
+"is neergehaald",
+"raakte een boom en crashte",
+"getroffen door een storing en daardoor gecrasht",
+"gesaboteerd en neergestort",
+"beschadigd en neergestort",
+"geraakt en neergestort",
+"verloor brandstof en is daardoor neergestort",
+"neergestort in een schijnbare zelfmoord",
+"neergestort in een schijnbare zelfmoord pact",
+"neergestort na verlies van radio contact",
+"geen contact en wordt verondersteld als neergestort",
+"verdwenen op de radar en wordt verondersteld als vernietigd",
+"verloren radio contact en word verondersteld als neergestort"
+];
 
 ZFM_AI_NAMES=[
 "Afanas",

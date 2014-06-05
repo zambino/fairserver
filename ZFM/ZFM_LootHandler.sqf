@@ -220,11 +220,5 @@ ZFM_Create_LootCrate ={
 	
 	_createItem
 };
- 
-// Get the config stuff..
-ZFM_Includes_Loot_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Loot_Config.sqf";
-
-// We need to get access to these functions..
-call compile preprocessFileLineNumbers ZFM_Includes_Loot_Config;
 
 
