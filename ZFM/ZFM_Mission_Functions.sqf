@@ -18,28 +18,28 @@ call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
 *	Handles when an AI unit is killed.
 */
 ZFM_Handle_MissionUnitKilled ={
-	private ["_unit","_killer","_missionID","_remainingUnits","_unitType","_deathText"];
+	private ["_unit","_killer","_missionID","_remainingUnits","_unitType","_deathText","_missionInstance","_numUnitsTotal","_numUnitsKilled"];
 	
 	_unit = _this select 0;
 	_killer = _this select 1;
 	
 	_outputText = "";
 	
-	diag_log(format["HANDLEMISSIONKILLED %1, UNIT %2, KILLER %3",_this]);
-	
-	
 	if(typeName _unit == "OBJECT") then
-	
 	{
 		_missionID = _unit getVariable["ZFM_MISSION_ID",[]];
+		
+		diag_log(format["ZFM_MISSION_ID %1",_missionID]);
 		
 		if(typeName _missionID != "ARRAY") then
 		{
 			_unitType = _unit getVariable["ZFM_UnitType",[]];
 			
+			diag_log(format["_unitType %1",_unitType]);
+			
 			if(typeName _unitType != "ARRAY") then
 			{
-
+				diag_log(format["_unitType %1 CHECK PASSED",_unitType]);
 				_deathText = ZFM_DeathPhrases call BIS_fnc_selectRandom;
 	
 				// Per-unit-killed humanity.
@@ -48,10 +48,25 @@ ZFM_Handle_MissionUnitKilled ={
 					[_killer] call ZFM_Alter_Humanity;
 				};
 				
-				[nil,nil,rTitleText,format["That bandit %1! Killed by %2",_deathText,(name _killer)],"PLAIN",30] call RE;
+				// Adds 1 to the kill count
+				[_missionID,ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED,1] call ZFM_Mission_Set;
+				
+				// TODO: Remove after debug
+				_missionInstance = [_missionID] call ZFM_Mission_GetMissionByID;
+						
+				_numUnitsTotal = _missionInstance select 6;
+				_numUnitsKilled = _missionInstance select 7;
+				
+				if(_numUnitsKilled < _numUnitsTotal) then
+				{
+					[nil,nil,rTitleText,format["That bandit %1! Killed by %2 [%3 / %4]",_deathText,(name _killer),_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+				}
+				else
+				{
+					// All units are killed..
+					[nil,nil,rTitleText,format["All units were killed! [%3 / %4]",_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+				}
 			};
-		
-			
 		};
 	};
 };
@@ -475,6 +490,9 @@ ZFM_CreateUnitGroup ={
 	_spawnAt = _this select 3;
 	_missionID = _this select 4;
 	
+	diag_log(format["THE MISSION ID FROM PARAM IS %1",_missionID]);
+	
+	
 	_uArrayReturn = [];
 	
 	if(typeName _unitsArray =="ARRAY") then
@@ -501,10 +519,11 @@ ZFM_CreateUnitGroup ={
 					// Lets us find out which mission the unit is attached to.
 					_thisUnit setVariable ["ZFM_MISSION_ID",_missionID];
 					
-					diag_log(format["THIS UNIT VARIABLE %",_thisUnit getVariable["ZFM_MISSION_ID","AAAAAARGH NOTHIN"]]);
+					
+					diag_log(format["_missionID IS %1",_missionID]);
+					diag_log(format["THIS UNIT %1",_thisUnit]);
 					
 					_thisUnit addMPEventHandler["MPKilled",{
-						diag_log("AI was killed, mofo!");
 						[(_this select 0),(_this select 1)] call ZFM_Handle_MissionUnitKilled;
 					}];
 					
