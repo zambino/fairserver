@@ -92,7 +92,7 @@ ZFM_Handle_JIP = {
 		// Find out how many missions there are
 		_missionsCount = count ZFM_CURRENT_MISSIONS;
 
-		for [{_x =0},{_x <= _numberLootCrates},{_x = _x +1} ] do
+		for [{_x =0},{_x <= _missionsCount-1},{_x = _x +1} ] do
 		{
 			// Get the row..
 			_row = ZFM_CURRENT_MISSIONS select _x;
