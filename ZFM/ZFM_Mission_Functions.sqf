@@ -63,8 +63,13 @@ ZFM_Handle_MissionUnitKilled ={
 				}
 				else
 				{
+					diag_log(format["MISSIONID AS PASSED TO CONCLUDE CONCLUDE CONCLUDE %1",_missionID]);
+					
+					// Conclude the mission!
+					[_missionID] call ZFM_Mission_Conclude_Mission;
+					
 					// All units are killed..
-					[nil,nil,rTitleText,format["All units were killed! [%3 / %4]",_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+					[nil,nil,rTitleText,format["All units were killed! [%1 / %2]",_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
 				}
 			};
 		};
@@ -163,18 +168,9 @@ ZFM_AI_Get_View_Distance = {
 ZFM_DoBootStrap = {
 
     private["_checkAI","_outputMessage","_checkAI"];
-    
-	// Check to see if any AI is already set. 
-	
-	// Issue #5 - Raised by BetterDeadThanZed - Disable ZFM-skip until ZAI is released.
-	//_checkAI = [] call ZFM_CheckExistingAI;
-	
+    	
 	// Consistency with error or information logging.
 	_outputMessage = ZFM_Name + ZFM_Version;
-	
-	//if(!_checkAI) exitWith { diag_log(_outputMessage + "CheckExistingAI - No other AI is installed. Proceeding with initialization steps for ZFM") };	
-
-	diag_log(_outputMessage + "DoBootStrap - Adding Centers for AI to congregate around..");
 	
 	// Create the Centers for AI
 	ZFM_GROUP_EAST = createCenter east;
@@ -183,7 +179,6 @@ ZFM_DoBootStrap = {
 	ZFM_GROUP_RESISTANCE = createCenter resistance; // Vive Le Resistance!
 	
 	// unfriendly AI bandits
-	// TODO: SET TO 0 once debugging is completed :-)
 	EAST setFriend [WEST, 0];
 	EAST setFriend [RESISTANCE, 0];
 
@@ -556,7 +551,6 @@ ZFM_CreateCrashMarker ={
 	_markerText =_this select 2;
 	
 	// Create the marker
-	
 	_markerColor = "ColorWhite";
 	_markerSize = 150;
 

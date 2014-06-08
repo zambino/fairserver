@@ -53,21 +53,24 @@ call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
 ZFM_Includes_Loot_Functions = "\z\addons\dayz_server\ZFM\ZFM_LootHandler.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Loot_Functions;
 
- 
 /*
 *	ZFM_Includes_Loot_Config
 *	
 *	Configuration files for loot config..
 */
 ZFM_Includes_Loot_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Loot_Config.sqf";
-
-// We need to get access to these functions..
 call compile preprocessFileLineNumbers ZFM_Includes_Loot_Config;
 
+/*
+*	Main (Minimal) init for ZFM
+*/
 
-// Bootstrap the AI
+// Declared universally so that ALL AI are put under its spell, rather than one group.
 [] call ZFM_DoBootStrap;
 
-// Single call to start the mission scheduler..
+// Run the main mission handler -- this loops and waits for mission events to start/finish
 [] call ZFM_Mission_Handler_Start;
+
+// Handle JIP events for players joining after-the-fact so we can update their mission markers
+onPlayerConnected ZFM_Handle_JIP;
 
