@@ -8,7 +8,106 @@
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
  
-
+ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
+ 
+/*
+	ZFM_Mission_CountDead
+	
+	Counts the number of dead units from an array
+*/
+ZFM_Mission_CountDead ={
+	private["_unitsArray","_numberUnits","_numberDead","_thisUnit"];
+	
+	_unitsArray = _this select 0;
+	_numberDead = 0;
+	
+	if(typeName _unitsArray == "ARRAY") then
+	{
+		if(count _unitsArray >0) then
+		{
+			_numberUnits = count _unitsArray;
+		
+			for [{_x =0},{_x <= _numberUnits-1},{_x = _x +1} ] do
+			{
+				// Get the unit
+				_thisUnit = _unitsArray select _x;
+				
+				if(!(alive _thisUnit)) then
+				{
+					_numberDead = _numberDead + 1;
+				};
+			};
+			
+		};
+	};
+	
+	
+	_numberDead
+};
+ 
+ 
+ 
+ 
+ 
+ /*
+*	ZFM_Handle_MissionUnitKilled
+*
+*	Handles when an AI unit is killed.
+*/
+ZFM_Handle_MissionUnitKilled ={
+	private ["_unit","_killer","_missionID","_numberActualDead","_remainingUnits","_unitType","_deathText","_missionInstance","_numUnitsTotal","_numUnitsKilled"];
+	
+	_unit = _this select 0;
+	_killer = _this select 1;
+	
+	_outputText = "";
+	
+	if(typeName _unit == "OBJECT") then
+	{
+		_missionID = _unit getVariable["ZFM_MISSION_ID",[]];
+		
+		if(typeName _missionID != "ARRAY") then
+		{
+			_unitType = _unit getVariable["ZFM_UnitType",[]];
+			
+			if(typeName _unitType != "ARRAY") then
+			{
+				_deathText = ZFM_DeathPhrases call BIS_fnc_selectRandom;
+	
+				// Per-unit-killed humanity.
+				if(ZFM_HUMANITY_FOR_BANDIT_KILLS) then
+				{
+					[_killer] call ZFM_Alter_Humanity;
+				};
+				
+				// Adds 1 to the kill count
+				[_missionID,ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED,1] call ZFM_Mission_Set;
+				
+				// TODO: Remove after debug
+				_missionInstance = [_missionID] call ZFM_Mission_GetMissionByID;
+						
+				_numUnitsTotal = _missionInstance select 6;
+				_numUnitsKilled = [(_missionInstance select 5)] call ZFM_Mission_CountDead;
+				
+				if(_numUnitsKilled < _numUnitsTotal) then
+				{
+					[nil,nil,rTitleText,format["That bandit %1! Killed by %2 [%3 / %4]",_deathText,(name _killer),_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+				}
+				else
+				{
+					diag_log(format["MISSIONID AS PASSED TO CONCLUDE CONCLUDE CONCLUDE %1",_missionID]);
+					
+					// Conclude the mission!
+					[_missionID] call ZFM_Mission_Conclude_Mission;
+					
+					// All units are killed..
+					[nil,nil,rTitleText,format["All units were killed! [%1 / %2]",_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+				}
+			};
+		};
+	};
+};
  
  
  /*
@@ -61,7 +160,7 @@ ZFM_CreateAIGroup = {
 /*
 *	ZFM_AI_Get_View_Distance
 *
-*	Determines the unit#'s
+*	Determines the unit's view distance.
 */
 ZFM_AI_Get_View_Distance = {
 	private ["_difficulty","_viewRange"];
@@ -93,80 +192,6 @@ ZFM_AI_Get_View_Distance = {
 	
 };
 
-/*
-*	ZFM_AI_Find_Nearby_Cover
-*
-*	Used for any type. Will find nearby trees to hide in.
-*/
-ZFM_AI_Find_Nearby_Cover = {
-	private["_unit","_issuingUnit","_difficulty","_unitPosition","_viewRange","_nearbyTrees","_nearestTree","_nearestTreeFound","_objectName"];
-	
-	_unit = _this select 0;
-	_issuingUnit = _this select 1;
-	_difficulty = _this select 2;
-	
-	// Find out where the unit is.
-	_unitPosition = getPos _unit;
-		
-	// Array for nearest tree..
-	_nearestTree = [];
-
-	// How many trees are there? So far none, but when we search.. ? 
-	_nearbyTrees = 0;
-	
-	// Get the viewRange for the units.
-	_viewRange = [_difficulty] call ZFM_AI_Get_View_Distance;
-	
-	diag_log(format["View range: %1",_viewRange]);
-	
-	_nearestTreeFound = false;
-	{
-		if("" == typeOf _x) then
-		{
-			if(alive _x ) then 
-			{
-				_objectName = _x call DZE_getModelName;
-				
-				diag_log(format["objectName: %1",_objectName]);
-				
-				if(_objectName in DZE_trees) then
-				{
-					if(!_nearestTreeFound) then
-					{
-						// Add to an array.
-						_nearestTree set [(count _nearestTree),_x];
-						_nearestTreeFound = true;
-						diag_log("Found nearby tree..");
-					};
-					_nearbyTrees = _nearbyTrees + 1;
-				};
-			};
-		};
-	} forEach nearestObjects [getPos _unit,[],_viewRange];
-
-	if(_nearbyTrees > 3) then
-	{
-		// Tell the group
-		if(_difficulty == "HARD" || _difficulty == "WAR_MACHINE") then
-		{	
-			_unit groupChat "ZFS_ETC_FOUND -  Roger that. Found nearby tree cover.";
-			_unit sideChat "Roger that. Found nearby tree cover.";
-		};
-		
-		// Go to the tree!
-		_unit doMove (getPos _nearestTree); 
-		diag_log("Moving to..");
-	}
-	else
-	{
-		// Tell the group
-		if(_difficulty == "HARD" || _difficulty == "WAR_MACHINE") then
-		{	
-			_unit groupChat "ZFS_ETC_NOTFOUND - Negative! Cannot find tree cover."; 
-			_unit sideChat "Negative! Cannot find tree cover."; 
-		};
-	};
-};
 
 /*
 	ZFM_DoBootStrap
@@ -176,18 +201,9 @@ ZFM_AI_Find_Nearby_Cover = {
 ZFM_DoBootStrap = {
 
     private["_checkAI","_outputMessage","_checkAI"];
-    
-	// Check to see if any AI is already set. 
-	
-	// Issue #5 - Raised by BetterDeadThanZed - Disable ZFM-skip until ZAI is released.
-	//_checkAI = [] call ZFM_CheckExistingAI;
-	
+    	
 	// Consistency with error or information logging.
 	_outputMessage = ZFM_Name + ZFM_Version;
-	
-	//if(!_checkAI) exitWith { diag_log(_outputMessage + "CheckExistingAI - No other AI is installed. Proceeding with initialization steps for ZFM") };	
-
-	diag_log(_outputMessage + "DoBootStrap - Adding Centers for AI to congregate around..");
 	
 	// Create the Centers for AI
 	ZFM_GROUP_EAST = createCenter east;
@@ -196,23 +212,23 @@ ZFM_DoBootStrap = {
 	ZFM_GROUP_RESISTANCE = createCenter resistance; // Vive Le Resistance!
 	
 	// unfriendly AI bandits
-	// TODO: SET TO 0 once debugging is completed :-)
-	EAST setFriend [WEST, 1];
-	EAST setFriend [RESISTANCE, 1];
+	EAST setFriend [WEST, 0];
+	EAST setFriend [RESISTANCE, 0];
 
 	// Players
-	WEST setFriend [EAST, 1];
-	WEST setFriend [RESISTANCE, 1];
+	WEST setFriend [EAST, 0];
+	WEST setFriend [RESISTANCE, 0];
 
 	// friendly AI
-	RESISTANCE setFriend [EAST, 1];
-	RESISTANCE setFriend [WEST, 1];
+	RESISTANCE setFriend [EAST, 0];
+	RESISTANCE setFriend [WEST, 0];
 };
 
 /*
 *	ZFM_CheckExistingAI
 * 
 *	Check to see if existing AI systems are installed. 
+*	As of alpha release, disabled to prevent issues with DZAI/etc.
 */
 ZFM_CheckExistingAI = {
     private["_doExit","_outputMessage"];
@@ -349,21 +365,6 @@ ZFM_SetAISkills ={
 };
 
 /*
-	ZFM_Disable_Default_AI
-	
-	Disables default AI for debugging purposes.
-*/
-ZFM_Disable_Default_AI ={
-	private ["_unit"];
-	
-	_unit = _this select 0;
-	
-	_unit disableAI "TARGET";
-	_unit disableAI "AUTOTARGET";
-	_unit disableAI "FSM";
-};
-
-/*
 *	ZFM_CreateUnit
 *
 *	Create a ZFM_typed unit.
@@ -480,9 +481,6 @@ ZFM_CreateUnit ={
 	// Spawn the unit..
 	_unit = [_aiGroup,_skin,_spawnAt] call ZFM_InitUnitSpawn;
 	
-	// "I was never given a name.."
-	[_unit] call ZFM_GiveUnitName;
-	
 	// Ad the relevant equipment from the EquipArray
 	[_unit,_equipArray] call ZFM_EquipAIFromArray;
 	
@@ -520,6 +518,9 @@ ZFM_CreateUnitGroup ={
 	_spawnAt = _this select 3;
 	_missionID = _this select 4;
 	
+	diag_log(format["THE MISSION ID FROM PARAM IS %1",_missionID]);
+	
+	
 	_uArrayReturn = [];
 	
 	if(typeName _unitsArray =="ARRAY") then
@@ -545,6 +546,10 @@ ZFM_CreateUnitGroup ={
 				
 					// Lets us find out which mission the unit is attached to.
 					_thisUnit setVariable ["ZFM_MISSION_ID",_missionID];
+					
+					
+					diag_log(format["_missionID IS %1",_missionID]);
+					diag_log(format["THIS UNIT %1",_thisUnit]);
 					
 					_thisUnit addMPEventHandler["MPKilled",{
 						[(_this select 0),(_this select 1)] call ZFM_Handle_MissionUnitKilled;
@@ -572,14 +577,13 @@ ZFM_CreateUnitGroup ={
 	Creates a marker for a crash
 */
 ZFM_CreateCrashMarker ={
-	private ["_location","_difficulty","_markerText","_markerCreated","_markerColor","_markerSize","_markerType"];
+	private ["_location","_difficulty","_markerText","_textMarkerName","_markerCreatedName","_markerCreated","_markerColor","_markerSize","_markerType"];
 	
 	_location = _this select 0;
 	_difficulty = _this select 1;
 	_markerText =_this select 2;
 	
 	// Create the marker
-	
 	_markerColor = "ColorWhite";
 	_markerSize = 150;
 
@@ -610,19 +614,24 @@ ZFM_CreateCrashMarker ={
 		};
 	};
 
-	_markerCreated = createMarker[format["%1",(round random 999999)],_location];
+	_markerCreatedName = format["ZFM%1",(round random 999999)];
+		
+	_markerCreated = createMarker[_markerCreated,_location];
 	_markerCreated setMarkerShape "ELLIPSE";
 	_markerCreated setMarkerBrush "Solid";
 	_markerCreated setMarkerSize [_markerSize,_markerSize];
 	_markerCreated setMarkerColor _markerColor;
 	
 	// Bugfix: Add marker text (requires another marker)
-	_textMarkerCreated = createMarker[format["%1",(round random 999999)],_location];
+	
+	_textMarkerName = format["ZFM%1",(round random 999999)];
+	
+	_textMarkerCreated = createMarker[_textMarkerName,_location];
 	_textMarkerCreated setMarkerColor "ColorBlack";
 	_textMarkerCreated setMarkerType "Warning";
 	_textMarkerCreated setMarkerText format["%1 (%2)",_markerText,_difficulty];
 	
-	[_markerCreated,_textMarkerCreated]
+	[_markerCreatedName,_textMarkerName,[_markerCreated,_textMarkerCreated]]
 };
 
 /*
@@ -744,7 +753,7 @@ ZFM_GetVehicleWreckClass ={
 };
 
 /*
-	ZFM_CreateCrashVehicle_Sub
+	ZFM_CreateCrashVehicle_NoWater
 	
 	We want to make sure that if there's a crash in water, we re-crash it on land
 */
@@ -950,31 +959,3 @@ ZFM_Alter_Humanity ={
 		};
 	};
 };
-
-
-
-/*
-ZFM_UnitGroup_GetInVehicle_Goto ={
-	private ["_group","_vehicle","_gotoLocation","_x"];
-	
-	_group = _this select 0; // Side group
-	_vehicle = _this select 1;
-	_gotoLocation = _this select 2;
-	
-	if(typeName _unitGroup == "ARRAY") then
-	{
-		_group setFormation "DIAMOND"; // Just for a laugh
-	
-		// Firstly tell the group to get into the car..
-		_gotoCarWP = _group addWaypoint[position _vehicle, 0];
-		_gotoCarWP setWaypointType "GETIN";
-		
-		// Wait for that..
-		sleep 50;
-		
-		// Now move to the _gotoLocation
-		_gotoCarWP setWaypointType "MOVE";
-		_gotoCarWP setWaypointPosition [_gotoLocation,0];
-	};
-};
-*/

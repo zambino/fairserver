@@ -16,20 +16,61 @@ if(!isServer) exitWith { diag_log("ZFM: This shouldn't be run by anything other 
 */
 ZFSS_Installed = true;
 ZFM_Name = "Zambino FairMission System [ZFM] ";
-ZFM_Version = "v0.3.2";
+ZFM_Version = "v0.3.5";
 
-diag_log(format["%1 %2 - Waiting for INITIALIZATION..",ZFM_Name,ZFM_Version]);
+diag_log(format["%1 %2 - ZFM_Initialize.sqf - Waiting for server to initialize.",ZFM_Name,ZFM_Version]);
 waitUntil{initialized};
 
 /*
 	Globals used to ensure that things can function
 */
-ZFM_Includes_Functions_File = "\z\addons\dayz_server\ZFM\ZFM_Functions.sqf";
-ZFM_Includes_Loot_File = "\z\addons\dayz_server\ZFM\ZFM_LootHandler.sqf";
-ZFM_Includes_Missions_File = "\z\addons\dayz_server\ZFM\ZFM_Mission.sqf";
-ZFM_Includes_Admin_file = "\z\addons\dayz_server\ZFM\ZFM_Admin.sqf";
 
-[] execVM ZFM_Includes_Functions_File;
-[] execVM ZFM_Includes_Loot_File;
-[] execVM ZFM_Includes_Missions_File;
-[] execVM ZFM_Includes_Admin_File;
+ZFM_Includes_Mission = "\z\addons\dayz_server\ZFM\ZFM_Mission.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Mission;
+
+/*
+*	ZFM_Includes_Mission_Config
+*	
+*	Contains the configuration for units and the general runtime configuration of ZFM missions.
+*/ 
+ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
+
+/*
+*	ZFM_Includes_Mission_Functions
+*	
+*	Contains functions for generating and supporting missions
+*/
+ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Functions.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
+
+
+/*
+*	ZFM_Includes_Mission_Functions
+*	
+*	Contains functions for handling loot
+*/
+ZFM_Includes_Loot_Functions = "\z\addons\dayz_server\ZFM\ZFM_LootHandler.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Loot_Functions;
+
+/*
+*	ZFM_Includes_Loot_Config
+*	
+*	Configuration files for loot config..
+*/
+ZFM_Includes_Loot_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Loot_Config.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Loot_Config;
+
+/*
+*	Main (Minimal) init for ZFM
+*/
+
+// Declared universally so that ALL AI are put under its spell, rather than one group.
+[] call ZFM_DoBootStrap;
+
+// Run the main mission handler -- this loops and waits for mission events to start/finish
+[] call ZFM_Mission_Handler_Start;
+
+// Handle JIP events for players joining after-the-fact so we can update their mission markers
+onPlayerConnected ZFM_Handle_JIP;
+
