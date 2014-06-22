@@ -104,6 +104,9 @@ ZFM_Handle_JIP = {
 				_markerPos = _row select 13;
 				_difficulty = _row select 14;
 				
+				diag_log(format["JIP MARKERS %1 AND %2 AND %3",_crashVehicle,_markerPos,_difficulty]);
+				
+				
 				// Add the marker pos for them.
 				[_markerPos,_difficulty,format["Crashed %1",_crashVehicle]] call ZFM_CreateCrashMarker;
 			};
@@ -126,15 +129,10 @@ ZFM_Mission_Conclude_Mission ={
 		if(count _missionArray >0) then
 		{
 			_objects = _missionArray select 8;
-			_markers = _missionArray select 11;
-			
-			diag_log(format["MISSION MARKERS %1",_markers]);
-			
+			_markers = _missionArray select 10;
+
 			// Remove the mission marker!
 			[_markers] call ZFM_Mission_Remove_Mission_Marker;
-			
-			// Clear all of the objects after a moment.
-			[_objects] call ZFM_Mission_Remove_Mission_Objects;
 		};
 	};
 };
@@ -657,9 +655,11 @@ ZFM_ExecuteCrashMission ={
 			*	14 = Difficulty
 			*   15 = Status
 			*/
-		
+			
 		_objects = _lootCrates + _accoutrements;
-		[ZFM_MISSION_TYPE_CRASH,_title,"NOT_IMPLEMENTED","NOT_IMPLEMENTED",(_actCrashGroup select 1),(count (_actCrashGroup select 1)),0,_objects,[],[],(_actCrashVehicle select 0),_crashVehicle,_crashPos,_difficulty]
+		
+		// Return the missionArray excluding ID, which appended by the handler..
+		[ZFM_MISSION_TYPE_CRASH,_title,"NOT_IMPLEMENTED","NOT_IMPLEMENTED",(_actCrashGroup select 1),(count (_actCrashGroup select 1)),0,_objects,[],(_actCrashVehicle select 1),(_actCrashVehicle select 2),_crashVehicle,_crashPos,_difficulty]
 	};
 	
 };

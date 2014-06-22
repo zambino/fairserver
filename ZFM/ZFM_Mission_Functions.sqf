@@ -46,10 +46,6 @@ ZFM_Mission_CountDead ={
 	_numberDead
 };
  
- 
- 
- 
- 
  /*
 *	ZFM_Handle_MissionUnitKilled
 *
@@ -616,20 +612,20 @@ ZFM_CreateCrashMarker ={
 
 	_markerCreatedName = format["ZFM%1",(round random 999999)];
 		
-	_markerCreated = createMarker[_markerCreated,_location];
-	_markerCreated setMarkerShape "ELLIPSE";
-	_markerCreated setMarkerBrush "Solid";
-	_markerCreated setMarkerSize [_markerSize,_markerSize];
-	_markerCreated setMarkerColor _markerColor;
+	_markerCreated = createMarker[_markerCreatedName,_location];
+	_markerCreatedName setMarkerShape "ELLIPSE";
+	_markerCreatedName setMarkerBrush "Solid";
+	_markerCreatedName setMarkerSize [_markerSize,_markerSize];
+	_markerCreatedName setMarkerColor _markerColor;
 	
 	// Bugfix: Add marker text (requires another marker)
 	
 	_textMarkerName = format["ZFM%1",(round random 999999)];
 	
 	_textMarkerCreated = createMarker[_textMarkerName,_location];
-	_textMarkerCreated setMarkerColor "ColorBlack";
-	_textMarkerCreated setMarkerType "Warning";
-	_textMarkerCreated setMarkerText format["%1 (%2)",_markerText,_difficulty];
+	_textMarkerName setMarkerColor "ColorBlack";
+	_textMarkerName setMarkerType "Warning";
+	_textMarkerName setMarkerText format["%1 (%2)",_markerText,_difficulty];
 	
 	[_markerCreatedName,_textMarkerName,[_markerCreated,_textMarkerCreated]]
 };
