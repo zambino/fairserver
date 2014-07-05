@@ -9,6 +9,28 @@
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
 
+ /*
+ *	 ZFM_Create_Loot_Array
+ *
+ *	 Changed approach to generating loot. Rather than do it the ass-backward way I did it originally,
+ *	 why not just have arrays put stuff into an object. Easy peasy, huh?
+ */
+ 
+ /*
+ *	ZFM_Log
+ *
+ *	Logs an error message in the style we've all come to love from ZFM, baby.
+ */
+ ZFM_Log ={
+	private["_errorMessage","_nameSpace"];
+	_nameSpace = _this select 0;
+	_errorMessage = _this select 1;
+
+	// Log it.. "ZFM vN.N. - MyNameSpace - Error.."
+	diag_log(format["%1 %2 - %3  - %4",ZFM_NAME,ZFM_VERSION,_nameSpace,_errorMessage]);
+ };
+ 
+
 /*
 *	ZFM_Create_Loot_Item
 *	

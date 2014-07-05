@@ -92,7 +92,7 @@ ZFM_Handle_JIP = {
 		// Find out how many missions there are
 		_missionsCount = count ZFM_CURRENT_MISSIONS;
 
-		for [{_x =0},{_x <= _missionsCount-1},{_x = _x +1} ] do
+		for [{_x =0},{_x <= _missionsCount},{_x = _x +1} ] do
 		{
 			// Get the row..
 			_row = ZFM_CURRENT_MISSIONS select _x;
@@ -104,6 +104,9 @@ ZFM_Handle_JIP = {
 				_markerPos = _row select 13;
 				_difficulty = _row select 14;
 				
+				diag_log(format["JIP MARKERS %1 AND %2 AND %3",_crashVehicle,_markerPos,_difficulty]);
+				
+				
 				// Add the marker pos for them.
 				[_markerPos,_difficulty,format["Crashed %1",_crashVehicle]] call ZFM_CreateCrashMarker;
 			};
@@ -112,7 +115,7 @@ ZFM_Handle_JIP = {
 };
 
 ZFM_Mission_Conclude_Mission ={
-	private["_missionID","_missionArray"];
+	private["_missionID","_missionArray","_markers","_objects"];
 	_missionID = _this select 0;
 	
 	_missionArray = [_missionID] call ZFM_Mission_GetMissionByID;
@@ -125,70 +128,59 @@ ZFM_Mission_Conclude_Mission ={
 		
 		if(count _missionArray >0) then
 		{
+			_objects = _missionArray select 8;
+			_markers = _missionArray select 10;
+
 			// Remove the mission marker!
-			[_missionID] call ZFM_Mission_Remove_Mission_Marker;
-			
-			// TODO: Do a post-mission autopsy ;-)
-			
-			// Clear all of the objects after a moment.
-			[_missionID] call ZFM_Mission_Remove_Mission_Objects;
+			[_markers] call ZFM_Mission_Remove_Mission_Marker;
 		};
 	};
 };
 
 
 ZFM_Mission_Remove_Mission_Objects = {
-	private ["_missionID"];
-	_missionArray = [_missionID] call ZFM_Mission_GetMissionByID;
-	diag_log(format["Mission CONCLUDE MISSIONARRAY %1",_missionArray]);
-	if(typeName _missionArray == "ARRAY") then
+	private ["_missionObjects"];
+	
+	_missionObjects = _this select 0;
+	
+	diag_log(format["ZFM_MISSION_REMOVE_MISSION_OBJECTS params %1",_this]);
+	
+	if(typeName _missionObjects == "ARRAY") then
 	{
-		if(count _missionArray >0) then
+		diag_log(format["ZFM_MISSION_REMOVE_MISSION_OBJECTS COUNT COUNT COUNT %1",count _missionObjects]);
+	
+		if(count _missionObjects > 0) then
 		{
-			_missionObjects = _missionArray select 8;
-			diag_log(format["Mission CONCLUDE MISSIONOBJECTS %1",_missionObjects]);
-			if(typeName _missionObjects == "ARRAY") then
-			{
-				if(count _missionObjects > 0) then
 				{
-						{
-							diag_log(format["OBJECT %1",_x]);
-							// Is it an actual object?
-							if(typeName _x == "OBJECT") then
-							{
-								deleteVehicle _x; // Get rid of it.
-							};
-						} forEach _missionObjects;
-				};	
-			};
-		};
+					diag_log(format["OBJECT %1",_x]);
+					// Is it an actual object?
+					if(typeName _x == "OBJECT") then
+					{
+						deleteVehicle _x; // Get rid of it.
+					};
+				} forEach _missionObjects;
+		};	
 	};
 	
 };
 
-
-
-
 ZFM_Mission_Remove_Mission_Marker ={
 	private["_missionID","_missionArray","_missionMarkers","_missionMarkerOne","_missionMarkerTwo"];
 	
-	_missionID = _this select 0;
-	_missionArray = [_missionID] call ZFM_Mission_GetMissionByID;
+	_missionMarkers = _this select 0;
 	
-	if(typeName _missionArray == "ARRAY") then
-	{
-		_missionMarkers = _missionArray select 11;
-		
+	diag_log(format["ZFM_MISSION_REMOVE_MISSION_MARKER params %1",_this]);
+
 		if(typeName _missionMarkers == "ARRAY") then
 		{
+			diag_log(format["ZFM_MISSION_REMOVE_MISSION_MARKER MARKERS %1",_missionMarkers]);
+		
 			_missionMarkerOne = _missionMarkers select 0;
 			_missionMarkerTwo = _missionMarkers select 1;
 			
 			deleteMarker _missionMarkerOne;
 			deleteMarker _missionMarkerTwo;
 		};	
-		
-	};
 };
 
 /*
@@ -264,18 +256,25 @@ ZFM_Mission_Can_Add = {
 *	Adds a pre-generated mission array to ZFM_CURRENT_MISSIONS.
 */
 ZFM_Mission_Add ={
-	private ["_missionArray","_missionType"];
+	private ["_missionArray","_missionType","_thisOffset"];
 	
 	_missionArray = _this select 0;
+	
+	diag_log(format["ZFM_MISSION_ADD NULL CHECK %1",_this]);
 	
 	if(typeName ZFM_CURRENT_MISSIONS == "ARRAY" && typeName _missionArray == "ARRAY") then
 	{
 		// Get the mission type
 		_missionType = _missionArray select 1;
 		_canAdd = [] call ZFM_Mission_Can_Add;
-	
+		
+		diag_log(format["ZFM_MISSION_ADD NULL CHECK - CAN ADD %1, MISSION TYPE",_canAdd,_missionType]);
+		
 		if(_canAdd) then
 		{
+			diag_log(format["ZFM_CURRENT_MISSIONS - %1 AND %2",ZFM_CURRENT_MISSIONS,count ZFM_CURRENT_MISSIONS]);
+			
+		
 			// Todo: Count by mission type
 			ZFM_CURRENT_MISSIONS set[(count ZFM_CURRENT_MISSIONS),[(count ZFM_CURRENT_MISSIONS)] + _missionArray]
 		};
@@ -358,7 +357,7 @@ ZFM_Mission_GetMissionByID ={
 
 */
 ZFM_Mission_Set ={
-	private["_missionID","_missionVariableType","_missionVariable","_missionArray","_currentUnits"];
+	private["_missionID","_missionVariableType","_missionVariable","_missionArray","_killers","_killerWeapon","_currentUnits"];
 	
 	_missionID = _this select 0;
 	_missionVariableType = _this select 1;
@@ -404,7 +403,7 @@ ZFM_Mission_Set ={
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_UNITS_TOTAL: {
 			diag_log("Units fired");
-			_missionArray set[6,(_missionArray select 6) +1];
+			_missionArray set[6,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED: {
@@ -437,11 +436,9 @@ ZFM_Mission_Set ={
 			ZFM_CURRENT_MISSIONS set[_missionID,_missionArray];
 		};		
 		case ZFM_MISSION_VARIABLE_MISSION_PARTICIPANT_KILLS: {
-			diag_log("Kills fired");
 			_unit = _missionVariable select 0;
 			_killer = _missionVariable select 1;
-		
-			_missionArray set[10,(_missionArray select 10)+[_unit,_killer]];
+			_missionArray set[10,(_missionArray select 10)+[_unit,_killer,currentWeapon _killer]];
 			ZFM_CURRENT_MISSIONS set[_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_MARKERS: {
@@ -451,15 +448,13 @@ ZFM_Mission_Set ={
 		};	
 		
 	};
-	
-
 };
 
 /*
 	ZFM_Mission_Generate_New
 	
 	Houses the mission generation function (puts ll the ZFM_Mission elements into play.
-	At the moment, just a wrapper funtion for ZFM_GenerateMission..
+	At the moment, just a wrapper function for ZFM_GenerateMission..
 */
 ZFM_Mission_Generate_New ={
 	private["_missionArray","_title","_units","_unitsTotal","_newMission"];
@@ -532,9 +527,6 @@ ZFM_Mission_Handler_Start ={
 			
 			// Get the rounded amount 
 			_minutesToWait = (ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN + (round random _minutesRandSeed))*60;
-			
-			//Debugging
-			_minutesToWait = 60;
 			
 			diag_log(format["WAITING %1 SECONDS",_minutesToWait]);
 			
@@ -658,10 +650,12 @@ ZFM_ExecuteCrashMission ={
 			*	13 = Crash location
 			*	14 = Difficulty
 			*   15 = Status
-			*/
-		
+		*/
+			
 		_objects = _lootCrates + _accoutrements;
-		[ZFM_MISSION_TYPE_CRASH,_title,"NOT_IMPLEMENTED","NOT_IMPLEMENTED",(_actCrashGroup select 1),(count (_actCrashGroup select 1)),0,_objects,[],[],(_actCrashVehicle select 0),_crashVehicle,_crashPos,_difficulty]
+		
+		// Return the missionArray excluding ID, which appended by the handler..
+		[ZFM_MISSION_TYPE_CRASH,_title,"NOT_IMPLEMENTED","NOT_IMPLEMENTED",(_actCrashGroup select 1),(count (_actCrashGroup select 1)),0,_objects,[],(_actCrashVehicle select 1),(_actCrashVehicle select 2),_crashVehicle,_crashPos,_difficulty]
 	};
 	
 };
@@ -765,7 +759,7 @@ ZFM_GenerateMissionTitle ={
 					_securedBy = ZFM_BanditGroup_Names_NL call BIS_fnc_selectRandom;
 				
 					// Fixed so that the mission handling logic calls rTITLETEXT
-					_crashText = format["Een %1 %2 %3 %4. %5 heeft der site aangegrepen.",_vehicleName,_onTheWayTo,_onTheWayToPlace,_deathType,_securedBy];
+					_crashText = format["Een %1 %2 %3 %4. %5 hebben der site aangegrepen.",_vehicleName,_onTheWayTo,_onTheWayToPlace,_deathType,_securedBy];
 				};
 				
 			};

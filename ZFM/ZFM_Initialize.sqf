@@ -61,16 +61,40 @@ call compile preprocessFileLineNumbers ZFM_Includes_Loot_Functions;
 ZFM_Includes_Loot_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Loot_Config.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Loot_Config;
 
+
+/*
+*	ZFM_Includes_Accoutrements
+*	
+*	Files for creating accoutrements
+*/
+ZFM_Includes_Accoutrements = "\z\addons\dayz_server\ZFM\ZFM_Accoutrements.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Accoutrements;
+
+
+/*
+	Debugging - remove
+*/
+
+[] call ZFM_Debug_Create_Layout;
+
+
+
+
 /*
 *	Main (Minimal) init for ZFM
 */
 
 // Declared universally so that ALL AI are put under its spell, rather than one group.
-[] call ZFM_DoBootStrap;
+
+// DEBUGGING - Uncomment to enable BootStrap
+// DEBUGGING - Uncomment to enable BootStrap
+// DEBUGGING - Uncomment to enable BootStrap
+// DEBUGGING - Uncomment to enable BootStrap
+//[] call ZFM_DoBootStrap;
 
 // Run the main mission handler -- this loops and waits for mission events to start/finish
-[] call ZFM_Mission_Handler_Start;
+//[] call ZFM_Mission_Handler_Start;
 
 // Handle JIP events for players joining after-the-fact so we can update their mission markers
-onPlayerConnected ZFM_Handle_JIP;
+//onPlayerConnected ZFM_Handle_JIP;
 

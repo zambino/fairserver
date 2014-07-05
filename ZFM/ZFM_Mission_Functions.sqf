@@ -11,14 +11,51 @@
 ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
  
+/*
+	ZFM_Mission_CountDead
+	
+	Counts the number of dead units from an array
+*/
+ZFM_Mission_CountDead ={
+	private["_unitsArray","_numberUnits","_numberDead","_thisUnit"];
+	
+	_unitsArray = _this select 0;
+	_numberDead = 0;
+	
+	if(typeName _unitsArray == "ARRAY") then
+	{
+		if(count _unitsArray >0) then
+		{
+			_numberUnits = count _unitsArray;
+		
+			for [{_x =0},{_x <= _numberUnits-1},{_x = _x +1} ] do
+			{
+				// Get the unit
+				_thisUnit = _unitsArray select _x;
+				
+				if(!(alive _thisUnit)) then
+				{
+					_numberDead = _numberDead + 1;
+				};
+			};
+			
+		};
+	};
+	
+	
+	_numberDead
+};
+ 
+  
  
  /*
+ 
 *	ZFM_Handle_MissionUnitKilled
 *
 *	Handles when an AI unit is killed.
 */
 ZFM_Handle_MissionUnitKilled ={
-	private ["_unit","_killer","_missionID","_remainingUnits","_unitType","_deathText","_missionInstance","_numUnitsTotal","_numUnitsKilled"];
+	private ["_unit","_killer","_missionID","_numberActualDead","_killerWeapon","_remainingUnits","_unitType","_deathText","_missionInstance","_numUnitsTotal","_numUnitsKilled"];
 	
 	_unit = _this select 0;
 	_killer = _this select 1;
@@ -29,17 +66,14 @@ ZFM_Handle_MissionUnitKilled ={
 	{
 		_missionID = _unit getVariable["ZFM_MISSION_ID",[]];
 		
-		diag_log(format["ZFM_MISSION_ID %1",_missionID]);
-		
 		if(typeName _missionID != "ARRAY") then
 		{
 			_unitType = _unit getVariable["ZFM_UnitType",[]];
 			
-			diag_log(format["_unitType %1",_unitType]);
-			
 			if(typeName _unitType != "ARRAY") then
 			{
-				diag_log(format["_unitType %1 CHECK PASSED",_unitType]);
+			
+				// A little fun, says "That bandit croaked it.." etc. 
 				_deathText = ZFM_DeathPhrases call BIS_fnc_selectRandom;
 	
 				// Per-unit-killed humanity.
@@ -48,14 +82,20 @@ ZFM_Handle_MissionUnitKilled ={
 					[_killer] call ZFM_Alter_Humanity;
 				};
 				
-				// Adds 1 to the kill count
-				[_missionID,ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED,1] call ZFM_Mission_Set;
-				
 				// TODO: Remove after debug
 				_missionInstance = [_missionID] call ZFM_Mission_GetMissionByID;
-						
+				
+				// Used to see total units. This is the total units ZFM determines before they spawn. Not based on the number of alive when mission is available. 
 				_numUnitsTotal = _missionInstance select 6;
-				_numUnitsKilled = _missionInstance select 7;
+				
+				// Used to prevent any kill-skips. 
+				_numUnitsKilled = [(_missionInstance select 5)] call ZFM_Mission_CountDead;
+
+				// Sets the number dead based on the info from the missionArray
+				[_missionID,ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED,_numUnitsKilled] call ZFM_Mission_Set;
+				
+				// Set who killed what, with what. (person's current weapon is determined by ZFM_Mission_Set!
+				[_missionID,ZFM_MISSION_VARIABLE_MISSION_PARTICIPANT_KILLS,[_unit,_killer]] call ZFM_Mission_Set;
 				
 				if(_numUnitsKilled < _numUnitsTotal) then
 				{
@@ -486,8 +526,6 @@ ZFM_CreateUnitGroup ={
 	_missionID = _this select 4;
 	
 	diag_log(format["THE MISSION ID FROM PARAM IS %1",_missionID]);
-	
-	
 	_uArrayReturn = [];
 	
 	if(typeName _unitsArray =="ARRAY") then
@@ -544,7 +582,7 @@ ZFM_CreateUnitGroup ={
 	Creates a marker for a crash
 */
 ZFM_CreateCrashMarker ={
-	private ["_location","_difficulty","_markerText","_markerCreated","_markerColor","_markerSize","_markerType"];
+	private ["_location","_difficulty","_markerText","_textMarkerName","_markerCreatedName","_markerCreated","_markerColor","_markerSize","_markerType"];
 	
 	_location = _this select 0;
 	_difficulty = _this select 1;
@@ -581,19 +619,24 @@ ZFM_CreateCrashMarker ={
 		};
 	};
 
-	_markerCreated = createMarker[format["%1",(round random 999999)],_location];
-	_markerCreated setMarkerShape "ELLIPSE";
-	_markerCreated setMarkerBrush "Solid";
-	_markerCreated setMarkerSize [_markerSize,_markerSize];
-	_markerCreated setMarkerColor _markerColor;
+	_markerCreatedName = format["ZFM%1",(round random 999999)];
+		
+	_markerCreated = createMarker[_markerCreatedName,_location];
+	_markerCreatedName setMarkerShape "ELLIPSE";
+	_markerCreatedName setMarkerBrush "Solid";
+	_markerCreatedName setMarkerSize [_markerSize,_markerSize];
+	_markerCreatedName setMarkerColor _markerColor;
 	
 	// Bugfix: Add marker text (requires another marker)
-	_textMarkerCreated = createMarker[format["%1",(round random 999999)],_location];
-	_textMarkerCreated setMarkerColor "ColorBlack";
-	_textMarkerCreated setMarkerType "Warning";
-	_textMarkerCreated setMarkerText format["%1 (%2)",_markerText,_difficulty];
 	
-	[_markerCreated,_textMarkerCreated]
+	_textMarkerName = format["ZFM%1",(round random 999999)];
+	
+	_textMarkerCreated = createMarker[_textMarkerName,_location];
+	_textMarkerName setMarkerColor "ColorBlack";
+	_textMarkerName setMarkerType "Warning";
+	_textMarkerName setMarkerText format["%1 (%2)",_markerText,_difficulty];
+	
+	[_markerCreatedName,_textMarkerName,[_markerCreated,_textMarkerCreated]]
 };
 
 /*
