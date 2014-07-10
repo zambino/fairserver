@@ -11,7 +11,6 @@ This is a step-by-step development of a one-size-fits all solution for someone r
 ZFM which is the Zambino FairMission System, and ZFSS which is the client-side files for ZFM. It was created as the 
 next step in the mission systems, and to provide some variability in content. 
 
-As of 24/05/2014 - release of 0.4.0 is due 24 or 25 May.
 
 At the moment, ZFM has the following features:
 * Probability-based loot
