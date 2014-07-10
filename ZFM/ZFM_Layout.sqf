@@ -100,6 +100,15 @@ ZFM_Layouts_Crap_To_Clear =[
 	"str habr.p3d"
 ];
   
+  
+/*
+*	Config entities for layouts.
+*/ 
+ZFM_LAYOUT_OBJECT_UNIT_CLASS = "Lx101010";  
+ZFM_LAYOUT_OBJECT_UNIT_GROUP = "Lx101011";  
+ZFM_LAYOUT_OBJECT_LOOT = "Lx101012";  
+  
+    
 ZFM_DZE_getModelName = {
 	_objInfo = toArray(str(_this));
 	_lenInfo = count _objInfo - 2;
@@ -149,7 +158,6 @@ ZFM_Layouts_Class_Get_SuperClass = {
 	
 	
 }; 
- 
  
 /*
 *	ZFM_Layout_Create_Object

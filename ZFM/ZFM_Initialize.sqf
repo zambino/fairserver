@@ -63,21 +63,24 @@ call compile preprocessFileLineNumbers ZFM_Includes_Loot_Config;
 
 
 /*
-*	ZFM_Includes_Accoutrements
+*	ZFM_Includes_Layout
 *	
 *	Files for creating accoutrements
 */
-ZFM_Includes_Accoutrements = "\z\addons\dayz_server\ZFM\ZFM_Accoutrements.sqf";
-call compile preprocessFileLineNumbers ZFM_Includes_Accoutrements;
+ZFM_Includes_Loot = "\z\addons\dayz_server\ZFM\ZFM_Loot.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Loot;
 
 
 /*
 	Debugging - remove
 */
 
-[] call ZFM_Debug_Create_Layout;
-
-
+ZFM_Loot_To_Add =[
+	["PK",5],
+	["TK_Assault_Pack_EP1",5]
+ ];
+ 
+ ["CZBasicWeapons_EP1",[4600,10160,0],ZFM_Loot_To_Add] call ZFM_Loot_Create_Loot_Object;
 
 
 /*

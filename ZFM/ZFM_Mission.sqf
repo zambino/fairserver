@@ -83,7 +83,7 @@ ZFM_DEFAULT_LANGUAGE = "EN";
 /*
 *	ZFM_Handle_JIP
 *
-*	Handles the Join In Progress - updates markers for joining players
+*	Handles the Join In Progress - updates mission markers for joining players.
 */
 ZFM_Handle_JIP = {
 
@@ -105,7 +105,6 @@ ZFM_Handle_JIP = {
 				_difficulty = _row select 14;
 				
 				diag_log(format["JIP MARKERS %1 AND %2 AND %3",_crashVehicle,_markerPos,_difficulty]);
-				
 				
 				// Add the marker pos for them.
 				[_markerPos,_difficulty,format["Crashed %1",_crashVehicle]] call ZFM_CreateCrashMarker;
@@ -137,6 +136,9 @@ ZFM_Mission_Conclude_Mission ={
 	};
 };
 
+/*
+
+*/
 
 ZFM_Mission_Remove_Mission_Objects = {
 	private ["_missionObjects"];
@@ -164,6 +166,11 @@ ZFM_Mission_Remove_Mission_Objects = {
 	
 };
 
+/*
+*	ZFM_Mission_Remove_Mission_Marker
+*
+*	Removes the mission marker from the mission stack.
+*/
 ZFM_Mission_Remove_Mission_Marker ={
 	private["_missionID","_missionArray","_missionMarkers","_missionMarkerOne","_missionMarkerTwo"];
 	
@@ -210,27 +217,6 @@ ZFM_Mission_Free ={
 	};
 
 };
-
-/*
-ZFM_Mission_Get_Missions_ByType ={
-	private["_missionType"];
-	
-	// Two distinct types as we want to make sure it's an array before we count it, to stop errors.
-	if(typeName ZFM_CURRENT_MISSION != "ARRAY") exitWith{};
-	if(count ZFM_CURRENT_MISSION == 0) exitWith{};
-	
-	if(count ZFM_CURRENT_MISSION ==1) then
-	{
-	
-	
-	}
-	else
-	{
-	
-	};
-	
-	
-};*/
 
 ZFM_Mission_Can_Add = {
 	private["_currentMissions"];
@@ -593,8 +579,6 @@ ZFM_ExecuteCrashMission ={
 		{
 			_isProbabilityBased = true;
 		};
-		
-		diag_log(format["%1",_missionGenArray]);
 		
 		// TODO: Replace with matrix-based method
 		_accoutrements = [_crashPos,_difficulty] call ZFM_CreateCrash_Accoutrements;
