@@ -16,7 +16,7 @@ if(!isServer) exitWith { diag_log("ZFM: This shouldn't be run by anything other 
 */
 ZFSS_Installed = true;
 ZFM_Name = "Zambino FairMission System [ZFM] ";
-ZFM_Version = "v0.3.5";
+ZFM_Version = "v0.4.0";
 
 diag_log(format["%1 %2 - ZFM_Initialize.sqf - Waiting for server to initialize.",ZFM_Name,ZFM_Version]);
 waitUntil{initialized};
@@ -45,13 +45,6 @@ ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Function
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
 
 
-/*
-*	ZFM_Includes_Mission_Functions
-*	
-*	Contains functions for handling loot
-*/
-ZFM_Includes_Loot_Functions = "\z\addons\dayz_server\ZFM\ZFM_LootHandler.sqf";
-call compile preprocessFileLineNumbers ZFM_Includes_Loot_Functions;
 
 /*
 *	ZFM_Includes_Loot_Config
@@ -63,25 +56,20 @@ call compile preprocessFileLineNumbers ZFM_Includes_Loot_Config;
 
 
 /*
-*	ZFM_Includes_Layout
+*	ZFM_Includes_Loot
 *	
-*	Files for creating accoutrements
+*	Files 
 */
 ZFM_Includes_Loot = "\z\addons\dayz_server\ZFM\ZFM_Loot.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Loot;
-
 
 /*
 	Debugging - remove
 */
 
-ZFM_Loot_To_Add =[
-	["PK",5],
-	["TK_Assault_Pack_EP1",5]
- ];
- 
- ["CZBasicWeapons_EP1",[4600,10160,0],ZFM_Loot_To_Add] call ZFM_Loot_Create_Loot_Object;
-
+//ZFM_Loot_To_Add = ["WAR_MACHINE",["MACHINEGUNS","PISTOLS"]] call ZFM_Loot_Get_Contents;
+//["TKVehicleBox_EP1",[4600,10160,0],ZFM_Loot_To_Add] call ZFM_Loot_Create_Loot_Object;
+["WAR_MACHINE",[4600,10160,0]] call ZFM_Loot_Create;
 
 /*
 *	Main (Minimal) init for ZFM

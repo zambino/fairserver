@@ -44,6 +44,7 @@
 	"RIFLES",
 	"PISTOLS",
 	"TOOLS",
+	"BACKPACKS",
 	"BUILDINGSUPPLIES",
 	"MEDICAL"
  ];
@@ -59,63 +60,511 @@
 	ZFM_LOOT_CONTENT_TYPE_MEDICAL
  ];
  
-ZFM_LOOT_SNIPERS_DEADMEAT = [];
-ZFM_LOOT_SNIPERS_EASY = [];
-ZFM_LOOT_SNIPERS_MEDIUM = [];
-ZFM_LOOT_SNIPERS_HARD = [];
-ZFM_LOOT_SNIPERS_WAR_MACHINE = [];
+ZFM_LOOT_SNIPERS_DEADMEAT = [
+	"SVD_CAMO",
+	"SVD_des_EP1",
+	"M24"
+];
+ZFM_LOOT_SNIPERS_EASY = [
+	"SVD_CAMO",
+	"SVD_des_EP1",
+	"M24"
+];
+ZFM_LOOT_SNIPERS_MEDIUM = [
+	"SVD_CAMO",
+	"SVD_des_EP1",
+	"M24"
+];
+ZFM_LOOT_SNIPERS_HARD = [
+	"A550",
+	"SCAR_H_LNG_Sniper_SD",
+	"SVD_CAMO",
+	"SVD_des_EP1",
+	"M24"
+];
+ZFM_LOOT_SNIPERS_WAR_MACHINE = [
+	"KSVK_DZE",
+	"A550",
+	"DMR_DZ",
+	"SCAR_H_LNG_Sniper_SD",
+	"SVD_CAMO",
+	"SVD_des_EP1",
+	"M24"
+];
+ZFM_LOOT_MACHINEGUNS_DEADMEAT = [
+	"M240_DZ",
+	"M249_DZ"
+];
+ZFM_LOOT_MACHINEGUNS_EASY = [
+	"M240_DZ",
+	"M249_DZ"
+];
+ZFM_LOOT_MACHINEGUNS_MEDIUM = [
+	"M240_DZ",
+	"M249_DZ",
+	"M636_camo"
+];
+ZFM_LOOT_MACHINEGUNS_HARD = [
+	"M240_DZ",
+	"M249_DZ",
+	"M636_camo",
+	"Mk_48_DZ"
+];
+ZFM_LOOT_MACHINEGUNS_WAR_MACHINE = [
+	"M240_DZ",
+	"M249_DZ",
+	"M636_camo",
+	"Mk_48_DZ",
+	"PK"
+];
 
-ZFM_LOOT_MACHINEGUNS_DEADMEAT = [];
-ZFM_LOOT_MACHINEGUNS_EASY = [];
-ZFM_LOOT_MACHINEGUNS_MEDIUM = [];
-ZFM_LOOT_MACHINEGUNS_HARD = [];
-ZFM_LOOT_MACHINEGUNS_WAR_MACHINE = [];
+ZFM_LOOT_RIFLES_DEADMEAT = [
+	"AK_47_M",
+	"AK_74",
+	"AKS_74_kobra",
+	"AKS_74_U",
+	"FN_FAL_ANPVS4",
+	"FN_FAL",
+	"G36A_camo",
+	"M1014",
+	"Sa58V_CCO_EP1",
+	"Sa58V_EP1",
+	"Sa58V_RCO_EP1"
+];
+ZFM_LOOT_RIFLES_EASY = [
+	"AK_47_M",
+	"AK_74",
+	"AKS_74_kobra",
+	"AKS_74_U",
+	"Remington870_lamp",
+	"Sa58P_EP1",
+	"Sa58V_CCO_EP1",
+	"Sa58V_EP1",
+	"Sa58V_RCO_EP1"
+];
+ZFM_LOOT_RIFLES_MEDIUM = [
+	"AK_47_M",
+	"AK_74",
+	"AKS_74_kobra",
+	"AKS_74_U",
+	"FN_FAL_ANPVS4",
+	"FN_FAL",
+	"G36A_camo",
+	"M1014",
+	"M16A2",
+	"M4A1_Aim",
+	"M4A1_HWS_GL_camo",
+	"M4A1",
+	"M4A3_CCO_EP1",
+	"Remington870_lamp",
+	"Sa58P_EP1",
+	"Sa58V_CCO_EP1",
+	"Sa58V_EP1",
+	"Sa58V_RCO_EP1"
+];
+ZFM_LOOT_RIFLES_HARD = [
+	"AK_47_M",
+	"AK_74",
+	"AKS_74_kobra",
+	"AKS_74_U",
+	"BAF_L85A2_RIS_Holo",
+	"bizon_silenced",
+	"FN_FAL_ANPVS4",
+	"FN_FAL",
+	"G36A_camo",
+	"G36C_camo",
+	"G36C",
+	"G36K_camo",
+	"M1014",
+	"M16A2",
+	"M16A2GL",
+	"M4A1_AIM_SD_camo",
+	"M4A1_Aim",
+	"M4A1_HWS_GL_camo",
+	"M4A1",
+	"M4A3_CCO_EP1",
+	"Remington870_lamp",
+	"Sa58P_EP1",
+	"Sa58V_CCO_EP1",
+	"Sa58V_EP1",
+	"Sa58V_RCO_EP1"
+];
+ZFM_LOOT_RIFLES_WAR_MACHINE = [
+	"RPK_74",
+	"AK_47_M",
+	"AK_74",
+	"AKS_74_kobra",
+	"AKS_74_U",
+	"BAF_L85A2_RIS_Holo",
+	"bizon_silenced",
+	"FN_FAL_ANPVS4",
+	"FN_FAL",
+	"G36A_camo",
+	"G36C_camo",
+	"G36C",
+	"G36K_camo",
+	"M1014",
+	"M16A2",
+	"M16A2GL",
+	"M4A1_AIM_SD_camo",
+	"M4A1_Aim",
+	"M4A1_HWS_GL_camo",
+	"M4A1",
+	"M4A3_CCO_EP1",
+	"Remington870_lamp",
+	"Sa58P_EP1",
+	"Sa58V_CCO_EP1",
+	"Sa58V_EP1",
+	"Sa58V_RCO_EP1"
+];
 
-ZFM_LOOT_RIFLES_DEADMEAT = [];
-ZFM_LOOT_RIFLES_EASY = [];
-ZFM_LOOT_RIFLES_MEDIUM = [];
-ZFM_LOOT_RIFLES_HARD = [];
-ZFM_LOOT_RIFLES_WAR_MACHINE = [];
+ZFM_LOOT_PISTOLS_DEADMEAT = [
+	"glock17_EP1",
+	"M9",
+	"M9SD"
+];
+ZFM_LOOT_PISTOLS_EASY = [
+	"glock17_EP1",
+	"M9",
+	"M9SD"
+];
+ZFM_LOOT_PISTOLS_MEDIUM = [
+	"glock17_EP1",
+	"M9",
+	"M9SD"
+];
+ZFM_LOOT_PISTOLS_HARD = [
+	"Makarov",
+	"MakarovSD",
+	"glock17_EP1",
+	"M9",
+	"M9SD"
+];
+ZFM_LOOT_PISTOLS_WAR_MACHINE = [
+	"Colt1911",
+	"revolver_EP1",
+	"UZI_EP1",
+	"Makarov",
+	"MakarovSD",
+	"glock17_EP1",
+	"M9",
+	"M9SD"
+];
 
-ZFM_LOOT_PISTOLS_DEADMEAT = [];
-ZFM_LOOT_PISTOLS_EASY = [];
-ZFM_LOOT_PISTOLS_MEDIUM = [];
-ZFM_LOOT_PISTOLS_HARD = [];
-ZFM_LOOT_PISTOLS_WAR_MACHINE = [];
+ZFM_LOOT_TOOLS_DEADMEAT = [
+"ItemToolBox",
+"ItemKeyKit",
+"ItemCompass",
+"ItemEtool",
+"ItemFishingPole",
+"ItemMap",
+"ItemShovel",
+"ItemSledge",
+"ItemKnife",
+"ItemHatchet_DZE",
+"ItemMatchBox_DZE",
+"ItemSledge"
+];
+ZFM_LOOT_TOOLS_EASY = [
+"ItemToolBox",
+"ItemKeyKit",
+"ItemCompass",
+"ItemEtool",
+"ItemFishingPole",
+"ItemMap",
+"ItemShovel",
+"ItemSledge",
+"ItemKnife",
+"ItemHatchet_DZE",
+"ItemMatchBox_DZE",
+"ItemSledge"
+];
+ZFM_LOOT_TOOLS_MEDIUM = [
+"ItemToolBox",
+"ItemKeyKit",
+"ItemCompass",
+"ItemEtool",
+"ItemFishingPole",
+"ItemMap",
+"ItemShovel",
+"ItemSledge",
+"ItemKnife",
+"ItemHatchet_DZE",
+"ItemMatchBox_DZE",
+"ItemSledge"
+];
+ZFM_LOOT_TOOLS_HARD = [
+"ItemToolBox",
+"ItemKeyKit",
+"ItemCompass",
+"ItemEtool",
+"ItemFishingPole",
+"ItemMap",
+"ItemShovel",
+"ItemSledge",
+"ItemKnife",
+"ItemHatchet_DZE",
+"ItemMatchBox_DZE",
+"ItemSledge"
+];
+ZFM_LOOT_TOOLS_WAR_MACHINE = [
+"ItemToolBox",
+"ItemKeyKit",
+"ItemCompass",
+"ItemEtool",
+"ItemFishingPole",
+"ItemMap",
+"ItemShovel",
+"ItemSledge",
+"ItemKnife",
+"ItemHatchet_DZE",
+"ItemMatchBox_DZE",
+"ItemSledge"
+];
 
-ZFM_LOOT_TOOLS_DEADMEAT = [];
-ZFM_LOOT_TOOLS_EASY = [];
-ZFM_LOOT_TOOLS_MEDIUM = [];
-ZFM_LOOT_TOOLS_HARD = [];
-ZFM_LOOT_TOOLS_WAR_MACHINE = [];
+ZFM_LOOT_BUILDINGSUPPLIES_DEADMEAT = [
+	"CinderBlocks",
+	"MortarBucket",
+	"ItemTankTrap",
+	"ItemPole",
+	"PartGeneric",
+	"PartPlywoodPack",
+	"PartPlankPack",
+	"ItemTentOld",
+	"ItemTentDomed",
+	"ItemTentDomed2",
+	"ItemSandbag",
+	"ItemWire",
+	"workbench_kit",
+	"ItemGenerator"
+];
+ZFM_LOOT_BUILDINGSUPPLIES_EASY = [
+	"CinderBlocks",
+	"MortarBucket",
+	"ItemTankTrap",
+	"ItemPole",
+	"PartGeneric",
+	"PartPlywoodPack",
+	"PartPlankPack",
+	"ItemTentOld",
+	"ItemTentDomed",
+	"ItemTentDomed2",
+	"ItemSandbag",
+	"ItemWire",
+	"workbench_kit",
+	"ItemGenerator"
+];
+ZFM_LOOT_BUILDINGSUPPLIES_MEDIUM = [
+	"CinderBlocks",
+	"MortarBucket",
+	"ItemTankTrap",
+	"ItemPole",
+	"PartGeneric",
+	"PartPlywoodPack",
+	"PartPlankPack",
+	"ItemTentOld",
+	"ItemTentDomed",
+	"ItemTentDomed2",
+	"ItemSandbag",
+	"ItemWire",
+	"workbench_kit",
+	"ItemGenerator"
+];
+ZFM_LOOT_BUILDINGSUPPLIES_HARD = [
+	"CinderWallHalf_DZ",
+	"CinderWall_DZ",
+	"ItemWoodWallGarageDoorLocked",
+	"ItemWoodFloorHalf",
+	"ItemWoodWallDoorLg",
+	"ItemWoodWallWithDoorLg",
+	"ItemWoodWallWithDoorLgLocked",
+	"ItemWoodWallLg"
+];
+ZFM_LOOT_BUILDINGSUPPLIES_WAR_MACHINE = [
+	"ItemWoodWallGarageDoor",
+	"ItemWoodWallGarageDoorLocked",
+	"ItemWoodFloorHalf",
+	"ItemWoodWallDoorLg",
+	"ItemWoodWallWithDoorLg",
+	"ItemWoodWallWithDoorLgLocked",
+	"ItemWoodWallLg",
+	"ItemWoodWallDoorLg",
+	"ItemWoodWallWindowLg",
+	"ItemWoodFloorQuarter",
+	"ItemWoodWallDoor",
+	"ItemWoodWallWithDoorLocked",
+	"ItemWoodWall",
+	"ItemWoodWallDoor",
+	"ItemWoodWallWithDoor",
+	"ItemWoodWallWindow",
+	"ItemWoodWallThird",
+	"ItemWoodLadder",
+	"ItemWoodFloor",
+	"ItemWoodStairs",
+	"ItemWoodStairsSupport",
+	"CinderWallHalf_DZ",
+	"CinderWall_DZ",
+	"CinderWallDoorway_DZ",
+	"cinder_door_kit",
+	"metal_floor_kit"
+];
 
-ZFM_LOOT_BUILDINGSUPPLIES_DEADMEAT = [];
-ZFM_LOOT_BUILDINGSUPPLIES_EASY = [];
-ZFM_LOOT_BUILDINGSUPPLIES_MEDIUM = [];
-ZFM_LOOT_BUILDINGSUPPLIES_HARD = [];
-ZFM_LOOT_BUILDINGSUPPLIES_WAR_MACHINE = [];
+ZFM_LOOT_MEDICAL_DEADMEAT = [
+	"ItemAntibiotic",
+	"ItemBandage",
+	"ItemBloodbag",
+	"ItemEpinephrine",
+	"ItemMorphine",
+	"ItemPainkiller"
+];
+ZFM_LOOT_MEDICAL_EASY = [
+	"ItemAntibiotic",
+	"ItemBandage",
+	"ItemBloodbag",
+	"ItemEpinephrine",
+	"ItemMorphine",
+	"ItemPainkiller"
+];
+ZFM_LOOT_MEDICAL_MEDIUM = [
+	"ItemAntibiotic",
+	"ItemBandage",
+	"ItemBloodbag",
+	"ItemEpinephrine",
+	"ItemMorphine",
+	"ItemPainkiller"
+];
+ZFM_LOOT_MEDICAL_HARD = [
+	"ItemAntibiotic",
+	"ItemBandage",
+	"ItemBloodbag",
+	"ItemEpinephrine",
+	"ItemMorphine",
+	"ItemPainkiller"
+];
+ZFM_LOOT_MEDICAL_WAR_MACHINE = [
+	"ItemAntibiotic",
+	"ItemBandage",
+	"ItemBloodbag",
+	"ItemEpinephrine",
+	"ItemMorphine",
+	"ItemPainkiller"
+];
 
-ZFM_LOOT_MEDICAL_DEADMEAT = [];
-ZFM_LOOT_MEDICAL_EASY = [];
-ZFM_LOOT_MEDICAL_MEDIUM = [];
-ZFM_LOOT_MEDICAL_HARD = [];
-ZFM_LOOT_MEDICAL_WAR_MACHINE = [];
- 
- 
+// Failover arrays -- used to grab loot from if the minimum amount isn't reached.
+ZFM_ALL_LOOT_DEADMEAT = ZFM_LOOT_SNIPERS_DEADMEAT + ZFM_LOOT_MACHINEGUNS_DEADMEAT + ZFM_LOOT_RIFLES_DEADMEAT + ZFM_LOOT_PISTOLS_DEADMEAT + ZFM_LOOT_TOOLS_DEADMEAT + ZFM_LOOT_MEDICAL_DEADMEAT + ZFM_LOOT_BUILDINGSUPPLIES_DEADMEAT;
+ZFM_ALL_LOOT_EASY = ZFM_LOOT_SNIPERS_EASY + ZFM_LOOT_MACHINEGUNS_EASY + ZFM_LOOT_RIFLES_EASY + ZFM_LOOT_PISTOLS_EASY + ZFM_LOOT_TOOLS_EASY + ZFM_LOOT_MEDICAL_EASY + ZFM_LOOT_BUILDINGSUPPLIES_EASY;
+ZFM_ALL_LOOT_MEDIUM = ZFM_LOOT_SNIPERS_MEDIUM + ZFM_LOOT_MACHINEGUNS_MEDIUM + ZFM_LOOT_RIFLES_MEDIUM + ZFM_LOOT_PISTOLS_MEDIUM + ZFM_LOOT_TOOLS_MEDIUM + ZFM_LOOT_MEDICAL_MEDIUM + ZFM_LOOT_BUILDINGSUPPLIES_MEDIUM;
+ZFM_ALL_LOOT_HARD = ZFM_LOOT_SNIPERS_HARD + ZFM_LOOT_MACHINEGUNS_HARD + ZFM_LOOT_RIFLES_HARD + ZFM_LOOT_PISTOLS_HARD + ZFM_LOOT_TOOLS_HARD + ZFM_LOOT_MEDICAL_HARD + ZFM_LOOT_BUILDINGSUPPLIES_HARD;
+ZFM_ALL_LOOT_WAR_MACHINE = ZFM_LOOT_SNIPERS_WAR_MACHINE + ZFM_LOOT_MACHINEGUNS_WAR_MACHINE + ZFM_LOOT_RIFLES_WAR_MACHINE + ZFM_LOOT_PISTOLS_WAR_MACHINE + ZFM_LOOT_TOOLS_WAR_MACHINE + ZFM_LOOT_MEDICAL_WAR_MACHINE + ZFM_LOOT_BUILDINGSUPPLIES_WAR_MACHINE;
+
+// Minimum items per loot crates!
+ZFM_MINIMUM_ITEMS_PER_LOOT_CRATE_DEADMEAT = 30;
+ZFM_MINIMUM_ITEMS_PER_LOOT_CRATE_EASY = 35;
+ZFM_MINIMUM_ITEMS_PER_LOOT_CRATE_MEDIUM = 40;
+ZFM_MINIMUM_ITEMS_PER_LOOT_CRATE_HARD = 45;
+ZFM_MINIMUM_ITEMS_PER_LOOT_CRATE_WAR_MACHINE = 50;
+
+ /*
+ *	ZCR_Item_Is_Weapon
+ *	
+ *	With a given classname, tells you if it is a weapon or not.
+ *	TODO: Move to ZCR.
+ */
+ZCR_Item_Is_Weapon ={
+	private["_class","_isWeapon"];
+	_class = _this select 0;
+	_isWeapon = false;
+
+	if(isClass(configFile >> "CfgWeapons" >> _class)) then
+ 	{
+ 			_isWeapon = true;
+ 	};
+
+ 	_isWeapon
+};
+
+ /*
+ *	ZCR_Item_Get_Type
+ *
+ *	Gets the type of the item based on the classname given.
+ *	TODO: Move to ZCR
+ */
+ ZCR_Item_Get_Type ={
+ 	private["_class"];
+ 	_class = _this select 0;
+ 	_type = "none";
+
+ 	if(typeName _class == "STRING") then
+ 	{
+ 		if(isClass(configFile >> "CfgWeapons" >> _class)) then
+ 		{
+ 			_type = "weapon";
+ 		};
+ 		if(isClass(configFile >> "CfgVehicles" >> _class)) then
+ 		{
+ 			_type = "backpack";
+ 		};
+ 		if(isClass(configFile >> "CfgMagazines" >> _class)) then
+ 		{
+ 			_type = "magazine";
+ 		};
+	};
+	_type
+};
+
+/*
+*	ZFM)Loot_Contents_Append_Magazines
+*
+*	Appends magazines to a given lootArray for each weapon supplied.
+*/
+ZFM_Loot_Contents_Append_Magazines ={
+	private["_contents","_countContents","_type","_weapon","_appendArray","_magazine"];
+	_contents = _this select 0;
+	_appendArray = [];
+
+	if(typeName _contents == "ARRAY") then
+	{	
+		_countContents = count _contents;
+		
+		for[{_x=0},{_x <= _countContents-1},{_x = _x +1}] do
+		{
+			_rowItem = _contents select _x;
+			_weapon = 	[_rowItem] call ZCR_Item_Is_Weapon;
+
+			if(_weapon) then
+			{
+				_magazine = getArray(configFile >> "CfgWeapons" >> _rowItem >> "magazines");
+
+				if(typeName _magazine == "ARRAY") then
+				{
+					_appendArray = _appendArray + [(_magazine select 0)];
+				};
+			};
+
+			_contents + _appendArray
+		};
+	};
+};
+
+
  /*
  *	ZFM_Loot_Get_Contents
  *
  *	Gets the loot contents based on content type and difficulty. Content type is set as an array.
  */
  ZFM_Loot_Get_Contents ={
-	private["_difficulty","_contents","_contentsArray","_contentsRow","_contentsCount","_outputArray"];
+	private["_difficulty","_contents","_contentsArray","_minimumItems","_itemRemaining","_fixArray","_rowContents","_contentsRow","_contentsCount","_outputArray"];
 	_difficulty = _this select 0;
 	_contents = _this select 1;
 
 	_outputArray = [];
  
+	diag_log(format["PAREMETERS FOR ZFM_Loot_Get_Contents %1",_this]);
+ 
 	if(_difficulty in ZFM_DIFFICULTY_TEXT_TYPES && typeName _contents == "ARRAY") then
 	{
+		diag_log(format["CONTENTS",_contents]);
+	
 		// Validate to see if the contents are actually there..
 		if(count _contents >0) then
 		{
@@ -126,9 +575,27 @@ ZFM_LOOT_MEDICAL_WAR_MACHINE = [];
 			{
 				_contentsRow = _contents select _x;
 				_contentsArray = _contentsArray + call compile format["ZFM_LOOT_%1_%2",_contentsRow,_difficulty];
+				
+				diag_log(format["CONTENTS ARRAYZAZ %1",_contentsArray]);
 			};
 			
-			_contentsArray = _outputArray;
+			_minimumItems = call compile format["ZFM_MINIMUM_ITEMS_PER_LOOT_CRATE_%1",_difficulty];
+			
+			if((count _contentsArray) < _minimumItems) then
+			{
+				_itemRemaining = _minimumItems - (count _contentsArray);
+				_fixArray = call compile format["ZFM_ALL_LOOT_%1",_difficulty];
+				
+				for[{_x=0},{_x <= _itemRemaining},{_x = _x +1}] do
+				{
+					_rowContents = _fixArray call BIS_fnc_selectRandom;
+					_contentsArray = _contentsArray + [_rowContents];
+				};
+			};
+
+			// Now to add in ammunition for any weapons in the crate!
+			_outputArray = [_contentsArray] call ZFM_Loot_Contents_Append_Magazines;
+			diag_log(format["OUTPUT ARRAY FINAL %1",_outputArray]);
 		};
 	};
 	
@@ -136,7 +603,11 @@ ZFM_LOOT_MEDICAL_WAR_MACHINE = [];
  
  };
  
- 
+ /*
+ * ZFM_Loot_Get_Container_Limits
+ *
+ * Supplied function to get the limits of the vehicle being filled.
+ */
  ZFM_Loot_Get_Container_Limits ={
  	private["_container","_class","_maxMags","_maxWeapons","_maxBackPacks"];
 	_container = _this select 0;
@@ -288,7 +759,7 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
  *	Adds loot to container. This function calls subfunctions. (See above)
  */
  ZFM_Loot_Add_Loot_To_Container ={
-	private["_toAddLootTo","_lootToAdd","_itemsCount","_rowItem","_x"];
+	private["_toAddLootTo","_lootToAdd","_itemsCount","_rowItem","_x","_amount"];
 	_toAddLootTo = _this select 0;
 	_lootToAdd = _this select 1;
 	
@@ -312,6 +783,12 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 					// classname, amount, container
 					[(_rowItem select 0),(_rowItem select 1),_toAddLootTo] call ZFM_Loot_Add_Loot_To_Container_Sub;
 				};
+				
+				if(typeName _rowItem == "STRING") then
+				{
+					[_rowItem,(round random 5),_toAddLootTo] call ZFM_Loot_Add_Loot_To_Container_Sub;
+				}
+				
 			};
 		};
 	};
@@ -400,6 +877,59 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 	
 	};
  };
- 
- 
- 
+
+ ZFM_Loot_Create = {
+ 	private["_difficulty","_position","_lootCrateType","_contents","_lootContents","_addContents","_createdContents","_createdLootItemClass"];
+
+ 	_difficulty = _this select 0;
+ 	_position = _this select 1;
+ 	_lootCrateType  = _this select 2;
+
+ 	diag_log(format["LOOT CRATE TYPE FIRST %1",_lootCrateType]);
+
+ 	if(count _this >3) then
+ 	{
+ 		_contents = _this select 3;
+	}
+	else
+	{
+		_contents = [];
+	};
+
+ 	diag_log(format["CONTENTS 3 %1, CONTENTS TYPE %2",_this select 2, typeOf (_this select 2)]);
+
+ 	// Default in case something goes wrong
+ 	_createdLootItemClass = ZFM_Loot_Crates call BIS_fnc_selectRandom;
+
+
+ 	if(_difficulty in ZFM_DIFFICULTY_TEXT_TYPES) then 
+ 	{
+ 		// This is the most type-safe way of checking the parameter. If someone sets offset x, isNull will freak out.
+ 		// This is to check if _contents doesn't exist. 
+ 		if(typeName _contents != "ARRAY" || count _contents == 0) then
+ 		{
+ 			//Hardcoding at least two types. For loops should be used very sparingly for CPU considerations.
+ 			_addContents = ZFM_LOOT_CONTENT_TEXT_TYPES call BIS_fnc_selectRandom;
+ 			_contents = _contents + [_addContents];
+ 			_addContents = ZFM_LOOT_CONTENT_TEXT_TYPES call BIS_fnc_selectRandom;
+ 			_contents = _contents + [_addContents];
+ 			_contents = [_difficulty,_contents] call ZFM_Loot_Get_Contents;
+
+ 			diag_log(format["CONTENTS YUYA %1",_contents]);
+ 		};
+
+ 		if(typeName _lootCrateType == "STRING") then
+ 		{
+	 		// Then select a random loot crate type from our pre-prepared list
+	 		_createdLootItemClass = _lootCrateType;
+ 		};
+
+ 		diag_log(format["CREATED LOOT ITEM CLASS %1",_createdLootItemClass]);
+
+ 		//Create the loot box.
+ 		[_createdLootItemClass,_position,_contents] call ZFM_Loot_Create_Loot_Object;
+
+ 	};
+
+ };
+
