@@ -9,105 +9,12 @@
  */
   
 /*
-*	ZFM_Layouts_Array
-*	
-*	Used for spawning layouts for bases automatically.
-*	Each item = Array =
-*	0 = classname
-*	1 = orientation
-*	2 = parameters (i.e. for vehicles, their contents)
-*/
-ZFM_Layouts_Crap_To_Clear =[
-	"b_corylus2s.p3d",
-	"b_craet1.p3d",
-	"r2_boulder1.p3d",
-	"r2_boulder2.p3d",
-	"t_picea2s_snow.p3d",
-	"b_corylus.p3d",
-	"t_quercus3s.p3d",
-	"t_larix3s.p3d",
-	"t_pyrus2s.p3d",
-	"str_briza_kriva.p3d",
-	"dd_borovice.p3d",
-	"les_singlestrom_b.p3d",
-	"les_singlestrom.p3d",
-	"smrk_velky.p3d",
-	"smrk_siroky.p3d",
-	"smrk_maly.p3d",
-	"les_buk.p3d",
-	"str krovisko vysoke.p3d",
-	"str_fikovnik_ker.p3d",
-	"str_fikovnik.p3d",
-	"str vrba.p3d",
-	"hrusen2.p3d",
-	"str dub jiny.p3d",
-	"str lipa.p3d",
-	"str briza.p3d",
-	"p_akat02s.p3d",
-	"jablon.p3d",
-	"p_buk.p3d",
-	"str_topol.p3d",
-	"str_topol2.p3d",
-	"p_osika.p3d",
-	"t_picea3f.p3d",
-	"t_picea2s.p3d",
-	"t_picea1s.p3d",
-	"t_fagus2w.p3d",
-	"t_fagus2s.p3d",
-	"t_fagus2f.p3d",
-	"t_betula1f.p3d",
-	"t_betula2f.p3d",
-	"t_betula2s.p3d",
-	"t_betula2w.p3d",
-	"t_alnus2s.p3d",
-	"t_acer2s.p3d",
-	"t_populus3s.p3d",
-	"t_quercus2f.p3d",
-	"t_sorbus2s.p3d",
-	"t_malus1s.p3d",
-	"t_salix2s.p3d",
-	"t_picea1s_w.p3d",
-	"t_picea2s_w.p3d",
-	"t_ficusb2s_ep1.p3d",
-	"t_populusb2s_ep1.p3d",
-	"t_populusf2s_ep1.p3d",
-	"t_amygdalusc2s_ep1.p3d",
-	"t_pistacial2s_ep1.p3d",
-	"t_pinuse2s_ep1.p3d",
-	"t_pinuss3s_ep1.p3d",
-	"t_prunuss2s_ep1.p3d",
-	"t_pinusn2s.p3d",
-	"t_pinusn1s.p3d",
-	"t_pinuss2f.p3d",
-	"t_poplar2f_dead_pmc.p3d",
-	"misc_torzotree_pmc.p3d",
-	"misc_burnspruce_pmc.p3d",
-	"brg_cocunutpalm8.p3d",
-	"brg_umbrella_acacia01b.p3d",
-	"brg_jungle_tree_canopy_1.p3d",
-	"brg_jungle_tree_canopy_2.p3d",
-	"brg_cocunutpalm4.p3d",
-	"brg_cocunutpalm3.p3d",
-	"palm_01.p3d",
-	"palm_02.p3d",
-	"palm_03.p3d",
-	"palm_04.p3d",
-	"palm_09.p3d",
-	"palm_10.p3d",
-	"brg_cocunutpalm2.p3d",
-	"brg_jungle_tree_antiaris.p3d",
-	"brg_cocunutpalm1.p3d",
-	"str habr.p3d"
-];
-  
-  
-/*
 *	Config entities for layouts.
 */ 
 ZFM_LAYOUT_OBJECT_UNIT_CLASS = "Lx101010";  
 ZFM_LAYOUT_OBJECT_UNIT_GROUP = "Lx101011";  
 ZFM_LAYOUT_OBJECT_LOOT = "Lx101012";  
-  
+ 
     
 ZFM_DZE_getModelName = {
 	_objInfo = toArray(str(_this));
@@ -126,13 +33,8 @@ ZFM_DZE_getModelName = {
 	_objName = toLower(toString(_objName));
 	_objName
 };
- 
-ZFM_Layouts_Array =[
-	[["CampEast",0,[]],["CampEast",0,[]],["CampEast",0,[]]],
-	[0,["Land_tent_east",0,[]],0]
-];
 
- 
+
 ZFM_Layouts_Class_Get_SuperClass = {
 	private ["_class","_vehicles","_weapons","_magazines","_retVal"];
 	_class = _this select 0;
@@ -175,13 +77,31 @@ ZFM_Layout_Create_Object ={
 	// Don't care if the input is wrong. It's important that the input be checked if this is going to be monkeyed with by casual developers.
 	if(typeName _outputLoc == "ARRAY" && typeName _className == "STRING" && typeName _orientation == "SCALAR" && typeName _classParameters == "ARRAY") then
 	{
-		_classType = [_className] call ZFM_Layouts_Class_Get_SuperClass;
-		
-		if(_classType == "CfgVehicles") then
+
+		// Creating a loot crate
+		if(_className == ZFM_LAYOUT_OBJECT_LOOT) then
 		{
-			_createdObject = createVehicle [_className,_outputLoc,[],0,"NONE"];
-			_createdObject setDir _orientation;
+			diag_log(format["FOUND LOOT OBJECT! YAY!"]);
+			diag_log(format["CLASSPARAMETERS %1",_classParameters]);
+
+			// We need it to be an array, or it won't work.
+			if(typeName _classParameters == "ARRAY") then
+			{
+				// So, the parameters are what are passed to this function to create a loot iten.
+				_createdObject = [(_classParameters select 0),_outputLoc,(_classParameters select 1),(_classParameters select 2)] call ZFM_Loot_Create;
+			};
+		}
+		else
+		{
+			_classType = [_className] call ZFM_Layouts_Class_Get_SuperClass;
+
+			if(_classType == "CfgVehicles") then
+			{
+				_createdObject = createVehicle [_className,_outputLoc,[],0,"NONE"];
+				_createdObject setDir _orientation;
+			};
 		};
+
 	};
 	
 	_createdObject
@@ -250,9 +170,7 @@ ZFM_Layout_Parse ={
 			
 				_width = count (_layout select 0)+1;
 				
-				// Okay, we need to use "Scout", once. Running through map objects N times is very resource-intensive.
-				[_centerLocation,(_width*_arraySpacing)] call ZFM_Layout_Scout;
-				
+	
 				// Now we loop through the main body of the layoutArray -- the row of arrays
 				for [{_x =0},{_x <= _layoutCount-1},{_x = _x +1} ] do
 				{
@@ -290,8 +208,7 @@ ZFM_Layout_Parse ={
 									{
 										_className = _rowItem select 0;
 										_orientation = _rowItem select 1;
-										_classParameters = _rowItem select 1;
-										
+										_classParameters = _rowItem select 2;
 
 										// SEt center as default. 99% of the time this will never equal center. This is for that weird 1% that doesn't work.
 										_offsetX = _centerLocation select 0;
@@ -338,7 +255,9 @@ ZFM_Layout_Parse ={
 										
 										diag_log(format["[%1,%2] > %3",_x,_y,_outputLoc]);
 										
-										[_outputLoc,_className,_orientation,[_classParameters]] call ZFM_Layout_Create_Object;
+										diag_log(format["OUTPUTLOC %1, %2,%3,%4",_outputLoc,_className,_orientation,_classParameters]);
+
+										[_outputLoc,_className,_orientation,_classParameters] call ZFM_Layout_Create_Object;
 										
 									};
 								};
@@ -352,12 +271,3 @@ ZFM_Layout_Parse ={
 		};
 	};
 };
-
-
-ZFM_Debug_Create_Layout ={
-	// 13400,3960,0
-	[ZFM_Layouts_Array,[1,1],[4600,10160,0],20] call ZFM_Layout_Parse;
-};
-
-
-

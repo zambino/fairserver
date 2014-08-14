@@ -22,28 +22,12 @@ diag_log(format["%1 %2 - ZFM_Initialize.sqf - Waiting for server to initialize."
 waitUntil{initialized};
 
 /*
-	Globals used to ensure that things can function
-*/
-
-ZFM_Includes_Mission = "\z\addons\dayz_server\ZFM\ZFM_Mission.sqf";
-call compile preprocessFileLineNumbers ZFM_Includes_Mission;
-
-/*
 *	ZFM_Includes_Mission_Config
 *	
 *	Contains the configuration for units and the general runtime configuration of ZFM missions.
 */ 
 ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
-
-/*
-*	ZFM_Includes_Mission_Functions
-*	
-*	Contains functions for generating and supporting missions
-*/
-ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Functions.sqf";
-call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
-
 
 
 /*
@@ -54,22 +38,62 @@ call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
 ZFM_Includes_Loot_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Loot_Config.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Loot_Config;
 
+/*
+*	ZFM_Includes_Layout_Config
+*	
+*	Functions for calculating and creating loot
+*/
+ZFM_Includes_Layout_Config = "\z\addons\dayz_server\ZFM\ZFM_Layout_Config.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Layout_Config;
+
+/*
+*	ZFM_Includes_Mission
+*
+*	Mission handler.
+*/
+ZFM_Includes_Mission = "\z\addons\dayz_server\ZFM\ZFM_Mission.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Mission;
+
+/*
+*	ZFM_Includes_Mission_Functions
+*	
+*	Contains functions for generating and supporting missions
+*/
+ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Functions.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
+
 
 /*
 *	ZFM_Includes_Loot
 *	
-*	Files 
+*	Functions for calculating and creating loot
 */
 ZFM_Includes_Loot = "\z\addons\dayz_server\ZFM\ZFM_Loot.sqf";
 call compile preprocessFileLineNumbers ZFM_Includes_Loot;
+
+
+/*
+*	ZFM_Includes_Loot
+*	
+*	Functions for calculating and creating loot
+*/
+ZFM_Includes_Layout = "\z\addons\dayz_server\ZFM\ZFM_Layout.sqf";
+call compile preprocessFileLineNumbers ZFM_Includes_Layout;
+
+// Remove
+ZFM_Layouts_Array =[
+	[["CampEast",0,[]],[ZFM_LAYOUT_OBJECT_LOOT,0,["EASY","TKSpecialWeapons_EP1",["PISTOLS","SNIPERS"]]],["CampEast",0,[]]],
+	[0,["Land_tent_east",0,[]],0]
+];
+
+[ZFM_Layouts_Array,[1,1],[4600,10160,0],20] call ZFM_Layout_Parse;
+
 
 /*
 	Debugging - remove
 */
 
-//ZFM_Loot_To_Add = ["WAR_MACHINE",["MACHINEGUNS","PISTOLS"]] call ZFM_Loot_Get_Contents;
-//["TKVehicleBox_EP1",[4600,10160,0],ZFM_Loot_To_Add] call ZFM_Loot_Create_Loot_Object;
-["WAR_MACHINE",[4600,10160,0]] call ZFM_Loot_Create;
+
 
 /*
 *	Main (Minimal) init for ZFM
