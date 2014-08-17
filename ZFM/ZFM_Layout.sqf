@@ -7,15 +7,7 @@
 	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
-  
-/*
-*	Config entities for layouts.
-*/ 
-ZFM_LAYOUT_OBJECT_UNIT_CLASS = "Lx101010";  
-ZFM_LAYOUT_OBJECT_UNIT_GROUP = "Lx101011";  
-ZFM_LAYOUT_OBJECT_LOOT = "Lx101012";  
- 
-    
+      
 ZFM_DZE_getModelName = {
 	_objInfo = toArray(str(_this));
 	_lenInfo = count _objInfo - 2;
@@ -78,6 +70,8 @@ ZFM_Layout_Create_Object ={
 	if(typeName _outputLoc == "ARRAY" && typeName _className == "STRING" && typeName _orientation == "SCALAR" && typeName _classParameters == "ARRAY") then
 	{
 
+		diag_log(format["CREATE OBJECT WAS CALLED %1",_this]);
+
 		// Creating a loot crate
 		if(_className == ZFM_LAYOUT_OBJECT_LOOT) then
 		{
@@ -93,11 +87,16 @@ ZFM_Layout_Create_Object ={
 		}
 		else
 		{
+			diag_log(format["FOUND NON-LAYOUT OBJECT YAY! %1",_this]);
+
 			_classType = [_className] call ZFM_Layouts_Class_Get_SuperClass;
+
+			diag_log(format["CLASSNAME ARR %1",_classType]);
 
 			if(_classType == "CfgVehicles") then
 			{
 				_createdObject = createVehicle [_className,_outputLoc,[],0,"NONE"];
+				diag_log(format["CREATED NON LOOT OBJECT %1",_createdObject]);
 				_createdObject setDir _orientation;
 			};
 		};
@@ -177,17 +176,20 @@ ZFM_Layout_Parse ={
 					// Get the row by number.
 					_row = _layout select _x;
 
+					diag_log(format["ROW NUMBER %1, X %2, LAYOUTCOUNT %3",_row,_x,_layoutCount]);
+
 					
 					if(typeName _row == "ARRAY") then
 					{
 						// How wide is this array?
 						_rowCount = count _row;
 						
-
+						diag_log(format["ROWCOUNT %1",_rowCount]);
 						// Did some dingbat give a row too short and a center too far? :O
 						if(_centerPosX > _rowCount) then
 						{
 							_centerPosX = _rowCount;
+							diag_log(format["CENTERPOSX %1",_centerPosX]);
 						};
 						
 						// Okay, so we're sure it's an array and we're going through each part 
@@ -199,6 +201,12 @@ ZFM_Layout_Parse ={
 						{
 							for [{_y =0},{_y <= _rowCount-1},{_y = _y +1} ] do
 							{
+
+								diag_log(format["ROW NUMBERY %1",_row]);
+
+
+								diag_log(format["ROW COUNT %1 AND ROW %2",count _row,_row]);	
+
 								// Get the item from the array..
 								_rowItem = _row select _y;
 							
@@ -217,29 +225,38 @@ ZFM_Layout_Parse ={
 										if(_x == _centerPosX) then
 										{
 											_outputX = _centerLocation select 0;
+											diag_log(format["OUTPUTX %1",_outputX]);
+
 										};
 
 										if(_x < _centerPosX) then
 										{
 											_offsetX = (_centerPosX + 1)-(_x+1);
 											_outputX = (_centerLocation select 0)-(_offsetX * _arraySpacing);
+											diag_log(format["OUTPUTX %1",_outputX]);
+
 										};
 										
 										if(_x > _centerPosX) then
 										{
 											_offsetX = (_x+1)-(_centerPosX+1);
 											_outputX = (_centerLocation select 0)+(_offsetX * _arraySpacing);
+											diag_log(format["OUTPUTX %1",_outputX]);
 										};											
 										
 										if(_y == _centerPosY) then
 										{
 											_outputY = _centerLocation select 1;
+											diag_log(format["OUTPUTY %1",_outputY]);
+
 										};
 
 										if(_y < _centerPosY) then
 										{
 											_offsetY = (_centerPosY + 1)-(_y+1);
 											_outputY = (_centerLocation select 1)-(_offsetY * _arraySpacing);
+											diag_log(format["OUTPUTY %1",_outputY]);
+
 										};
 										if(_y > _centerPosY) then
 										{
@@ -249,6 +266,8 @@ ZFM_Layout_Parse ={
 											_offsetY = (_y+1)-(_centerPosY+1); // So here, _y = 3 + 1 = 4
 											// _centerPosY = 2 + 1 = 3, so 3 + 4 = 7, 7*5 = 35 = 4635
 											_outputY = (_centerLocation select 1)+(_offsetY * _arraySpacing);
+											diag_log(format["OUTPUTY %1",_outputY]);
+
 										};												
 
 										_outputLoc = [_outputX,_outputY,(_centerLocation select 2)];

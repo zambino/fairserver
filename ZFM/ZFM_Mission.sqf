@@ -7,26 +7,6 @@
 	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
-diag_log(format["%1 %2 - ZFM_Mission.sqf - File loaded",ZFM_NAME,ZFM_VERSION]);
-
-ZFM_MISSION_VARIABLE_MISSION_TYPE = "6x101011";
-ZFM_MISSION_VARIABLE_MISSION_TITLE = "6x101012";
-ZFM_MISSION_VARIABLE_MISSION_HUMANITY_TYPE = "6x101013";
-ZFM_MISSION_VARIABLE_MISSION_LOOTSHARE_TYPE = "6x101014";
-ZFM_MISSION_VARIABLE_MISSION_UNITS = "6x101015";
-ZFM_MISSION_VARIABLE_MISSION_UNITS_TOTAL = "6x101016";
-ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED = "6x101017";
-ZFM_MISSION_VARIABLE_MISSION_OBJECTS = "6x101018";
-ZFM_MISSION_VARIABLE_MISSION_PARTICIPANTS = "6x101019";
-ZFM_MISSION_VARIABLE_MISSION_PARTICIPANT_KILLS = "6x101020";
-ZFM_MISSION_VARIABLE_MISSION_MARKERS = "6x101021";
-
-ZFM_MISSION_START_TYPE_TIMED_RANDOM = "7x101010";
-
-// Mission statuses
-ZFM_MISSION_STATUS_IN_PROGRESS = "6x201010";
-ZFM_MISSION_STATUS_COMPLETED = "6x201011";
-ZFM_MISSION_STATUS_TIMED_OUT = "6x201012";
 
 /*
 	ZFM_CURRENT_MISSIONS
@@ -66,19 +46,6 @@ ZFM_CAN_CREATE_NEW_MISSION = true;
 */
 ZFM_MISSIONS_MISSION_HANDLER_STARTED = false;
 
-/*
-	TODO: Move to global config file..
-*/
-ZFM_MISSIONS_START_MISSIONS_WHILE_SERVER_EMPTY = false;
-ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS = 3;
-ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS_CRASH = 3;
-ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE = ZFM_MISSION_START_TYPE_TIMED_RANDOM;
-ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN = 15; // Minutes
-ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MAX = 45; // Minutes (Means randomly, missions will fire between 15 and 45 minutes)
-
-// Set to NL.
-ZFM_DEFAULT_LANGUAGE = "EN";
-
 
 /*
 *	ZFM_Handle_JIP
@@ -108,6 +75,107 @@ ZFM_Handle_JIP = {
 				
 				// Add the marker pos for them.
 				[_markerPos,_difficulty,format["Crashed %1",_crashVehicle]] call ZFM_CreateCrashMarker;
+			};
+		};
+	};
+};
+
+
+/*
+	ZFM_Mission_CountDead
+	
+	Counts the number of dead units from an array
+*/
+ZFM_Mission_CountDead ={
+	private["_unitsArray","_numberUnits","_numberDead","_thisUnit"];
+	
+	_unitsArray = _this select 0;
+	_numberDead = 0;
+	
+	if(typeName _unitsArray == "ARRAY") then
+	{
+		if(count _unitsArray >0) then
+		{
+			_numberUnits = count _unitsArray;
+		
+			for [{_x =0},{_x <= _numberUnits-1},{_x = _x +1} ] do
+			{
+				// Get the unit
+				_thisUnit = _unitsArray select _x;
+				
+				if(!(alive _thisUnit)) then
+				{
+					_numberDead = _numberDead + 1;
+				};
+			};
+			
+		};
+	};
+	_numberDead
+};
+ 
+/*
+*	ZFM_Handle_MissionUnitKilled
+*
+*	Handles when an AI unit is killed.
+*/
+ZFM_Handle_MissionUnitKilled ={
+	private ["_unit","_killer","_missionID","_numberActualDead","_killerWeapon","_remainingUnits","_unitType","_deathText","_missionInstance","_numUnitsTotal","_numUnitsKilled"];
+	
+	_unit = _this select 0;
+	_killer = _this select 1;
+	
+	_outputText = "";
+	
+	if(typeName _unit == "OBJECT") then
+	{
+		_missionID = _unit getVariable["ZFM_MISSION_ID",[]];
+		
+		if(typeName _missionID != "ARRAY") then
+		{
+			_unitType = _unit getVariable["ZFM_UnitType",[]];
+			
+			if(typeName _unitType != "ARRAY") then
+			{
+			
+				// A little fun, says "That bandit croaked it.." etc. 
+				_deathText = ZFM_DeathPhrases call BIS_fnc_selectRandom;
+	
+				// Per-unit-killed humanity.
+				if(ZFM_HUMANITY_FOR_BANDIT_KILLS) then
+				{
+					[_killer] call ZFM_Alter_Humanity;
+				};
+				
+				// TODO: Remove after debug
+				_missionInstance = [_missionID] call ZFM_Mission_GetMissionByID;
+				
+				// Used to see total units. This is the total units ZFM determines before they spawn. Not based on the number of alive when mission is available. 
+				_numUnitsTotal = _missionInstance select 6;
+				
+				// Used to prevent any kill-skips. 
+				_numUnitsKilled = [(_missionInstance select 5)] call ZFM_Mission_CountDead;
+
+				// Sets the number dead based on the info from the missionArray
+				[_missionID,ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED,_numUnitsKilled] call ZFM_Mission_Set;
+				
+				// Set who killed what, with what. (person's current weapon is determined by ZFM_Mission_Set!
+				[_missionID,ZFM_MISSION_VARIABLE_MISSION_PARTICIPANT_KILLS,[_unit,_killer]] call ZFM_Mission_Set;
+				
+				if(_numUnitsKilled < _numUnitsTotal) then
+				{
+					[nil,nil,rTitleText,format["That bandit %1! Killed by %2 [%3 / %4]",_deathText,(name _killer),_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+				}
+				else
+				{
+					diag_log(format["MISSIONID AS PASSED TO CONCLUDE CONCLUDE CONCLUDE %1",_missionID]);
+					
+					// Conclude the mission!
+					[_missionID] call ZFM_Mission_Conclude_Mission;
+					
+					// All units are killed..
+					[nil,nil,rTitleText,format["All units were killed! [%1 / %2]",_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+				}
 			};
 		};
 	};
@@ -644,54 +712,6 @@ ZFM_ExecuteCrashMission ={
 	
 };
 
-/*
-*	ZFM_GenerateRandomUnits
-*
-*	Generates an array of ZFM-typed random units.
-*/
-ZFM_GenerateRandomUnits ={
-
-	private ["_difficulty","_maxBound","_generatedUnits","_x","_initRandSeed","_newType"];
-	_difficulty = _this select 0;
-
-	_generatedUnits = [];
-	
-	switch(_difficulty) do 
-	{
-		case "DEADMEAT": {
-			_maxBound = 20;
-		};
-		case "EASY": {
-			_maxBound = 22;
-		};
-		case "MEDIUM": {
-			_maxBound = 28;
-		};
-		case "HARD": {
-			_maxBound = 30;
-		};
-		case "WAR_MACHINE": {
-			_maxBound = 34;
-		};
-	};
-	
-	// TODO: Units like commander / gunner / etc in squads will be delayed until a later stage
-	_initRandSeed = (round random _maxBound);
-	
-	// We don't want just ONE unit, do we? 
-	if(_initRandSeed < ZFM_MINIMUM_AI_PER_MISSION) then 
-	{
-		_initRandSeed = ZFM_MINIMUM_AI_PER_MISSION; 
-	};
-	
-	for [{_x =0},{_x <= _initRandSeed-1},{_x = _x +1} ] do
-	{
-		_newType = ZFM_AI_TYPES call BIS_fnc_selectRandom;
-		_generatedUnits = _generatedUnits + [_newType];
-	};
-	
-	_generatedUnits
-};
 
 /*
 *	ZFM_GenerateMissionTitle

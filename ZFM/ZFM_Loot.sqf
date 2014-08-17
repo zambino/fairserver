@@ -104,7 +104,7 @@ ZFM_Loot_Contents_Append_Magazines ={
  *	Gets the loot contents based on content type and difficulty. Content type is set as an array.
  */
  ZFM_Loot_Get_Contents ={
-	private["_difficulty","_contents","_contentsArray","_minimumItems","_itemRemaining","_fixArray","_rowContents","_contentsRow","_contentsCount","_outputArray"];
+	private["_difficulty","_contents","_x","_contentsArray","_minimumItems","_itemRemaining","_fixArray","_rowContents","_contentsRow","_contentsCount","_outputArray"];
 	_difficulty = _this select 0;
 	_contents = _this select 1;
 
@@ -332,8 +332,6 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 		{
 			for [{_x =0},{_x <= _itemsCount-1},{_x = _x +1} ] do
 			{
-
-
 				_rowItem = _lootToAdd select _x;
 
 				diag_log("DIAGLOGGING NULL VALUE");

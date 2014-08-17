@@ -15,46 +15,7 @@
  ZFM_HUMANITY_FOR_BANDIT_KILLS = true;
  ZFM_HUMANITY_AMOUNT_FIXED = true;
  ZFM_HUMANITY_AMOUNT_PER_BANDIT = 20;
-  
- ZFM_GROUP_EAST = objNull;
- ZFM_GROUP_WEST = objNull;
- ZFM_GROUP_CIVILIAN = objNull;
- ZFM_GROUP_RESISTANCE = objNull;
- 
- // Global ZFM constants
- ZFM_AI_TYPE_SNIPER = "1x101010";
- ZFM_AI_TYPE_RIFLEMAN = "1x101011";
- ZFM_AI_TYPE_HEAVY = "1x101012";
- ZFM_AI_TYPE_COMMANDER = "1x101013";
- ZFM_AI_TYPE_MEDIC = "1x101014";
- ZFM_AI_TYPE_PILOT = "1x101015";
- ZFM_MISSION_METHOD_RANDOM = "3x101011";
- ZFM_MISSION_TYPE_CRASH = "2x101011";
- ZFM_MISSION_TYPE_CRASH_GOTO = "2x101012";
- ZFM_MISSION_TYPE_CRASH_AMBUSH = "2x101013";
- 
- 
- ZFM_AI_TYPES = [
-	ZFM_AI_TYPE_SNIPER,
-	ZFM_AI_TYPE_RIFLEMAN,
-	ZFM_AI_TYPE_HEAVY,
-	ZFM_AI_TYPE_COMMANDER
-	// Not adding Medic or Pilot yet, for later version
- ];
- 
- // Used for generation of AI missions (i.e. select at random from this list for difficulty)
- ZFM_DIFFICULTIES =[
-	"DEADMEAT",
-	"EASY",
-	"MEDIUM",
-	"HARD",
-	"WAR_MACHINE"
- ];
- 
- ZFM_MISSION_TYPES =[
-	ZFM_MISSION_TYPE_CRASH
- ];
- 
+   
 ZFM_CrashVehicles_Planes =[
 	"AV8B","AV8B2","C130J","C130J_US_EP1","F35B","MQ9PredatorB_US_EP1","MV22",
 	"Su25_CDF","Su25_TK_EP1","Su34"
@@ -68,214 +29,28 @@ ZFM_CrashVehicles_Helicopters =[
 //All crash vehicles
 ZFM_CrashVehicles = ZFM_CrashVehicles_Planes + ZFM_CrashVehicles_Helicopters;
  
-ZFS_Skills_AI_DEADMEAT = [
-	// ARMA Skill type, Max Skill Value
-    ["aimingAccuracy",0.1],
-    ["aimingShake",1],
-    ["aimingSpeed",0.1],
-    ["endurance",0.1],
-    ["spotDistance",0.1],
-    ["spotTime",0.1],
-    ["courage",0.1],
-    ["reloadSpeed",0.1],
-    ["commanding",0.1],
-    ["general",0.1]
- ];
- 
- ZFS_Skills_AI_EASY = [
-	// ARMA Skill type, Max Skill Value
-    ["aimingAccuracy",0.25],
-    ["aimingShake",0.8],
-    ["aimingSpeed",0.25],
-    ["endurance",0.25],
-    ["spotDistance",0.25],
-    ["spotTime",0.25],
-    ["courage",0.25],
-    ["reloadSpeed",0.25],
-    ["commanding",0.25],
-    ["general",0.25]
- ];
- 
- ZFS_Skills_AI_MEDIUM = [
-	// ARMA Skill type, Max Skill Value
-    ["aimingAccuracy",0.65],
-    ["aimingShake",0.3],
-    ["aimingSpeed",0.65],
-    ["endurance",0.65],
-    ["spotDistance",0.65],
-    ["spotTime",0.65],
-    ["courage",0.65],
-    ["reloadSpeed",0.65],
-    ["commanding",0.65],
-    ["general",0.65]
- ];
- 
- ZFS_Skills_AI_HARD = [
-	// ARMA Skill type, Max Skill Value
-    ["aimingAccuracy",0.85],
-    ["aimingShake",0.2],
-    ["aimingSpeed",0.85],
-    ["endurance",0.85],
-    ["spotDistance",0.85],
-    ["spotTime",0.85],
-    ["courage",0.85],
-    ["reloadSpeed",0.85],
-    ["commanding",0.85],
-    ["general",0.85]
- ];
- 
- ZFS_Skills_AI_WAR_MACHINE = [
-	// ARMA Skill type, Max Skill Value
-    ["aimingAccuracy",1],
-    ["aimingShake",0.1],
-    ["aimingSpeed",1],
-    ["endurance",1],
-    ["spotDistance",1],
-    ["spotTime",1],
-    ["courage",1],
-    ["reloadSpeed",1],
-    ["commanding",1],
-    ["general",1]
- ];
- 
+ZFM_MISSIONS_START_MISSIONS_WHILE_SERVER_EMPTY = false;
+ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS = 3;
+ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS_CRASH = 3;
+ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE = ZFM_MISSION_START_TYPE_TIMED_RANDOM;
+ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN = 15; // Minutes
+ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MAX = 45; // Minutes (Means randomly, missions will fire between 15 and 45 minutes)
 
- ZFS_Equipment_Sniper_EASY = [
-	"Bandit1_DZ", 												// Skin (STRING)
-	["SVD_CAMO"],														// Snipers from FixedLoot. (Random pick)
-	2,																	// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],		// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"] // Any medical supplies they should require.
- ];
- ZFS_Equipment_Sniper_MEDIUM = [
-	"Soldier_Sniper_PMC_DZ", 														// Skin
-	["SVD_CAMO","DMR_DZ","m107","SVD_des_EP1"],										// Snipers from FixedLoot. (Random pick)
-	3,																				// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],				// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]	
+
+ //Unit types
+  ZFM_AI_TYPES = [
+	ZFM_AI_TYPE_SNIPER,
+	ZFM_AI_TYPE_RIFLEMAN,
+	ZFM_AI_TYPE_HEAVY,
+	ZFM_AI_TYPE_COMMANDER
+	// Not adding Medic or Pilot yet, for later version
  ];
  
- ZFS_Equipment_Sniper_HARD = [
-	"GUE_Soldier_Sniper_DZ", 											// Skin
-	["SCAR_H_LNG_Sniper_SD","SVD_CAMO","DMR_DZ"],						// Snipers from FixedLoot. (Random pick)
-	5,																	// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],		// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
+ ZFM_MISSION_TYPES =[
+	ZFM_MISSION_TYPE_CRASH
  ];
 
- ZFS_Equipment_Sniper_WAR_MACHINE = [
-	"GUE_Soldier_Sniper_DZ",
-	["KSVK_DZE","DMR_DZ","m107"],				// Will always have an awesome sniper rifle..
-	5,
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],				// Doesn't really matter.
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
- ];
- 
-  // Riflemen
-  ZFS_Equipment_Rifleman_EASY = [
-	"Bandit1_DZ", 												// Skin
-	["AK_47_M","AK_74","AKS_74_kobra","AKS_74_U","G36C","G36K_camo","M4A1","M249_DZ"],														// Snipers from FixedLoot. (Random pick)
-	2,																	// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],		// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"] // Any medical supplies they should require.
- ];
- ZFS_Equipment_Rifleman_MEDIUM = [
-	"GUE_Soldier_MG_DZ", 														// Skin
-	["AK_47_M","AK_74","AKS_74_kobra","AKS_74_U","G36C","G36K_camo","M4A1","M249_DZ","G36A_camo","G36C_camo","M240_DZ"],										// Snipers from FixedLoot. (Random pick)
-	3,																				// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],				// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]	
- ];
- 
- ZFS_Equipment_Rifleman_HARD = [
-	"GUE_Soldier_Crew_DZ", 											// Skin
-	["AK_47_M","AK_74","AKS_74_kobra","AKS_74_U","G36C","G36K_camo","M4A1","M249_DZ","G36A_camo","G36C_camo","M240_DZ","MG36_camo"],						// Snipers from FixedLoot. (Random pick)
-	5,																	// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],		// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
- ];
 
- ZFS_Equipment_Rifleman_WAR_MACHINE = [
-	"Ins_Soldier_GL_DZ",
-	["FN_FAL","FN_FAL_ANPVS4","G36A_camo","G36C_camo","M240_DZ","MG36_camo","PK"],				// Will always have an awesome sniper rifle..
-	5,
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],				// Doesn't really matter.
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
- ];
- 
- // Commander is only used in hard or war machine, same model.
-ZFS_Equipment_Commander = [
-	"GUE_Commander_DZ",
-	["FN_FAL","FN_FAL_ANPVS4","SCAR_H_LNG_Sniper_SD","PK"],				// Will always have an awesome sniper rifle..
-	8,
-	["DZ_LargeGunBag_EP1"],				// Doesn't really matter.
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
- ];
- 
- // Heavy machinegunners
- ZFS_Equipment_Heavy_EASY = [
-	"Bandit1_DZ", 												// Skin
-	["M249_DZ"],														// Snipers from FixedLoot. (Random pick)
-	2,																	// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],		// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"] // Any medical supplies they should require.
- ];
- ZFS_Equipment_Heavy_MEDIUM = [
-	"Bandit2_DZ", 														// Skin
-	["Mk_48_DZ","M249_DZ"],										// Snipers from FixedLoot. (Random pick)
-	3,																				// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],				// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]	
- ];
- 
- ZFS_Equipment_Heavy_HARD = [
-	"GUE_Soldier_CO_DZ", 											// Skin
-	["MG36_camo","M249_DZ","M240_DZ"],						// Snipers from FixedLoot. (Random pick)
-	5,																	// Boundary for the maximum number of magazines
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],		// Backpacks from FixedLoot (Random pick)
-	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
- ];
-
- ZFS_Equipment_Heavy_WAR_MACHINE = [
-	"GUE_Soldier_CO_DZ",
-	["PK"],				// Will always have an awesome rifle..
-	5,
-	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],				// Doesn't really matter.
-	["ItemBandage","ItemBandage","ItemPainkiller","ItemKnife","ItemFlashlight"]
- ];
- 
- /*
-	ZFM Mission Variables
- */
- 
- ZFM_Accoutrements_Minor =[
-	"Fort_EnvelopeBig",
-	"Fort_EnvelopeSmall",
-	"Land_HBarrier5",
-	"Land_HBarrier3",
-	"Land_HBarrier1",
-	"Land_fort_bagfence_corner",
-	"Fort_StoneWall_EP1",
-	"Hhedgehog_concrete"
- ];
- 
- ZFM_Accoutrements_Medium =[
-	"Land_fort_rampart_EP1",
-	"Land_fortified_nest_small_EP1",
-	"Land_fort_rampart",
-	"Fort_Nest_M240",
-	"Land_fort_bagfence_round"
- ];
- 
- ZFM_Accoutrements_Ridiculous =[
-	"Land_fortified_nest_big",
-	"Land_Fort_Watchtower",
-	"Land_tent_east",
-	"Fort_Barracks_USMC",
-	"Land_fort_artillery_nest",
-	"Land_HBarrier_large"
- ];
- 
- 
  /*
 	ZFM BanditGroup Names
 
