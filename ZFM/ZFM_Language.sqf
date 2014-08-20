@@ -31,5 +31,14 @@
 	{
 		["Fatal error! There isn't any usable language defined! Please replace ZFM_LANGUAGES_SUPPORTED with correct contents.","ZFM_Language::ZFM_Language_BootStrap"] call ZFM_Common_Log;
 	};
-
 };	
+
+
+ZFM_Language_Get_String = {
+	if(typeName ZFM_LANGUAGE_STRINGS == "ARRAY" && count ZFM_LANGUAGE_STRINGS) then
+	{
+		// Select the language string with the 
+		ZFM_INFORMATION_STRINGS select (this select 0);
+	};
+};
+
