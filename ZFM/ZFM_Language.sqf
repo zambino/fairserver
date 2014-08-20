@@ -35,10 +35,23 @@
 
 
 ZFM_Language_Get_String = {
-	if(typeName ZFM_LANGUAGE_STRINGS == "ARRAY" && count ZFM_LANGUAGE_STRINGS) then
+	private["_type"];
+	_type = _this select 0;
+
+	switch(_type) do
 	{
-		// Select the language string with the 
-		ZFM_INFORMATION_STRINGS select (this select 0);
+		case "INFORMATION": {
+			if(typeName ZFM_INFORMATION_STRINGS == "ARRAY" && count ZFM_INFORMATION_STRINGS) then
+			{
+				// Select the language string with the 
+				ZFM_INFORMATION_STRINGS select (this select 0)
+			};
+		};
+		case "ERROR" :{
+			if(typeName ZFM_ERROR_STRINGS = "ARRAY" && count ZFM_ERROR_STRINGS) then
+			{
+				ZFM_ERROR_STRINGS select (this select 0)
+			};
+		};
 	};
 };
-
