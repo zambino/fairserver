@@ -413,6 +413,17 @@ ZFM_ExecuteCrashMission ={
 };
 
 
+ZFM_Mission_Type_Crash_GenerateMissionTitle = {
+	private["_missionType","_crashVehicleType","_difficulty"];
+
+	// The place the vehicle was on the way to.
+	_OTWT_G = ZFM_CRASH_MISSION_OTWT_GROUP call BIS_fnc_selectRandom;
+	_OTWT_P = ZFM_CRASH_MISSION_OTWT_PLACE call BIS_fnc_selectRandom;
+
+	//The 
+};
+
+
 /*
 *	ZFM_GenerateMissionTitle
 *
