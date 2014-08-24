@@ -8,7 +8,7 @@
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
 
- ZFM_Language_BootStrap ={
+ ZFM_Language_DoBootStrap ={
 	private["_includePath","_includes","_iRow"];
 
 	if(typeName ZFM_LANGUAGES_SUPPORTED== "ARRAY" && typeName ZFM_DEFAULT_LANGUAGE == "STRING") then
@@ -18,7 +18,7 @@
 			if(ZFM_DEFAULT_LANGUAGE in ZFM_LANGUAGES_SUPPORTED) then
 			{
 				_includePath = ZFM_LANGUAGE_INCLUDE_DIR + format[ZFM_LANGUAGE_INCLUDE_NAME,ZFM_DEFAULT_LANGUAGE];
-				["IncludePath is %1","ZFM_Language::ZFM_Language_BootStrap",_includePath] call ZFM_Common_Log;
+				["IncludePath is %1","ZFM_Language::ZFM_Language_BootStrap",[_includePath]] call ZFM_Common_Log;
 				call compile preprocessFileLineNumbers _includePath;
 			};
 		}

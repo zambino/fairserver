@@ -24,6 +24,7 @@ if(!isServer) exitWith { diag_log("ZFM: This shouldn't be run by anything other 
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Constants.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Common_Config.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Common.sqf";
+call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Language.sqf";
 
 // Other Configurations
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Units_Config.sqf";
@@ -31,7 +32,6 @@ call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Loo
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Layout_Config.sqf";
 
 // Other Functions
-call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Language.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Units.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Loot.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Layout.sqf";
@@ -39,8 +39,8 @@ call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Mission.sq
 
 //Dnyamic includes. (Based on enabled mission types)
 call ZFM_Common_DoMissionBootStrap;
-call ZFM_Language_BootStrap;
 call ZFM_Common_DoDayZBootStrap;
+call ZFM_Language_DoBootStrap;
 
 /*
 *	ZFM Initialize

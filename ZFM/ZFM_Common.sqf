@@ -59,7 +59,7 @@ ZFM_Common_Log ={
 				if(count(_this select 2) >0) then
 				{
 					// Use the array passed to this function and pass it to format along with the inputText param. Assuming the array matches the tokens..
-					_interpText = format[_inputText,(_this select 2)];
+					_interpText = format[(_this select 0),(_this select 2)];
 
 					diag_log(
 						format["%1 - %2 - %3 - %4",_prefix,(_this select 1),"INFORMATION",_interpText]
