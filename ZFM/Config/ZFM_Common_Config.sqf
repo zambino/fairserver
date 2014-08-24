@@ -96,7 +96,6 @@ ZFM_LANGUAGES_SUPPORTED =[
 	"NL"  // Nederlands
 ];
 
-
 /*
 *	ZFM_DEFAULT_LANGUAGE
 *	
@@ -117,3 +116,33 @@ ZFM_LANGUAGE_INCLUDE_DIR = "\z\addons\dayz_server\ZFM\Languages\";
 *	The default name of the file for the language
 */
 ZFM_LANGUAGE_INCLUDE_NAME = "ZFM_Language_%1.sqf";
+
+/*
+*	ZFM_DAYZ_TYPES_SUPPORTED
+*
+*	The types of dayz mod supported. Used for weapon loadouts
+*/
+ZFM_DAYZ_TYPES_SUPPORTED =[
+	"Epoch",
+	"Overpoch"
+];
+/*
+*	ZFM_DAYZ_TYPE
+*
+*	The type of dayz that ZFM is running with.
+*/
+ZFM_DAYZ_TYPE = "Epoch";
+
+/*
+*	ZFM_LANGUAGE_INCLUDE_DIR
+*
+*	The default directory for language includes.
+*/
+ZFM_DAYZ_TYPE_INCLUDE_DIR = "\z\addons\dayz_server\ZFM\Config\%1\";
+
+/*
+*	ZFM_DAYZ_TYPE_INCLUDE_NAME
+*
+*	The include name for the dayz-specific config. 
+*/
+ZFM_DAYZ_TYPE_INCLUDE_NAME = "ZFM_DayZ_Config.sqf";

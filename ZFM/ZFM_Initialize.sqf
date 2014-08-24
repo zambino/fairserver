@@ -40,6 +40,7 @@ call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Mission.sq
 //Dnyamic includes. (Based on enabled mission types)
 call ZFM_Common_DoMissionBootStrap;
 call ZFM_Language_BootStrap;
+call ZFM_Common_DoDayZBootStrap;
 
 /*
 *	ZFM Initialize

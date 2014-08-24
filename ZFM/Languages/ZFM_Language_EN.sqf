@@ -55,7 +55,7 @@ ZFM_INFORMATION_STRINGS = [
 	"MissionType CRASH - Crash marker has been created at %1",
 
 	// Crash dynamic stuff
-	"A %1 %2 %3 %4. %5",
+	"A %1 %2 %3 %4. %5"
 ];
 
 ZFM_ERROR_STRINGS =[
@@ -69,7 +69,7 @@ ZFM_ERROR_STRINGS =[
 	// Missions
 	"Maximum concurrent missions is set to 0. You do want missions, right?",
 	"Only one instance of the mission handler can run at the same time. Exiting main loop.",
-	"Nobody is on the server and ZFM_MISSIONS_START_WHILE_SERVER_EMPTY is set to FALSE. Waiting for player to join.",
+	"Nobody is on the server and ZFM_MISSIONS_START_WHILE_SERVER_EMPTY is set to FALSE. Waiting for player to join."
 ];
 
 // Module-specific language strings 
@@ -181,7 +181,7 @@ ZFM_CRASH_MISSION_OTWT_CONSEQUENCE =[
 	"Fuck, looks like",
 	"Oh shit,",
 	"Hot dawg,",
-	"Holy smokes,",
+	"Holy smokes,"
 ];
 
 // Double formatting to replace a wildcard replaced by a wildcard.. ;-)
@@ -200,8 +200,59 @@ ZFM_CRASH_MISSION_OTWT_CONSEQUENCE_CONCLUSION =[
 
 
 ZFM_CRASH_MISSION_OTWT_BG_NAMES_HERO =[
-	"My Hero Group Name",
+	"Peacemakers",
+	"Lawbringers",
+	"Justice-givers",
+	"Peacekeepers",
+	"Rectifiers",
+	"Just citizens",
+	"Lovable peacekeepers",
+	"Wonderful people",
+	"Fantastic folks",
+	"Lovable folks"
 ];
 ZFM_CRASH_MISSION_OTWT_BG_NAMES_BANDIT =[
-	"My Bandit Group Name"
+	"Assholes",
+	"Mudererers",
+	"Assassins",
+	"Criminals",
+	"Ex-convicts",
+	"Escaped criminals",
+	"Rabid bankers",
+	"Vicious farmers",
+	"Angry bus drivers",
+	"Frustrated dudes",
+	"Angry wankers",
+	"Grizzly truckers",
+	"Zombie fuckers",
+	"Comic book nerds",
+	"Politicians",
+	"Porn stars",
+	"Sex pests",
+	"Mormon priests",
+	"Book burners",
+	"Scientologists",
+	"Sexual deviants",
+	"Goat lovers",
+	"Momma's boys",
+	"Flag burners",
+	"Cheese eaters",
+	"Fudge farmers",
+	"Garlic eaters",
+	"Pests",
+	"Drug dealers",
+	"Meth cookers",
+	"Heisenberg",
+	"Stabbers",
+	"Slave traders",
+	"Pimps",
+	"Megapimps",
+	"Megawhores",
+	"Megatwats",
+	"Pricks",
+	"Jerks",
+	"Jerk-offs",
+	"Jack-offs",
+	"Cum guzzlers",
+	"Gang members"
 ];

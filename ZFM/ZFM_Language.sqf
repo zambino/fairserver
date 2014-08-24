@@ -48,7 +48,7 @@ ZFM_Language_Get_String = {
 			};
 		};
 		case "ERROR" :{
-			if(typeName ZFM_ERROR_STRINGS = "ARRAY" && count ZFM_ERROR_STRINGS) then
+			if(typeName ZFM_ERROR_STRINGS == "ARRAY" && count ZFM_ERROR_STRINGS) then
 			{
 				ZFM_ERROR_STRINGS select (this select 0)
 			};

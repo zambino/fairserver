@@ -7,113 +7,113 @@
 	This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
-
- ZFM_INFORMATION_STRINGS = [
-
-    // Join-In-Progress
-    "Erstelle eine Join-In-Progress Markierung - Fahrzeugtyp [%1],Position [%2],Schwierigkeit[%3].",
-
-    // Debug
-    "Debug Parameter für _this sind %1.",
-    "Debug null-Wert check für %1",
-    "DZMS oder EMS gefunden. Werde es los, packe deine PBO wieder zusammen, fühl dich großartig.",
-    "Die AI Scripts der ZFM Alpha sind noch nicht vollständig getestet. Nutzung auf eigene Gefahr, Landratte. Y'arr.",
-
-    // Units
-    "Einheiten - Erstelle eine Einheitengruppe für die Mission ID %1",
-    "Einheiten - Erstelle einzelne Einheit %1 von %2 [Typ: %3]",
-    "Einheiten - Ausrüstung der Einheiten mit Primärwaffe [%1], Magazinen [%2], Rucksack [%3],Einheit [%4] und Magazin [%5]",
-
-    // Missions
-    "Dieser Bandit %1 wurde von %2 getötet! [%3 / %4].", // User message
-    "Alle Einheiten wurden eleminiert! [%1 / %2]", // User message
-    "Missions Debug [Ziel %1] %2",
-    "Mission ErhalteMissionDurchID Debug %1 und %2",
-    "Mission %1 - Missionsfeld Typ %2",
-    "Mission %1 - Alle Einheiten wurden ausgelöscht, beende Mission.",
-    "Mission %1 - Beende aufgerufene mit Missionsfeld %2.",
-    "Mission %1 - Missionsobjekte die entfernt wurden: %2.",
-    "Mission %1 - Missionsmarker %2 entfernt.",
-    "Mission %1 - Mission hinzugefügt.",
-    "Mission %1 - Mission entfernt.",
-    "Missionsteuerung - Initialisiert",
-    "Missionsteuerung - Missionsstart Checkup fertiggestellt - Maximale Anzahl an laufenden Missionen nicht erreicht.",
-    "Missionsteuerung - Hauptschleife gestartet",
-    "Missionsteuerung - momentan spielbare Einheiten %1",
-    "Missionsteuerung - Start Typ %1, Zufälliger Typ %2",
-    "Missionsteuerung - Kann eine neue Mission hinzugefügt werden? %1",
-    "Missionsteuerung - Warte %1 Sekunden auf nächste Schleife.",
-    "Missionsgenerator - Ausgeführt von Methode %1",
-    "Missionsgenerator - Loot Modus [%1], Typ [%2], Variablen [%3], Einheiten [%4]",
-
-    // Crash missions
-    "Verunglügt %1",
-    "%1 [Schwierigkeit: %2]",
-    "MissionsTyp CRASH - Crash Mission wird ausgeführt.",
-    "MissionsTyp CRASH - Crash Position gefunden.",
-    "MissionsTyp CRASH - das verunglückte Fahrzeug wurde durch ein Modell ersetzt. Ersetze das Modell durch nicht brennendes Modell.",
-    "MissionsTyp CRASH - Crash Markierung erstellt bei %1",
-
-    // Crash dynamic stuff
-    "Ein %1 %2 %3 %4. %5",
+ZFM_INFORMATION_STRINGS = [
+ 
+// Join-In-Progress
+"Creeren van de Join-In-Progress markers - voertuigtype [%1],positie [%2],moeilijkheid[%3].",
+ 
+// Debug
+"Debug parameters voor _this zijn %1.",
+"Debug null-waarde check voor %1",
+"DZMS of EMS is geinstalled. Verwijder, herbouw PBO, voel je goed.",
+"De Ai scripts zijn niet getest voor ZFM Alpha. Gebruik onder supervisie van een ouder of verzorger, landrot. Y'arr.",
+ 
+ 
+// Troepen
+"Troepen – Creeren van troepen groep voor missie ID %1",
+"Troepen – Creeren van individuele soldaat %1 of %2 [Type: %3]",
+"Troepen – Bewapenen van de soldaat met Primair [%1], Magazijn [%2], Rugzak [%3],Soldaat [%4] en Magazine [%5]",
+ 
+// Missies
+"Die bandiet %1! Is gedood door %2 [%3 / %4].", // gebruiker mededeling
+"Alle eenheden zijn gedood! [%1 / %2]", // User message
+"Missie Debug [Purpose %1] %2",
+"Missie KrijgMissieIDDoor Debug %1 and %2",
+"Missie %1 - MissieArray type %2",
+"Missie %1 – Alle troepen zijn gedood, missie afronden.",
+"Missie %1 – Afronden opgeroepen door MissieArray %2.",
+"Missie %1 – Missie objecten verwijderd door %2.",
+"Missie %1 - Missie markeer object %2 verwijderd.",
+"Missie %1 - Missie toegevoegd.",
+"Missie %1 - Missie verwijderd.",
+"Missie Handelaar - Gestart",
+"Missie Handelaar – Opstart check voltooid – Maximum aan missies niet bereikt.",
+"Missie Handelaar – Hoofd lus gestart",
+"Missie Handelaar – Huidige speelbare troepen %1",
+"Missie Handelaar - Start Type %1, Willekeurig type %2",
+"Missie Handelaar – Kan ik een nieuwe missie toevoegen? %1",
+"Missie Handelaar – Wachten, nog %1 seconden tot de volgende lus.",
+"Missie Genereren – Gestart via methode %1",
+"Missie Genereren – Buit modus [%1], Type [%2], Variabelen [%3], Troepen [%4]",
+ 
+// Ongeluk missies
+"Verongelukt %1",
+"%1 [Moeilijkheid: %2]",
+"MissieType ONGELUK - Ongeluk Missie Start.",
+"MissieType ONGELUK - Ongeluk locatie gevonden.",
+"MissieType ONGELUK – Verongelukt model heeft een vervangende versie. Het model wordt vervangen met een die niet brandt.",
+"MissieType ONGELUK – Ongelukmarker is gecreerd door %1",
+ 
+// Dynamisch ongeluk spul
+"A %1 %2 %3 %4. %5"
 ];
-
+ 
 ZFM_ERROR_STRINGS =[
-    // Fatal errors (ex language ones)
-    "Fatal error! Keine Missionstypen definiert oder aktiviert! Bitte beheben Sie dies, durch die Sicherstellung, dass ZFM_MISSION_TYPES_ENABLED or ZFM_MISSION_TYPES_SUPPORTED die korrekten Inhalte hat.",
-
-    // Units
-    "Unbekannter Einheitentyp erhalten. Schließe Einheiten Erstellung.",
-    "Falscher Format des Ausrüstungsfeldes für Einheiten. Sie müssen ZFM neu aufsetzen oder Ihre Fehler beheben.",    
-
-    // Missions
-    "Die Maximale Anzahl an Missionen wurde auf 0 festgelegt. Sie wollen doch Missionen, oder?",
-    "Nur eine Instanz der Missionssteuerung kann gleichzeitig laufen. Verlasse Hauptschleife.",
-    "Momentan ist keiner auf dem Serber und ZFM_MISSIONS_START_WHILE_SERVER_EMPTY ist auf FALSE gestellt. Warte auf Spieler.",
+    // Fatale fouten (ex language ones)
+    "Fatale fout! Er is geem type missie gedefineerd of toepasbaar! Verhelp dit middels een controle om te zien dat ZFM_MISSION_TYPES_ENABLED of ZFM_MISSION_TYPES_SUPPORTED de juiste inhoud heeft",
+     
+    // Troepen
+    "Onbekend type soldaat aangeleverd. Stoppen met soldaat creeren.",
+    "Verkeerde formaat van EquipArray voor de soldaat. Je zult ZFM moeten terug brengen naar standaard instellingen or maken wat je kapot hebt gemaakt.",
+     
+    // Missies
+    "Het maximale aantal missies is 0. Je wilt wel missies, toch?",
+    "Er kan maar een missie handelaar draaien per keer. Missie lus afsluiten.",
+    "Er is niemand in de server en ZFM_MISSIONS_START_WHILE_SERVER_EMPTY staat op FALSE. Wachten tot er spelers zich in de server bevinden."
 ];
-
-// Module-specific language strings
-
+ 
+// Module-specifieke taal strings
+ 
 ZFM_CRASH_MISSION_OTWT =[
-    
+ 
 ];
-
+ 
 ZFM_CRASH_MISSION_OTWT_PLACE =[
-
+ 
 ];
-
+ 
 ZFM_CRASH_MISSION_OTWT_ACTION =[
-    
+ 
 ];
 ZFM_CRASH_MISSION_OTWT_CONSEQUENCE =[
-    "Es scheint so als würde",
-    "Sieht aus als",
-    "Unglücklicherweise,",
-    "Bedauerlicherweise,",
-    "Verdammt, sieht aus als",
-    "Oh Scheiße,",
-    "Ohh Kumpel,",
-    "Heilige Scheiße,",
+"Het lijkt er op dat",
+"Blijkbaar",
+"Helaas Pindakaas,",
+"Jammer genoeg,",
+"KUT! Het lijkt er op dat",
+"O kut,",
+"Jeetje mineetje,",
+"Mijn god,"
 ];
-
+ 
 // Double formatting to replace a wildcard replaced by a wildcard.. ;-)
 ZFM_CRASH_MISSION_OTWT_CONSEQUENCE_CONCLUSION =[
-    "%1 haben die Kontrolle über das Gebiet erlangt.",
-    "%1 haben sich im Gebiet verschantzt.",
-    "%1 patollieren in der Nähe.",
-    "%1 feiern eine Orgie in der Nähe.",
-    "%1 haben die Scharfschützenposition erobert.",
-    "%1 haben sich im Gebiet versteckt",
-    "%1 haben Defensive Positionen aufgestellt.",
-    "%1 haben jetzt die Kontrolle.",
-    "%1 sind nun die Befehlshaber.",
-    "%1 sind die großen Bosse in der Stadt."
+"%1 heeft controle genomen over het gebied.",
+"%1 verschuilen zich in het gebied.",
+"%1 patrouilleren dichtbij.",
+"%1 hebben een orgie in de nabije omgeving.",
+"%1 hebben scherschutterposities ingenomen in de omgeving.",
+"%1 verstoppen zich in de omgeving",
+"%1 hebben defensieve plekken ingenomen.",
+"%1 zijn in controle.",
+"%1 zijn de baas.",
+"%1 zijn nu de ekte ekte bazen in de stad jwz."
 ];
-
-
+ 
+ 
 ZFM_CRASH_MISSION_OTWT_BG_NAMES_HERO =[
-    "Der Name meiner Heldengruppe",
+"Mijn heldengroep naam",
 ];
 ZFM_CRASH_MISSION_OTWT_BG_NAMES_BANDIT =[
-    "Der Name meiner Banditengruppe"
+"Mijn bandietengroep naam"
 ];

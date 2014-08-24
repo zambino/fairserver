@@ -13,42 +13,73 @@
 *	Common function used to log errors and information.
 */
 ZFM_Common_Log ={
-	private["_inputText","_name","_type","_variables","_output"];
+	private["_prefix","_interpText"];
 
-	_inputText = _this select 0;
-	_name = _this select 1;
-	_variables = _this select 2;
+	// Always prefix the string with this as it's a common static part
+	_prefix = format["%1 %2",ZFM_NAME,ZFM_VERSION];
 
-	_output = "";
-	_type ="ERROR";
-
-	if(count(_this) <3) then
+	switch(count(_this)) do
 	{
-		_variables = [];
-	}
-	else
-	{
-		if(typeName (_this select 2) == "ARRAY") then
-		{
-			if(count (_this select 2) == 0) then
+		// Debug text only
+		case 1: {
+			if(typeName (_this select 0) == "STRING") then
 			{
-				_output = _inputText;
+				diag_log(
+					format["%1 - %2 - %3 - %4",_prefix,"NotSpecified","INFORMATION",(_this select 0)]
+				);
 			}
 			else
 			{
-				_output = format[_inputText,(_this select 2)];
+				diag_log(
+					format["%1 - ERROR - Wrong parameter types for Common_Log! (#1 is %2)",_prefix,typeName (_this select 0)]
+				);	
+			};
+		};
+
+		// Debug text and caller name
+		case 2: {
+			if(typeName (_this select 0) == "STRING" && typeName (_this select 1) == "STRING") then
+			{
+				diag_log(
+					format["%1 - %2 - %3 - %4",_prefix,(_this select 1),"INFORMATION",(_this select 0)]
+				);		
+			}
+			else
+			{
+				diag_log(
+					format["%1 - ERROR - Wrong parameter types for Common_Log! (#1 is %2,#2 is %3)",_prefix,typeName (_this select 0),typeName (_this select 1)]
+				);
+			};
+		};
+
+		// Debug text, caller name and message type
+		case 3: {
+			if(typeName (_this select 0) == "STRING" && typeName (_this select 1) == "STRING" && typeName (_this select 2) == "ARRAY") then
+			{
+				if(count(_this select 2) >0) then
+				{
+					// Use the array passed to this function and pass it to format along with the inputText param. Assuming the array matches the tokens..
+					_interpText = format[_inputText,(_this select 2)];
+
+					diag_log(
+						format["%1 - %2 - %3 - %4",_prefix,(_this select 1),"INFORMATION",_interpText]
+					);
+				}
+				else
+				{
+					diag_log(
+						format["%1 - %2 - %3 - %4",_prefix,(_this select 1),"INFORMATION",(_this select 0)]
+					);
+				};
+			}
+			else
+			{
+				diag_log(
+					format["%1 - ERROR - Wrong parameter types for Common_Log! (#1 is %2,#2 is %3, #3 is %4)",_prefix,typeName (_this select 0),typeName (_this select 1),typeName (_this select 2)]
+				);
 			};
 		};
 	};
-
-	if(count(_this) <3) then
-	{
-		_type = "ERROR";
-	};
-
-	diag_log(
-		format["%1 %2 - %3 - %4 - ",ZFM_NAME,ZFM_VERSION,_name,_type] + _output
-	);
 };
 
 
@@ -74,7 +105,7 @@ ZFM_Common_DoMissionBootStrap ={
 				if(_iRow in ZFM_MISSION_TYPES_SUPPORTED) then
 				{
 					_includePath = ZFM_MISSION_TYPE_INCLUDE_DIR + format[ZFM_MISSION_TYPE_INCLUDE_NAME,_iRow];
-					["IncludePath is %1","ZFM_Common::ZFM_Common_DoMissionBootStrap",_includePath] call ZFM_Common_Log;
+					["MissionBootStrap IncludePath is %1","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Common_Log;
 					call compile preprocessFileLineNumbers _includePath;
 				};
 			};
@@ -90,6 +121,40 @@ ZFM_Common_DoMissionBootStrap ={
 	};
 
 };	
+
+ZFM_Common_DoDayZBootStrap ={
+	private["_includePath"];	
+
+	diag_log("DAYZBOOTSTRAP");
+
+	if(typename ZFM_DAYZ_TYPES_SUPPORTED == "ARRAY" && typeName ZFM_DAYZ_TYPE_INCLUDE_NAME == "STRING") then
+	{
+		if(count ZFM_DAYZ_TYPES_SUPPORTED >0) then
+		{
+			diag_log(format["DAYZ COUNT %1",count ZFM_DAYZ_TYPES_SUPPORTED]);
+
+			if(ZFM_DAYZ_TYPE in ZFM_DAYZ_TYPES_SUPPORTED) then
+			{
+				_includePath = format[ZFM_DAYZ_TYPE_INCLUDE_DIR,ZFM_DAYZ_TYPE] + ZFM_DAYZ_TYPE_INCLUDE_NAME;
+				["DayZBootStrap Include Path is %1","ZFM_Common::ZFM_Common_DoDayZBootStrap",[_includePath]] call ZFM_Common_Log;
+				call compile preprocessFileLineNumbers _includePath;
+			}
+			else
+			{
+				["Fatal error! No DayZ types are defined or enabled! Please rectify this by ensuring ZFM_DAYZ_TYPES_SUPPORTED is correct.","ZFM_Common::ZFM_Common_DoDayZBootStrap"] call ZFM_Common_Log;
+			};
+		}
+		else
+		{
+			["Fatal error! No DayZ types are defined or enabled! Please rectify this by ensuring ZFM_DAYZ_TYPES_SUPPORTED is correct.","ZFM_Common::ZFM_Common_DoDayZBootStrap"] call ZFM_Common_Log;
+		};
+	}
+	else
+	{
+		["Fatal error! No DayZ types are defined or enabled! Please rectify this by ensuring ZFM_DAYZ_TYPES_SUPPORTED is correct.","ZFM_Common::ZFM_Common_DoDayZBootStrap"] call ZFM_Common_Log;
+	};
+
+};
 
 
 /*
