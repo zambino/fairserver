@@ -84,6 +84,14 @@ ZFM_Layout_Create_Object ={
 				// So, the parameters are what are passed to this function to create a loot iten.
 				_createdObject = [(_classParameters select 0),_outputLoc,(_classParameters select 1),(_classParameters select 2)] call ZFM_Loot_Create;
 			};
+		};
+
+		if(_className = ZFM_LAYOUT_OBJECT_UNIT_GROUP) then
+		{
+			if(typeName _classParameters == "ARRAY") then
+			{
+				[(_classParameters select 0),(_classParameters select 1),(_classParameters select 2),_outputLoc,(_classParameters select 3)] call ZFM_CreateUnitGroup;
+			};
 		}
 		else
 		{
