@@ -11,8 +11,6 @@ ZFM_Loot_Crates =[
 	"USSpecialWeapons_EP1"
  ];
  
- 
- 
  ZFM_LOOT_CONTENT_TEXT_TYPES =[
 	"SNIPERS",
 	"MACHINEGUNS",

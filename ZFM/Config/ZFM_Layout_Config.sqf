@@ -103,6 +103,4 @@ ZFM_Layouts_Crap_To_Clear =[
 *	Config entities for layouts.
 */ 
 ZFM_LAYOUT_OBJECT_UNIT_GROUP = "Lx101010";  
-ZFM_LAYOUT_OBJECT_LOOT = "Lx101012";  
- 
-  
+ZFM_LAYOUT_OBJECT_LOOT = "Lx101012";

@@ -34,7 +34,9 @@ ZFM_Layouts_Class_Get_SuperClass = {
 	_vehicles = isClass(configFile >> "CfgVehicles" >> _class);
 	_weapons = isClass(configFile >> "CfgWeapons" >> _class);
 	_magazine = isClass(configFile >> "CfgMagazines" >> _class);
-	
+
+	_retVal = "CfgNothing";
+
 	if(isClass(configFile >> "CfgVehicles" >> _class)) then
 	{
 		_retVal = "CfgVehicles";
@@ -86,11 +88,11 @@ ZFM_Layout_Create_Object ={
 			};
 		};
 
-		if(_className = ZFM_LAYOUT_OBJECT_UNIT_GROUP) then
+		if(_className == ZFM_LAYOUT_OBJECT_UNIT_GROUP) then
 		{
 			if(typeName _classParameters == "ARRAY") then
 			{
-				[(_classParameters select 0),(_classParameters select 1),(_classParameters select 2),_outputLoc,(_classParameters select 3)] call ZFM_CreateUnitGroup;
+				[(_classParameters select 0),(_classParameters select 1),(_classParameters select 2),_outputLoc,(_classParameters select 3)] call ZFM_Units_CreateUnitGroup;
 			};
 		}
 		else

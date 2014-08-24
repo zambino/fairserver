@@ -119,7 +119,7 @@ ZFM_Mission_CountDead ={
 *
 *	Handles when an AI unit is killed.
 */
-ZFM_Handle_MissionUnitKilled ={
+ZFM_Mission_Handle_MissionUnitKilled ={
 	private ["_unit","_killer","_missionID","_numberActualDead","_killerWeapon","_remainingUnits","_unitType","_deathText","_missionInstance","_numUnitsTotal","_numUnitsKilled"];
 	
 	_unit = _this select 0;
@@ -286,6 +286,11 @@ ZFM_Mission_Free ={
 
 };
 
+/*
+*	ZFM_Mission_Can_Add
+*
+*	Determines whether a new mission can be added to the stack.
+*/
 ZFM_Mission_Can_Add = {
 	private["_currentMissions"];
 	
@@ -305,7 +310,7 @@ ZFM_Mission_Can_Add = {
 };
 
 /*
-*	ZFM_MissionArray_AddMissionArray
+*	ZFM_Mission_Add
 *
 *	Adds a pre-generated mission array to ZFM_CURRENT_MISSIONS.
 */
@@ -371,7 +376,7 @@ ZFM_Mission_VerifyID={
 };
 
 /*
-*	ZFM_MissionArray_GetMissionByID	
+*	ZFM_Mission_GetMissionByID
 *
 *	Gets a mission array from ZFM_CURRENT_MISSIONS by Mission ID.
 */
@@ -400,7 +405,7 @@ ZFM_Mission_GetMissionByID ={
 };
 
 /*
-*	ZFM_MissionArray_SetMission_Variables
+*	ZFM_Mission_Set
 *
 *	Adds mission variables to a specific MissionArray. This is used to keep status updates of missions.
 *
@@ -515,7 +520,7 @@ ZFM_Mission_Generate_New ={
 	_missionID = _this select 0;
 
 	// Crash mission should pass to generateMission, then 
-	_missionArray = [ZFM_MISSION_METHOD_RANDOM,_missionID] call ZFM_GenerateMission; // Return MissionArray
+	_missionArray = [ZFM_MISSION_METHOD_RANDOM,_missionID] call ZFM_Mission_GenerateMission; // Return MissionArray
 	diag_log(format["MISSION ARRAY FROM GENERATEMISSION %1",_missionArray]);
 	[_missionArray] call ZFM_Mission_Add;
 	
@@ -597,7 +602,7 @@ ZFM_Mission_Handler_Start ={
 *
 *	Generates a mission. This is intended to support manually-defined and random mission types.
 */
-ZFM_GenerateMission ={
+ZFM_Mission_GenerateMission ={
 	private ["_missionMethod","_missionGenArray","_missionUnits","_missionArray","_missionTitle","_missionDifficulty","_lootMode","_missionType","_missionVariables"];
 	_missionMethod = _this select 0;
 	_missionID = _this select 1;

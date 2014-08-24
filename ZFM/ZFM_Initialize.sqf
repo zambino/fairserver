@@ -38,9 +38,11 @@ call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Layout.sqf
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Mission.sqf";
 
 //Dnyamic includes. (Based on enabled mission types)
-call ZFM_Common_DoMissionBootStrap;
-call ZFM_Common_DoDayZBootStrap;
-call ZFM_Language_DoBootStrap;
+call ZFM_Common_DoMissionBootStrap;							// Bootstraps supported missions (crash,etc)
+call ZFM_Common_DoDayZBootStrap;							// Bootstraps Epoch/Overpoch etc.
+call ZFM_Language_DoBootStrap;								// Bootsraps language (EN,NL,DE,FR)
+call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
+
 
 /*
 *	ZFM Initialize
@@ -74,7 +76,9 @@ ZFM_Layouts_Array =[
 		[ZFM_LAYOUT_OBJECT_LOOT,0,["EASY","TKSpecialWeapons_EP1",["MACHINEGUNS","SNIPERS"]]],
 		[ZFM_LAYOUT_OBJECT_LOOT,0,["WAR_MACHINE","TKSpecialWeapons_EP1",["BUILDINGSUPPLIES","TOOLS"]]],
 		[ZFM_LAYOUT_OBJECT_LOOT,0,["HARD","TKSpecialWeapons_EP1",["PISTOLS","SNIPERS"]]]
-	]
+	],
+	[0,0,0],
+	[0,[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[[ZFM_AI_TYPE_SNIPER,ZFM_AI_TYPE_SNIPER,ZFM_AI_TYPE_SNIPER],"EASY",ZFM_GROUP_EAST,1]],0]
 ];
 
 [ZFM_Layouts_Array,[0,1],[4600,10160,0],20] call ZFM_Layout_Parse;

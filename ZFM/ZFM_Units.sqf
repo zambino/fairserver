@@ -10,11 +10,37 @@
 
 
 /*
+	ZFM_DoBootStrap
+	
+	Starts up all the checks necessary to ensure that AI and Missions can be loaded.
+*/
+ZFM_Units_DoBootStrap = {
+	// Create the Centers for AI
+	ZFM_GROUP_EAST = createCenter east;
+	ZFM_GROUP_WEST = createCenter west;
+	ZFM_GROUP_CIVILIAN = createCenter civilian;
+	ZFM_GROUP_RESISTANCE = createCenter resistance; // Vive Le Resistance!
+	
+	// unfriendly AI bandits
+	EAST setFriend [WEST, 0];
+	EAST setFriend [RESISTANCE, 0];
+
+	// Players
+	WEST setFriend [EAST, 0];
+	WEST setFriend [RESISTANCE, 0];
+
+	// friendly AI
+	RESISTANCE setFriend [EAST, 0];
+	RESISTANCE setFriend [WEST, 0];
+};
+
+
+/*
 *	ZFM_GenerateRandomUnits
 *
 *	Generates an array of ZFM-typed random units.
 */
-ZFM_GenerateRandomUnits ={
+ZFM_Units_GenerateRandomUnits ={
 
 	private ["_difficulty","_maxBound","_generatedUnits","_x","_initRandSeed","_newType"];
 	_difficulty = _this select 0;
@@ -59,11 +85,11 @@ ZFM_GenerateRandomUnits ={
 };
 
 /*
-	ZFM_CreateUnitGroup
+	ZFM_Units_CreateUnitGroup
 	
 	Takes an array input and other requirements to generate groups of AI at once. Returns in an array for convenience.
 */
-ZFM_CreateUnitGroup ={
+ZFM_Units_CreateUnitGroup ={
 	private["_unitsArray","_difficulty","_side","_thisUnit","_spawnAt","_uArrayReturn","_unitGroup","_unitsArrayCount","_aiType","_thisUnit","_x"];
 
 	_unitsArray = _this select 0;
@@ -84,26 +110,23 @@ ZFM_CreateUnitGroup ={
 		if(_unitsArrayCount > 0) then
 		{
 			//Create AI group..
-			_unitGroup = [_side] call ZFM_CreateAIGroup;
+			_unitGroup = [_side] call ZFM_Units_Create_Group;
 			
 			for [{_x =0},{_x <= _unitsArrayCount-1},{_x = _x +1} ] do
 			{
 				_aiType = _unitsArray select _x;
 				
-				if(_aiType in ZFM_AI_TYPES) then
+				if(_aiType in ZFM_UNIT_TYPES_TEXT) then
 				{
-					// Stagger them so they aren't just crushed or what have you.
-					_staggerSpawnAt = [_crashPos,(round random 10),(round random 10)] call ZFM_Create_OffsetPosition;
-				
 					["Creating individual unit %1 of %2 (Type %3)",[_x,(_unitsArrayCount-1),_aiType]] call ZFM_Common_Log;
 
-					_thisUnit = [_unitGroup,_difficulty,_staggerSpawnAt,_aiType] call ZFM_CreateUnit;
+					_thisUnit = [_unitGroup,_difficulty,_spawnAt,_aiType] call ZFM_Units_CreateUnit;
 				
 					// Lets us find out which mission the unit is attached to.
 					_thisUnit setVariable ["ZFM_MISSION_ID",_missionID];
 
 					_thisUnit addMPEventHandler["MPKilled",{
-						[(_this select 0),(_this select 1)] call ZFM_Handle_MissionUnitKilled;
+						[(_this select 0),(_this select 1)] call ZFM_Mission_Handle_MissionUnitKilled;
 					}];
 					
 					// Add to the array return
@@ -126,7 +149,7 @@ ZFM_CreateUnitGroup ={
 *
 *	Provide an array in the ZFM format, and equip the unit with the weapons proscribed.
 */
-ZFM_EquipAIFromArray ={
+ZFM_Units_Equip_From_Array ={
 	private ["_ai","_equipArray","_primaryWeap","_numMagazines","_unitBackPk","_unitBackPack","_primaryWeapon","_magazineToAdd","_x"];
 	
 	_ai = _this select 0;
@@ -164,7 +187,7 @@ ZFM_EquipAIFromArray ={
 	
 	Sets AI skills based on config arrays. 
 */
-ZFM_SetAISkills ={
+ZFM_Units_Set_AI_Skills ={
 	private ["_unit","_difficulty","_skillsArray","_numSkills","_thisRow","_skill","_currSkill","_x"];
 	
 	_unit  = _this select 0;
@@ -265,7 +288,7 @@ ZFM_SetAISkills ={
 *
 *	Create a ZFM_typed unit.
 */
-ZFM_CreateUnit ={
+ZFM_Units_CreateUnit ={
 	private ["_aiGroup","_difficulty","_skin","_unit","_location","_equipArray"];
 
 	_aiGroup = _this select 0;
@@ -309,10 +332,10 @@ ZFM_CreateUnit ={
 		removeAllWeapons _unit;
 
 		// Now, add the equipment from the equiparray for that unit.
-		[_unit,_equipArray] call ZFM_EquipAIFromArray;
+		[_unit,_equipArray] call ZFM_Units_Equip_From_Array;
 
 		// Now, set the skills of the unit.
-		[_unit,_difficulty] call ZFM_SetAISkills;
+		[_unit,_difficulty] call ZFM_Units_Set_AI_Skills;
 
 		// Now we set the variables for the unit so we can distinguish this unit from others.
 		_unit setVariable ["ZFM_Unit",true];
@@ -342,7 +365,7 @@ ZFM_CreateUnit ={
 *
 *	Create a group for a group of AI.
 */
-ZFM_Units_CreateGroup = {
+ZFM_Units_Create_Group = {
 
 	private ["_sideType","_createdGroup"];
 	_sideType = _this select 0;

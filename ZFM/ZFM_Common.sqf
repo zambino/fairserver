@@ -209,32 +209,6 @@ ZFM_Common_Humanity_Alter ={
 };
 
 
-
-/*
-	ZFM_DoBootStrap
-	
-	Starts up all the checks necessary to ensure that AI and Missions can be loaded.
-*/
-ZFM_Common_DoBootStrap = {
-	// Create the Centers for AI
-	ZFM_GROUP_EAST = createCenter east;
-	ZFM_GROUP_WEST = createCenter west;
-	ZFM_GROUP_CIVILIAN = createCenter civilian;
-	ZFM_GROUP_RESISTANCE = createCenter resistance; // Vive Le Resistance!
-	
-	// unfriendly AI bandits
-	EAST setFriend [WEST, 0];
-	EAST setFriend [RESISTANCE, 0];
-
-	// Players
-	WEST setFriend [EAST, 0];
-	WEST setFriend [RESISTANCE, 0];
-
-	// friendly AI
-	RESISTANCE setFriend [EAST, 0];
-	RESISTANCE setFriend [WEST, 0];
-};
-
 /*
 *	ZFM_CheckExistingMissionSystems	
 *
