@@ -15,6 +15,8 @@
 	Starts up all the checks necessary to ensure that AI and Missions can be loaded.
 */
 ZFM_Units_DoBootStrap = {
+	[3,"INFORMATION","ZFM_Units::ZFM_Units_DoBootStrap"] call ZFM_Language_Log;
+
 	// Create the Centers for AI
 	ZFM_GROUP_EAST = createCenter east;
 	ZFM_GROUP_WEST = createCenter west;
@@ -89,7 +91,7 @@ ZFM_Units_GenerateRandomUnits ={
 	
 	Takes an array input and other requirements to generate groups of AI at once. Returns in an array for convenience.
 */
-ZFM_Units_CreateUnitGroup ={
+ZFM_Units_Create_Unit_Group ={
 	private["_unitsArray","_difficulty","_side","_thisUnit","_spawnAt","_uArrayReturn","_unitGroup","_unitsArrayCount","_aiType","_thisUnit","_x"];
 
 	_unitsArray = _this select 0;
@@ -99,7 +101,7 @@ ZFM_Units_CreateUnitGroup ={
 	_missionID = _this select 4;
 	
 
-	["Creating Unit Group from MissionID %1","ZFM_Units::ZFM_CreateUnitGroup",_missionID] call ZFM_Common_Log;
+	["Creating group of units for MissionID %1","ZFM_Units::ZFM_Units_Create_Unit_Group",[_missionID]] call ZFM_Common_Log;
 
 	_uArrayReturn = [];
 	
@@ -109,32 +111,33 @@ ZFM_Units_CreateUnitGroup ={
 	
 		if(_unitsArrayCount > 0) then
 		{
+			["Units array count is OK.","ZFM_Units::ZFM_Units_Create_Unit_Group"] call ZFM_Common_Log;
+
 			//Create AI group..
 			_unitGroup = [_side] call ZFM_Units_Create_Group;
-			
+
+			["Unit group created, output is %1","ZFM_Units::ZFM_Units_Create_Unit_Group",[_unitGroup]] call ZFM_Common_Log;
+		
 			for [{_x =0},{_x <= _unitsArrayCount-1},{_x = _x +1} ] do
 			{
 				_aiType = _unitsArray select _x;
 				
 				if(_aiType in ZFM_UNIT_TYPES_TEXT) then
 				{
-					["Creating individual unit %1 of %2 (Type %3)",[_x,(_unitsArrayCount-1),_aiType]] call ZFM_Common_Log;
-
-					_thisUnit = [_unitGroup,_difficulty,_spawnAt,_aiType] call ZFM_Units_CreateUnit;
-				
-					// Lets us find out which mission the unit is attached to.
+					_thisUnit = [_unitGroup,_difficulty,_spawnAt,_aiType] call ZFM_Units_Create_Unit;
 					_thisUnit setVariable ["ZFM_MISSION_ID",_missionID];
-
 					_thisUnit addMPEventHandler["MPKilled",{
 						[(_this select 0),(_this select 1)] call ZFM_Mission_Handle_MissionUnitKilled;
 					}];
 					
+					["Iteration [%1], Unit created [%2], Unit Type [%3]","ZFM_Units::ZFM_Units_Create_Unit_Group",[_x,_thisUnit,_aiType]] call ZFM_Common_Log;
+		
 					// Add to the array return
 					_uArrayReturn = _uArrayReturn + [_thisUnit];
 				};
 			};
 			
-			// Stops them from killing eachother when they fire..s
+			// Stops them from killing eachother when they fire..
 			_unitGroup setFormation "ECH LEFT";
 			
 		};
@@ -288,7 +291,7 @@ ZFM_Units_Set_AI_Skills ={
 *
 *	Create a ZFM_typed unit.
 */
-ZFM_Units_CreateUnit ={
+ZFM_Units_Create_Unit ={
 	private ["_aiGroup","_difficulty","_skin","_unit","_location","_equipArray"];
 
 	_aiGroup = _this select 0;

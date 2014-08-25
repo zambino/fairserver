@@ -38,9 +38,9 @@ call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Layout.sqf
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Mission.sqf";
 
 //Dnyamic includes. (Based on enabled mission types)
+call ZFM_Language_DoBootStrap;								// Bootsraps language (EN,NL,DE,FR)
 call ZFM_Common_DoMissionBootStrap;							// Bootstraps supported missions (crash,etc)
 call ZFM_Common_DoDayZBootStrap;							// Bootstraps Epoch/Overpoch etc.
-call ZFM_Language_DoBootStrap;								// Bootsraps language (EN,NL,DE,FR)
 call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
 
 
@@ -49,7 +49,7 @@ call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
 *
 *	Waits for all the other server functions to start before ZFM begins.
 */
-["Waiting for initialization..","ZFM_Initialize"] call ZFM_Common_Log;
+[4,"INFORMATION","ZFM_Initialize.sqf::execVM"] call ZFM_Language_Log;
 waitUntil{initialized};
 
 /*
@@ -78,7 +78,7 @@ ZFM_Layouts_Array =[
 		[ZFM_LAYOUT_OBJECT_LOOT,0,["HARD","TKSpecialWeapons_EP1",["PISTOLS","SNIPERS"]]]
 	],
 	[0,0,0],
-	[0,[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[[ZFM_AI_TYPE_SNIPER,ZFM_AI_TYPE_SNIPER,ZFM_AI_TYPE_SNIPER],"EASY",ZFM_GROUP_EAST,1]],0]
+	[0,[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[["COMMANDER","SNIPER","HEAVY","HEAVY"],"WAR_MACHINE",ZFM_GROUP_EAST,1]],0]
 ];
 
 [ZFM_Layouts_Array,[0,1],[4600,10160,0],20] call ZFM_Layout_Parse;

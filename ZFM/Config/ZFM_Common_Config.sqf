@@ -14,6 +14,15 @@
 */
 ZFM_IS_INSTALLED = true;
 
+
+/*
+*	ZFM_ENABLE_DEBUG_MESSAGES
+*
+*	Enables debugging and output to RPT. Highly recommended, however, you can turn it off if you don't want RPT spam.
+*/
+ZFM_ENABLE_DEBUG_MESSAGES = true;
+
+
 /*
 *	ZFM_NAME
 *	

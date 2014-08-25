@@ -10,57 +10,75 @@
 ZFM_INFORMATION_STRINGS = [
 
 	// Join-In-Progress
-	"Creating Join-In-Progress marker - VehicleType [%1],Position [%2],Difficulty[%3].",
+	"Creating Join-In-Progress marker - VehicleType [%1],Position [%2],Difficulty[%3].", //0
+
+	// BootStrap process
+	"BootStrapping - DayZ type - Include path is %1.", //1
+	"BootStrapping - Enabled Missions - Include path is %1.", //2
+	"BootStrapping - Units - Creating centers and enabling AI.", //3
+	"BootStrapping - Initialisation - Waiting for init to occur.", //4
 
 	// Debug
-	"Debug parameters for _this are %1.",
-	"Debug null-value check for %1",
-	"DZMS or EMS is installed. Get rid, rebuild PBO, feel good.",
-	"AI scripts are not fully tested for ZFM Alpha. Use at your peril, landlubber. Y'arr.",
-
+	"Debug parameters are %1.", //3
+	"Debug null-value check for %1",//2
+	"DZMS or EMS is installed. Get rid, rebuild PBO, feel good.", //3
+	"AI scripts are not fully tested for ZFM Alpha. Use at your peril, landlubber. Y'arr.", //4
 
 	// Units
-	"Units - Creating Unit Group from Mission ID %1",
-	"Units - Creating Individual Unit %1 of %2 [Type: %3]",
-	"Units - Equipping Unit with Primary [%1], Magazines [%2], Backpack [%3],Unit [%4] and Magazine [%5]",
+	"Units - Creating Unit Group from Mission ID %1", //5
+	"Units - Creating Individual Unit %1 of %2 [Type: %3]", //6
+	"Units - Equipping Unit with Primary [%1], Magazines [%2], Backpack [%3],Unit [%4] and Magazine [%5]", //7
+
+	// Layouts
+	"Layout - Row [%1], Row Array [%2], Row Array Count [%3] - Parsing..",
+	"Layout - Row [%1], X-Axis Center Position [%2]",
+	"Layout - Row [%1], CenterPos exceeded limited, defaulted",
+	"Layout - Row [%1], Column [%2] - Parsing.. ",
+	"Layout - Row [%1], Column [%2] - X-Axis Center Position Reached",
+	"Layout - Row [%1], Column [%2] - Negative Offset from X-Axis Center",
+	"Layout - Row [%1], Column [%2] - Positive Offset from X-Axis Center",
+	"Layout - Row [%1], Column [%2] - Y-Axis Center Position Reached",
+	"Layout - Row [%1], Column [%2] - Negative Offset from Y-Axis Center",
+	"Layout - Row [%1], Column [%2] - Positive Offset from Y-Axis Center",
 
 	// Missions
-	"That bandit %1! Was killed by %2 [%3 / %4].", // User message
-	"All units were killed! [%1 / %2]", // User message
-	"Mission Debug [Purpose %1] %2",
-	"Mission GetMissionByID Debug %1 and %2",
-	"Mission %1 - MissionArray type %2",
-	"Mission %1 - All units have been killed, concluding mission.",
-	"Mission %1 - Conclude called with MissionArray %2.",
-	"Mission %1 - Mission objects removed are %2.",
-	"Mission %1 - Mission markers object %2 removed.",
-	"Mission %1 - Mission added.",
-	"Mission %1 - Mission removed.",
-	"Mission Handler - Initialized",
-	"Mission Handler - Startup Check Completed - Maximum concurrent missions not reached.",
-	"Mission Handler - Main loop started",
-	"Mission Handler - Current playable units %1",
-	"Mission Handler - Start Type %1, Random type %2",
-	"Mission Handler - Can Add New Mission? %1",
-	"Mission Handler - Waiting %1 seconds for next loop.",
-	"Mission Generation - Executed by method %1",
-	"Mission Generation - Loot Mode [%1], Type [%2], Variables [%3], Units [%4]",
+	"That bandit %1! Was killed by %2 [%3 / %4].", // 9
+	"All units were killed! [%1 / %2]", // 10
+	"Mission Debug [Purpose %1] %2", //11
+	"Mission GetMissionByID Debug %1 and %2", //12
+	"Mission %1 - MissionArray type %2", //13
+	"Mission %1 - All units have been killed, concluding mission.", //14
+	"Mission %1 - Conclude called with MissionArray %2.", //15
+	"Mission %1 - Mission objects removed are %2.", //16
+	"Mission %1 - Mission markers object %2 removed.", //17
+	"Mission %1 - Mission added.", //18
+	"Mission %1 - Mission removed.", //19
+	"Mission Handler - Initialized", //20
+	"Mission Handler - Startup Check Completed - Maximum concurrent missions not reached.", //21
+	"Mission Handler - Main loop started", //22
+	"Mission Handler - Current playable units %1", // 23
+	"Mission Handler - Start Type %1, Random type %2", //24
+	"Mission Handler - Can Add New Mission? %1", //25
+	"Mission Handler - Waiting %1 seconds for next loop.", //26
+	"Mission Generation - Executed by method %1", //27
+	"Mission Generation - Loot Mode [%1], Type [%2], Variables [%3], Units [%4]", //28
 
 	// Crash missions
-	"Crashed %1",
-	"%1 [Difficulty: %2]",
-	"MissionType CRASH - Crash Mission Executing.",
-	"MissionType CRASH - Crash location found.",
-	"MissionType CRASH - Vehicle crashed has replacement model. Replacing model with non-burning model.",
-	"MissionType CRASH - Crash marker has been created at %1",
+	"Crashed %1", //29
+	"%1 [Difficulty: %2]", //30
+	"MissionType CRASH - Crash Mission Executing.", //31
+	"MissionType CRASH - Crash location found.", //32
+	"MissionType CRASH - Vehicle crashed has replacement model. Replacing model with non-burning model.", //33
+	"MissionType CRASH - Crash marker has been created at %1", //34
 
 	// Crash dynamic stuff
-	"A %1 %2 %3 %4. %5"
+	"A %1 %2 %3 %4. %5" //35
 ];
 
 ZFM_ERROR_STRINGS =[
 	// Fatal errors (ex language ones)
 	"Fatal error! No mission types are defined or enabled! Please rectify this by ensuring ZFM_MISSION_TYPES_ENABLED or ZFM_MISSION_TYPES_SUPPORTED has the correct contents",
+	"Fatal error! No DayZ types are defined or enabled! Please rectify this by ensuring ZFM_DAYZ_TYPES_SUPPORTED is correct.",
 
 	// Units
 	"Unknown unit type provided. Exiting unit creation.",

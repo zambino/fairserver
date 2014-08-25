@@ -13,7 +13,10 @@
 *	Common function used to log errors and information.
 */
 ZFM_Common_Log ={
-	private["_prefix","_interpText"];
+	private["_prefix","_interpText","_interpArray","_outputText","_formatText"];
+
+	// Exit the function, no output. Isn't this such a beautiful function? :D
+	if(!ZFM_ENABLE_DEBUG_MESSAGES) exitWith{};
 
 	// Always prefix the string with this as it's a common static part
 	_prefix = format["%1 %2",ZFM_NAME,ZFM_VERSION];
@@ -52,23 +55,40 @@ ZFM_Common_Log ={
 			};
 		};
 
+
 		// Debug text, caller name and message type
 		case 3: {
-			if(typeName (_this select 0) == "STRING" && typeName (_this select 1) == "STRING" && typeName (_this select 2) == "ARRAY") then
+			if(typeName (_this select 0) == "STRING" && typeName (_this select 1) == "STRING" && typeName (_this select 2) == "STRING") then
 			{
-				if(count(_this select 2) >0) then
-				{
-					// Use the array passed to this function and pass it to format along with the inputText param. Assuming the array matches the tokens..
-					_interpText = format[(_this select 0),(_this select 2)];
-
 					diag_log(
-						format["%1 - %2 - %3 - %4",_prefix,(_this select 1),"INFORMATION",_interpText]
+						format["%1 - %2 - %3 - %4",_prefix,(_this select 1),(_this select 2),(_this select 0)]
 					);
+			}
+			else
+			{
+				diag_log(
+					format["%1 - ERROR - Wrong parameter types for Common_Log! (#1 is %2,#2 is %3, #3 is %4)",_prefix,typeName (_this select 0),typeName (_this select 1),typeName (_this select 2)]
+				);
+			};
+		};
+
+		// Debug text, caller name, message type & parameters
+		case 4: {
+			if(typeName (_this select 0) == "STRING" && typeName (_this select 1) == "STRING" && typeName (_this select 2) == "STRING" && typeName (_this select 3) == "ARRAY") then
+			{
+				if(count(_this select 3) >0) then
+				{
+					// Create an array for the format function
+					_interpArray = [(_this select 0)] + (_this select 3);
+					_interpText = format _interpArray;
+					_outputText = ["%1 - %2 - %3 - %4",_prefix,(_this select 1),(_this select 2),_interpText];
+					_formatText = format _outputText;
+					diag_log(_formatText);
 				}
 				else
 				{
 					diag_log(
-						format["%1 - %2 - %3 - %4",_prefix,(_this select 1),"INFORMATION",(_this select 0)]
+						format["%1 - %2 - %3 - %4",_prefix,(_this select 1),(_this select 2),(_this select 0)]
 					);
 				};
 			}
@@ -105,19 +125,22 @@ ZFM_Common_DoMissionBootStrap ={
 				if(_iRow in ZFM_MISSION_TYPES_SUPPORTED) then
 				{
 					_includePath = ZFM_MISSION_TYPE_INCLUDE_DIR + format[ZFM_MISSION_TYPE_INCLUDE_NAME,_iRow];
-					["MissionBootStrap IncludePath is %1","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Common_Log;
+					[2,"INFORMATION","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Language_Log;
+					//["MissionBootStrap IncludePath is %1","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Common_Log;
 					call compile preprocessFileLineNumbers _includePath;
 				};
 			};
 		}
 		else
 		{
-			["Fatal error! No mission types are defined or enabled! Please rectify this by ensuring ZFM_MISSION_TYPES_ENABLED or ZFM_MISSION_TYPES_SUPPORTED has the correct contents","ZFM_Common::ZFM_Common_DoMissionBootStrap"] call ZFM_Common_Log;
+			[0,"ERROR"] call ZFM_Language_Log;
+			//["Fatal error! No mission types are defined or enabled! Please rectify this by ensuring ZFM_MISSION_TYPES_ENABLED or ZFM_MISSION_TYPES_SUPPORTED has the correct contents","ZFM_Common::ZFM_Common_DoMissionBootStrap"] call ZFM_Common_Log;
 		};
 	}
 	else
 	{
-		["Fatal error! No mission types are defined or enabled! Please rectify this by ensuring ZFM_MISSION_TYPES_ENABLED or ZFM_MISSION_TYPES_SUPPORTED has the correct contents","ZFM_Common::ZFM_Common_DoMissionBootStrap"] call ZFM_Common_Log;
+		[0,"ERROR"] call ZFM_Language_Log;
+		//["Fatal error! No mission types are defined or enabled! Please rectify this by ensuring ZFM_MISSION_TYPES_ENABLED or ZFM_MISSION_TYPES_SUPPORTED has the correct contents","ZFM_Common::ZFM_Common_DoMissionBootStrap"] call ZFM_Common_Log;
 	};
 
 };	
@@ -136,22 +159,22 @@ ZFM_Common_DoDayZBootStrap ={
 			if(ZFM_DAYZ_TYPE in ZFM_DAYZ_TYPES_SUPPORTED) then
 			{
 				_includePath = format[ZFM_DAYZ_TYPE_INCLUDE_DIR,ZFM_DAYZ_TYPE] + ZFM_DAYZ_TYPE_INCLUDE_NAME;
-				["DayZBootStrap Include Path is %1","ZFM_Common::ZFM_Common_DoDayZBootStrap",[_includePath]] call ZFM_Common_Log;
+				[1,"INFORMATION","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Language_Log;
 				call compile preprocessFileLineNumbers _includePath;
 			}
 			else
 			{
-				["Fatal error! No DayZ types are defined or enabled! Please rectify this by ensuring ZFM_DAYZ_TYPES_SUPPORTED is correct.","ZFM_Common::ZFM_Common_DoDayZBootStrap"] call ZFM_Common_Log;
+				[1,"ERROR","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Language_Log;
 			};
 		}
 		else
 		{
-			["Fatal error! No DayZ types are defined or enabled! Please rectify this by ensuring ZFM_DAYZ_TYPES_SUPPORTED is correct.","ZFM_Common::ZFM_Common_DoDayZBootStrap"] call ZFM_Common_Log;
+			[1,"ERROR","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Language_Log;
 		};
 	}
 	else
 	{
-		["Fatal error! No DayZ types are defined or enabled! Please rectify this by ensuring ZFM_DAYZ_TYPES_SUPPORTED is correct.","ZFM_Common::ZFM_Common_DoDayZBootStrap"] call ZFM_Common_Log;
+		[1,"ERROR","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Language_Log;
 	};
 
 };
@@ -214,7 +237,7 @@ ZFM_Common_Humanity_Alter ={
 *
 *	Checks to see if existing Misson Systems are included.
 */
-ZFM_CheckExistingMissionSystems = {
+ZFM_Common_CheckExistingMissionSystems = {
 	
 	_doExit = false;
 	_outputMessage = ZFM_Name + ZFM_version;
@@ -224,7 +247,7 @@ ZFM_CheckExistingMissionSystems = {
 	*/
 	if(!isNil(DZMSInstalled)) then
 	{
-		diag_log(_outputMessage + "CheckExistingMissionSystems - DZMS or EMS is currently installed. This will interfere with ZFM, and needs to be disabled before ZFM can run. Exiting.");
+		[7,"INFORMATION","ZFM_Common::ZFM_Common_CheckExistingMissionSystems"] call ZFM_Language_Log;
 		_doExit = true;
 	};
 	
@@ -233,7 +256,7 @@ ZFM_CheckExistingMissionSystems = {
 	*/
 	if(!isNil(MissionGoMinor)) then
 	{
-		diag_log(_outputMessage + "CheckExistingMissionSystems - DayZ Missions is currently installed. This will interfere with ZFM, and needs to be disabled before ZFM can run. Exiting.");
+		[7,"INFORMATION","ZFM_Common::ZFM_Common_CheckExistingMissionSystems"] call ZFM_Language_Log;
 		_doExit = true;
 	};
 	
@@ -246,39 +269,9 @@ ZFM_CheckExistingMissionSystems = {
 *	Check to see if existing AI systems are installed. 
 *	As of alpha release, disabled to prevent issues with DZAI/etc.
 */
-ZFM_CheckExistingAI = {
-    private["_doExit","_outputMessage"];
-    
-    
-	_doExit = false;
-	_outputMessage = ZFM_Name + ZFM_Version;
-	
-	/*
-	* 	 Check For WickedAI.
-	*/
-	if(typeName WAIconfigloaded == "BOOLEAN") then
+ZFM_Common_CheckExistingAI = {
+	if(format["%1",WAIconfigloaded] != "" || format["%1",SAR_version] != "" || format["%1",DZAI_isActive] != "") then
 	{
-		diag_log(_outputMessage + "CheckExistingAI - WickedAI discovered. This will interfere with ZFM, and must be disabled before ZFM can run. Exiting.");
-		_doExit = true;
+		[8,"INFORMATION","ZFM_Common::ZFM_Common_CheckExistingAI"] call ZFM_Language_Log;
 	};
-	
-	/*
-	*	Check for SARGE AI
-	*/
-	if(!isNil(SAR_version)) then
-	{
-		diag_log(_outputMessage + "CheckExistingAI - SARGE AI discovered. This will interfere with ZFM, and must be disabled before ZFM can run. Exiting.");
-		_doExit = true;
-	};
-	
-	/*
-	*	Check for DZ AI
-	*/
-	if(typeName DZAI_isActive == "BOOLEAN") then
-	{
-		diag_log(_outputMessage + "CheckExistingAI - DZ AI discovered. This will interfere with ZFM, and must be disabled before ZFM can run. Exiting.");
-		_doExit = true;	
-	};
-
-	_doExit
 };

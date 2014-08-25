@@ -71,20 +71,19 @@ ZFM_Layout_Create_Object ={
 	// Don't care if the input is wrong. It's important that the input be checked if this is going to be monkeyed with by casual developers.
 	if(typeName _outputLoc == "ARRAY" && typeName _className == "STRING" && typeName _orientation == "SCALAR" && typeName _classParameters == "ARRAY") then
 	{
-
-		diag_log(format["CREATE OBJECT WAS CALLED %1",_this]);
+		[5,"INFORMATION","ZFM_Layout::ZFM_Layout_Create_Object[74]",[_this]] call ZFM_Language_Log;
 
 		// Creating a loot crate
 		if(_className == ZFM_LAYOUT_OBJECT_LOOT) then
 		{
-			diag_log(format["FOUND LOOT OBJECT! YAY!"]);
-			diag_log(format["CLASSPARAMETERS %1",_classParameters]);
+			[5,"INFORMATION","ZFM_Layout::ZFM_Layout_Create_Object[79]",[_className]] call ZFM_Language_Log;
 
 			// We need it to be an array, or it won't work.
 			if(typeName _classParameters == "ARRAY") then
 			{
 				// So, the parameters are what are passed to this function to create a loot iten.
 				_createdObject = [(_classParameters select 0),_outputLoc,(_classParameters select 1),(_classParameters select 2)] call ZFM_Loot_Create;
+				_createdObject
 			};
 		};
 
@@ -92,29 +91,26 @@ ZFM_Layout_Create_Object ={
 		{
 			if(typeName _classParameters == "ARRAY") then
 			{
-				[(_classParameters select 0),(_classParameters select 1),(_classParameters select 2),_outputLoc,(_classParameters select 3)] call ZFM_Units_CreateUnitGroup;
+				_createdObject = [(_classParameters select 0),(_classParameters select 1),(_classParameters select 2),_outputLoc,(_classParameters select 3)] call ZFM_Units_Create_Unit_Group;
+				_createdObject
 			};
 		}
 		else
 		{
-			diag_log(format["FOUND NON-LAYOUT OBJECT YAY! %1",_this]);
-
+			[5,"INFORMATION","ZFM_Layout::ZFM_Layout_Create_Object[100]",[_className]] call ZFM_Language_Log;
 			_classType = [_className] call ZFM_Layouts_Class_Get_SuperClass;
-
-			diag_log(format["CLASSNAME ARR %1",_classType]);
 
 			if(_classType == "CfgVehicles") then
 			{
 				_createdObject = createVehicle [_className,_outputLoc,[],0,"NONE"];
-				diag_log(format["CREATED NON LOOT OBJECT %1",_createdObject]);
+				[5,"INFORMATION","ZFM_Layout::ZFM_Layout_Create_Object[106]",[_createdObject]] call ZFM_Language_Log;
 				_createdObject setDir _orientation;
+
+				_createdObject
 			};
 		};
 
 	};
-	
-	_createdObject
-	
 };
 
 /*
@@ -186,20 +182,20 @@ ZFM_Layout_Parse ={
 					// Get the row by number.
 					_row = _layout select _x;
 
-					diag_log(format["ROW NUMBER %1, X %2, LAYOUTCOUNT %3",_row,_x,_layoutCount]);
+					[12,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_row,_layoutCount]] call ZFM_Language_Log;
 
-					
 					if(typeName _row == "ARRAY") then
 					{
 						// How wide is this array?
 						_rowCount = count _row;
 						
-						diag_log(format["ROWCOUNT %1",_rowCount]);
+						[13,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_row,_centerPosX]] call ZFM_Language_Log;
+
 						// Did some dingbat give a row too short and a center too far? :O
 						if(_centerPosX > _rowCount) then
 						{
 							_centerPosX = _rowCount;
-							diag_log(format["CENTERPOSX %1",_centerPosX]);
+							[14,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_row]] call ZFM_Language_Log;
 						};
 						
 						// Okay, so we're sure it's an array and we're going through each part 
@@ -212,10 +208,7 @@ ZFM_Layout_Parse ={
 							for [{_y =0},{_y <= _rowCount-1},{_y = _y +1} ] do
 							{
 
-								diag_log(format["ROW NUMBERY %1",_row]);
-
-
-								diag_log(format["ROW COUNT %1 AND ROW %2",count _row,_row]);	
+								[14,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_row,_y]] call ZFM_Language_Log;
 
 								// Get the item from the array..
 								_rowItem = _row select _y;

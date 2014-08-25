@@ -502,35 +502,35 @@ ZFM_UNIT_EQUIPMENT_RIFLEMAN_WAR_MACHINE =[
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
 ];
 
-ZFM_EQUIPMENT_COMMANDER_DEADMEAT =[
+ZFM_UNIT_EQUIPMENT_COMMANDER_DEADMEAT =[
 	"GUE_Commander_DZ",
 	["FN_FAL","FN_FAL_ANPVS4","SCAR_H_LNG_Sniper_SD","PK"],				// Will always have an awesome sniper rifle..
 	8,
 	["DZ_LargeGunBag_EP1"],				// Doesn't really matter.
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
 ];
-ZFM_EQUIPMENT_COMMANDER_EASY =[
+ZFM_UNIT_EQUIPMENT_COMMANDER_EASY =[
 	"GUE_Commander_DZ",
 	["FN_FAL","FN_FAL_ANPVS4","SCAR_H_LNG_Sniper_SD","PK"],				// Will always have an awesome sniper rifle..
 	8,
 	["DZ_LargeGunBag_EP1"],				// Doesn't really matter.
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
 ];
-ZFM_EQUIPMENT_COMMANDER_MEDIUM =[
+ZFM_UNIT_EQUIPMENT_COMMANDER_MEDIUM =[
 	"GUE_Commander_DZ",
 	["FN_FAL","FN_FAL_ANPVS4","SCAR_H_LNG_Sniper_SD","PK"],				// Will always have an awesome sniper rifle..
 	8,
 	["DZ_LargeGunBag_EP1"],				// Doesn't really matter.
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
 ];
-ZFM_EQUIPMENT_COMMANDER_HARD =[
+ZFM_UNIT_EQUIPMENT_COMMANDER_HARD =[
 	"GUE_Commander_DZ",
 	["FN_FAL","FN_FAL_ANPVS4","SCAR_H_LNG_Sniper_SD","PK"],				// Will always have an awesome sniper rifle..
 	8,
 	["DZ_LargeGunBag_EP1"],				// Doesn't really matter.
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
 ];
-ZFM_EQUIPMENT_COMMANDER_WAR_MACHINE =[
+ZFM_UNIT_EQUIPMENT_COMMANDER_WAR_MACHINE =[
 	"GUE_Commander_DZ",
 	["FN_FAL","FN_FAL_ANPVS4","SCAR_H_LNG_Sniper_SD","PK"],				// Will always have an awesome sniper rifle..
 	8,
@@ -538,7 +538,7 @@ ZFM_EQUIPMENT_COMMANDER_WAR_MACHINE =[
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
 ];
 
-ZFM_EQUIPMENT_HEAVY_DEADMEAT =[
+ZFM_UNIT_EQUIPMENT_HEAVY_DEADMEAT =[
 	"Bandit1_DZ", 												// Skin
 	["M249_DZ"],														// Snipers from FixedLoot. (Random pick)
 	2,																	// Boundary for the maximum number of magazines
@@ -546,7 +546,7 @@ ZFM_EQUIPMENT_HEAVY_DEADMEAT =[
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"] // Any medical supplies they should require.
 ];
 
-ZFM_EQUIPMENT_HEAVY_EASY =[
+ZFM_UNIT_EQUIPMENT_HEAVY_EASY =[
 	"Bandit1_DZ", 												// Skin
 	["M249_DZ"],														// Snipers from FixedLoot. (Random pick)
 	2,																	// Boundary for the maximum number of magazines
@@ -554,21 +554,21 @@ ZFM_EQUIPMENT_HEAVY_EASY =[
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"] // Any medical supplies they should require.
 ];
 
-ZFM_EQUIPMENT_HEAVY_MEDIUM =[
+ZFM_UNIT_EQUIPMENT_HEAVY_MEDIUM =[
 	"Bandit2_DZ", 														// Skin
 	["Mk_48_DZ","M249_DZ"],										// Snipers from FixedLoot. (Random pick)
 	3,																				// Boundary for the maximum number of magazines
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],				// Backpacks from FixedLoot (Random pick)
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]	
 ];
-ZFM_EQUIPMENT_HEAVY_HARD =[
+ZFM_UNIT_EQUIPMENT_HEAVY_HARD =[
 	"GUE_Soldier_CO_DZ", 											// Skin
 	["MG36_camo","M249_DZ","M240_DZ"],						// Snipers from FixedLoot. (Random pick)
 	5,																	// Boundary for the maximum number of magazines
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],		// Backpacks from FixedLoot (Random pick)
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
 ];
-ZFM_EQUIPMENT_HEAVY_WAR_MACHINE =[
+ZFM_UNIT_EQUIPMENT_HEAVY_WAR_MACHINE =[
 	"GUE_Soldier_CO_DZ",
 	["PK"],				// Will always have an awesome rifle..
 	5,
