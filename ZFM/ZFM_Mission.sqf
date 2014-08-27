@@ -52,7 +52,9 @@ ZFM_MISSIONS_MISSION_HANDLER_STARTED = false;
 *
 *	Handles the Join In Progress - updates mission markers for joining players.
 */
-ZFM_Handle_JIP = {
+ZFM_Mission_Handle_JIP = {
+	private["_missionsCount","_row","_crashVehicle","_markerPos","_difficulty","_crash"];
+	
 
 	if(count ZFM_CURRENT_MISSIONS != 0) then
 	{
@@ -70,11 +72,10 @@ ZFM_Handle_JIP = {
 				_crashVehicle = _row select 12;
 				_markerPos = _row select 13;
 				_difficulty = _row select 14;
-				
-				diag_log(format["JIP MARKERS %1 AND %2 AND %3",_crashVehicle,_markerPos,_difficulty]);
-				
+				_crash = [44,"INFORMATION","ZFM_Loot::ZFM_Mission_Handle_JIP",[_crashVehicle,_markerPos,_difficulty] call ZFM_Language_Log;
+
 				// Add the marker pos for them.
-				[_markerPos,_difficulty,format["Crashed %1",_crashVehicle]] call ZFM_CreateCrashMarker;
+				[_markerPos,_difficulty,_crash] call ZFM_CreateCrashMarker;
 			};
 		};
 	};

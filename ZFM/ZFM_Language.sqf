@@ -39,9 +39,6 @@ ZFM_Language_Get_String ={
 	_type = _this select 0;
 	_retVal = "RARR";
 
-
-	diag_log(format["PARAMS! %1",_this select 0]);
-
 	switch((_this select 0)) do
 	{
 		case "INFORMATION": {

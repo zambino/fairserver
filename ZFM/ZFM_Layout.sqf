@@ -208,7 +208,7 @@ ZFM_Layout_Parse ={
 							for [{_y =0},{_y <= _rowCount-1},{_y = _y +1} ] do
 							{
 
-								[14,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_row,_y]] call ZFM_Language_Log;
+								[14,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y]] call ZFM_Language_Log;
 
 								// Get the item from the array..
 								_rowItem = _row select _y;
@@ -228,38 +228,34 @@ ZFM_Layout_Parse ={
 										if(_x == _centerPosX) then
 										{
 											_outputX = _centerLocation select 0;
-											diag_log(format["OUTPUTX %1",_outputX]);
-
+											[17,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y]] call ZFM_Language_Log;
 										};
 
 										if(_x < _centerPosX) then
 										{
 											_offsetX = (_centerPosX + 1)-(_x+1);
 											_outputX = (_centerLocation select 0)-(_offsetX * _arraySpacing);
-											diag_log(format["OUTPUTX %1",_outputX]);
-
+											[18,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y]] call ZFM_Language_Log;
 										};
 										
 										if(_x > _centerPosX) then
 										{
 											_offsetX = (_x+1)-(_centerPosX+1);
 											_outputX = (_centerLocation select 0)+(_offsetX * _arraySpacing);
-											diag_log(format["OUTPUTX %1",_outputX]);
+											[19,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y]] call ZFM_Language_Log;
 										};											
 										
 										if(_y == _centerPosY) then
 										{
 											_outputY = _centerLocation select 1;
-											diag_log(format["OUTPUTY %1",_outputY]);
-
+											[20,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y]] call ZFM_Language_Log;
 										};
 
 										if(_y < _centerPosY) then
 										{
 											_offsetY = (_centerPosY + 1)-(_y+1);
 											_outputY = (_centerLocation select 1)-(_offsetY * _arraySpacing);
-											diag_log(format["OUTPUTY %1",_outputY]);
-
+											[21,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y]] call ZFM_Language_Log;
 										};
 										if(_y > _centerPosY) then
 										{
@@ -269,16 +265,11 @@ ZFM_Layout_Parse ={
 											_offsetY = (_y+1)-(_centerPosY+1); // So here, _y = 3 + 1 = 4
 											// _centerPosY = 2 + 1 = 3, so 3 + 4 = 7, 7*5 = 35 = 4635
 											_outputY = (_centerLocation select 1)+(_offsetY * _arraySpacing);
-											diag_log(format["OUTPUTY %1",_outputY]);
-
+											[22,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y]] call ZFM_Language_Log;
 										};												
 
 										_outputLoc = [_outputX,_outputY,(_centerLocation select 2)];
-										
-										diag_log(format["[%1,%2] > %3",_x,_y,_outputLoc]);
-										
-										diag_log(format["OUTPUTLOC %1, %2,%3,%4",_outputLoc,_className,_orientation,_classParameters]);
-
+										[22,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y,_outputLoc,_className,_orientation,_classParameters]] call ZFM_Language_Log;
 										[_outputLoc,_className,_orientation,_classParameters] call ZFM_Layout_Create_Object;
 										
 									};

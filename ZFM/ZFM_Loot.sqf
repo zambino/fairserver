@@ -83,7 +83,6 @@ ZFM_Loot_Contents_Append_Magazines ={
 
 				if(typeName _magazine == "ARRAY") then
 				{
-					diag_log(format["MAGAZINE %1",_magazine]);
 					if(count _magazine >0) then
 					{
 
@@ -110,12 +109,8 @@ ZFM_Loot_Contents_Append_Magazines ={
 
 	_outputArray = [];
  
-	diag_log(format["PAREMETERS FOR ZFM_Loot_Get_Contents %1",_this]);
- 
 	if(_difficulty in ZFM_DIFFICULTY_TEXT_TYPES && typeName _contents == "ARRAY") then
 	{
-		diag_log(format["CONTENTS",_contents]);
-	
 		// Validate to see if the contents are actually there..
 		if(count _contents >0) then
 		{
@@ -126,8 +121,6 @@ ZFM_Loot_Contents_Append_Magazines ={
 			{
 				_contentsRow = _contents select _x;
 				_contentsArray = _contentsArray + call compile format["ZFM_LOOT_%1_%2",_contentsRow,_difficulty];
-				
-				diag_log(format["CONTENTS ARRAYZAZ %1",_contentsArray]);
 			};
 			
 			_minimumItems = call compile format["ZFM_MINIMUM_ITEMS_PER_LOOT_CRATE_%1",_difficulty];
@@ -146,7 +139,6 @@ ZFM_Loot_Contents_Append_Magazines ={
 
 			// Now to add in ammunition for any weapons in the crate!
 			_outputArray = [_contentsArray] call ZFM_Loot_Contents_Append_Magazines;
-			diag_log(format["OUTPUT ARRAY FINAL %1",_outputArray]);
 		};
 	}
 	else
@@ -221,8 +213,6 @@ ZFM_Loot_Container_Is_Full ={
 			};
 		};
 		
-		diag_log(format["CURRENT %1, MAX %2",_curr,_max]);
-		
 		if(_curr == _max) then
 		{
 			_isFull = true;
@@ -260,8 +250,6 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 			_amount = _max - _curr;
 		};	
 		
-		diag_log(format["AMOUNT AFTER %1, MAX %2, CURR %3, ISFULL %4",_amount,_max,_curr,_isFull]);
-		
 		// If the container is full, or if spawning on ground is 
 		if(!(_isFull select 0)) then
 		{
@@ -281,10 +269,6 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 		{
 			_amount = _max - _curr;
 		};	
-		
-		diag_log(format["AMOUNT AFTER %1, MAX %2, CURR %3, ISFULL %4",_amount,_max,_curr,_isFull]);
-		
-		
 		// If the container is full, or if spawning on ground is 
 		if(!(_isFull select 0)) then
 		{
@@ -302,8 +286,7 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 		{
 			_amount = _max - _curr;
 		};	
-		diag_log(format["AMOUNT AFTER %1, MAX %2, CURR %3, ISFULL %4",_amount,_max,_curr,_isFull]);
-		
+
 		// If the container is full, or if spawning on ground is 
 		if(!(_isFull select 0)) then
 		{
@@ -325,17 +308,12 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 	if(typeName _toAddLootTo == "OBJECT" && typeName _lootToAdd == "ARRAY") then
 	{
 		_itemsCount = count _lootToAdd;
-		
-		diag_log(format["Add Loot to Container param matched %1 AND ZA %2, ITEMSCOUNT %3",_this,count _lootToAdd,_itemsCount]);
-		
+
 		if(_itemsCount >0) then
 		{
 			for [{_x =0},{_x <= _itemsCount-1},{_x = _x +1} ] do
 			{
 				_rowItem = _lootToAdd select _x;
-
-				diag_log("DIAGLOGGING NULL VALUE");
-				diag_log(format["%1",(_lootToAdd select _x)]);
 
 				// This works surprisingly well. Check if the array element is null.
 				if(format["%1",(_lootToAdd select _x)] != "<null>") then
@@ -357,48 +335,6 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 	
  };
  
- 
- /*
- * 	ZFM_Loot_Create_LootItem
- *
- *	Creates a vehicle, places it, positions it, and puts into it the items specified.
- */
- ZFM_Loot_Create_Loot_Object ={
-	private["_toAddLootTo","_location","_lootToAdd","_actualLootObject"];
-	
-	_toAddLootTo = _this select 0;
-	_location = _this select 1;
-	_lootToAdd = _this select 2;
-	
-	diag_log(format["Create_Loot_Object called %1",_this]);
-	
-	// Check and make sure they're actually the right type. Man I wish SQF had typed and defined parameters.. :(
-	if(typeName _toAddLootTo == "STRING" && typeName _lootToAdd == "ARRAY") then
-	{
-		diag_log(format["Create_Loot_Object correct params%1",_this]);
-		
-		// Make sure it's a vehicle type to add loot to
-		if(isClass(configFile >> "CfgVehicles" >> _toAddLootTo)) then
-		{
-			diag_log(format["Create_Loot_Object is vehicle %1",_this]);
-			
-			// Create the vehicle for the loot to be put into
-			_actualLootObject = createVehicle[_toAddLootTo,_location,[],0,"NONE"];
-			_actualLootObject setPos _location;
-			_actualLootObject setDir round(random 360);
-			
-			// Get rid of the weapons, magazines & backpacks that might be added in by default
-			clearWeaponCargoGlobal _actualLootObject;
-			clearMagazineCargoGlobal _actualLootObject;
-			clearBackpackCargoGlobal _actualLootObject;
-			
-			// Add the items to the container
-			[_actualLootObject,_lootToAdd] call ZFM_Loot_Add_Loot_To_Container;
-		};
-	
-	};
- };
- 
  /*
  * 	ZFM_Loot_Create_LootItem
  *
@@ -410,21 +346,14 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 	_toAddLootTo = _this select 0;
 	_location = _this select 1;
 	_lootToAdd = _this select 2;
-	
-	diag_log(format["Create_Loot_Object called %1",_this]);
-	
 	_returnObject = objNull;
 
 	// Check and make sure they're actually the right type. Man I wish SQF had typed and defined parameters.. :(
 	if(typeName _toAddLootTo == "STRING" && typeName _lootToAdd == "ARRAY") then
 	{
-		diag_log(format["Create_Loot_Object correct params%1",_this]);
-		
 		// Make sure it's a vehicle type to add loot to
 		if(isClass(configFile >> "CfgVehicles" >> _toAddLootTo)) then
 		{
-			diag_log(format["Create_Loot_Object is vehicle %1",_this]);
-			
 			// Create the vehicle for the loot to be put into
 			_actualLootObject = createVehicle[_toAddLootTo,_location,[],0,"NONE"];
 			_actualLootObject setPos _location;
@@ -452,8 +381,6 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
  	_position = _this select 1;
  	_lootCrateType  = _this select 2;
  	_returnObject = objNull;
-
- 	diag_log(format["Creating loot motherfucker %1",_this]);
 
  	if(count _this >3) then
  	{
@@ -486,9 +413,6 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
  			_contents = [_difficulty,_contents] call ZFM_Loot_Get_Contents;
  		};
 
- 		diag_log(format["CONTENTS OF LAYOUT LOOT ARRAY %1",_contents]);
-
-
  		if(typeName _lootCrateType == "STRING") then
  		{
 
@@ -496,7 +420,7 @@ ZFM_Loot_Add_Loot_To_Container_Sub ={
 	 		_createdLootItemClass = _lootCrateType;
  		};
 
- 		diag_log(format["CREATED LOOT ITEM CLASS %1",_createdLootItemClass]);
+		[23,"INFORMATION","ZFM_Loot::ZFM_Loot_Create_Loot_Object",[_lootCrateType,_position,(count _contents)]] call ZFM_Language_Log;
 
  		//Create the loot box.
  		_returnObject = [_createdLootItemClass,_position,_contents] call ZFM_Loot_Create_Loot_Object;

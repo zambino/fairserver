@@ -40,6 +40,10 @@ ZFM_INFORMATION_STRINGS = [
 	"Layout - Row [%1], Column [%2] - Y-Axis Center Position Reached",
 	"Layout - Row [%1], Column [%2] - Negative Offset from Y-Axis Center",
 	"Layout - Row [%1], Column [%2] - Positive Offset from Y-Axis Center",
+	"Layout - Row [%1], Column [%2] - Output Location. OutputLoc [%3], ClassName [%4], Orientation [%5], Params [%6]",
+
+	// Loot
+	"Loot - Created Loot Object [%1] at [%2] with [%3] loot items.",
 
 	// Missions
 	"That bandit %1! Was killed by %2 [%3 / %4].", // 9
