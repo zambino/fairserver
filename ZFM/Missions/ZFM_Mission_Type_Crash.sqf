@@ -327,10 +327,6 @@ ZFM_ExecuteCrashMission ={
 	
 		// Add to the mission array.. [TODO]
 	
-		diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_ExecuteCrashMission - MissionGenArray %3.",ZFM_Name,ZFM_Version,_missionGenArray]);
-		diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_ExecuteCrashMission - MissionGenArray %3.",ZFM_Name,ZFM_Version,_missionGenArray]);
-		diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_ExecuteCrashMission - NumberLootCrates %3.",ZFM_Name,ZFM_Version,_numberLootCrates]);
-
 		// Now we've got the crash vehicle
 		_actCrashVehicle = [_crashVehicle,_difficulty,format["Crashed %1",_crashVehicle]] call ZFM_CreateCrashVehicle;
 		

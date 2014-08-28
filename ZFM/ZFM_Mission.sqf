@@ -72,7 +72,7 @@ ZFM_Mission_Handle_JIP = {
 				_crashVehicle = _row select 12;
 				_markerPos = _row select 13;
 				_difficulty = _row select 14;
-				_crash = [44,"INFORMATION","ZFM_Loot::ZFM_Mission_Handle_JIP",[_crashVehicle,_markerPos,_difficulty] call ZFM_Language_Log;
+				_crash = [44,"INFORMATION","ZFM_Mission::ZFM_Mission_Handle_JIP",[_crashVehicle,_markerPos,_difficulty]] call ZFM_Language_Log;
 
 				// Add the marker pos for them.
 				[_markerPos,_difficulty,_crash] call ZFM_CreateCrashMarker;
@@ -121,7 +121,7 @@ ZFM_Mission_CountDead ={
 *	Handles when an AI unit is killed.
 */
 ZFM_Mission_Handle_MissionUnitKilled ={
-	private ["_unit","_killer","_missionID","_numberActualDead","_killerWeapon","_remainingUnits","_unitType","_deathText","_missionInstance","_numUnitsTotal","_numUnitsKilled"];
+	private ["_unit","_killer","_missionID","_killerText","_numberActualDead","_killerWeapon","_remainingUnits","_unitType","_deathText","_missionInstance","_numUnitsTotal","_numUnitsKilled"];
 	
 	_unit = _this select 0;
 	_killer = _this select 1;
@@ -165,17 +165,16 @@ ZFM_Mission_Handle_MissionUnitKilled ={
 				
 				if(_numUnitsKilled < _numUnitsTotal) then
 				{
-					[nil,nil,rTitleText,format["That bandit %1! Killed by %2 [%3 / %4]",_deathText,(name _killer),_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+					_killerText =  [24,"INFORMATION","ZFM_Mission::ZFM_Mission_Handle_MissionUnitKilled",[_deathText,(name _killer),_numUnitsKilled,_numUnitsTotal]] call ZFM_Language_Log;
+					[nil,nil,rTitleText,_killerText,"PLAIN",30] call RE;
 				}
 				else
 				{
-					diag_log(format["MISSIONID AS PASSED TO CONCLUDE CONCLUDE CONCLUDE %1",_missionID]);
-					
 					// Conclude the mission!
 					[_missionID] call ZFM_Mission_Conclude_Mission;
 					
-					// All units are killed..
-					[nil,nil,rTitleText,format["All units were killed! [%1 / %2]",_numUnitsKilled,_numUnitsTotal],"PLAIN",30] call RE;
+					_killerText =  [25,"INFORMATION","ZFM_Mission::ZFM_Mission_Handle_MissionUnitKilled",[_numUnitsKilled,_numUnitsTotal]] call ZFM_Language_Log;
+					[nil,nil,rTitleText,_killerText,"PLAIN",30] call RE;
 				}
 			};
 		};
@@ -188,12 +187,12 @@ ZFM_Mission_Conclude_Mission ={
 	
 	_missionArray = [_missionID] call ZFM_Mission_GetMissionByID;
 	
-	diag_log(format["Mission CONCLUDE CALLED %1, MISSIONID %2",_missionArray,_missionID]);
-	
+	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Conclude_Mission[190]",[[_missionArray,_missionID]]] call ZFM_Language_Log;
+
 	if(typeName _missionArray == "ARRAY") then
 	{
-		diag_log(format["Mission CONCLUDE MISSIONARRAY %1",_missionArray]);
-		
+		[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Conclude_Mission[194]",[[_missionArray,_missionID]]] call ZFM_Language_Log;
+
 		if(count _missionArray >0) then
 		{
 			_objects = _missionArray select 8;
@@ -214,12 +213,11 @@ ZFM_Mission_Remove_Mission_Objects = {
 	
 	_missionObjects = _this select 0;
 	
-	diag_log(format["ZFM_MISSION_REMOVE_MISSION_OBJECTS params %1",_this]);
+	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Remove_Mission_Objects[216]",[[_missionObjects]]] call ZFM_Language_Log;
 	
 	if(typeName _missionObjects == "ARRAY") then
 	{
-		diag_log(format["ZFM_MISSION_REMOVE_MISSION_OBJECTS COUNT COUNT COUNT %1",count _missionObjects]);
-	
+		[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Remove_Mission_Objects[220]",[[count _missionObjects]]] call ZFM_Language_Log;
 		if(count _missionObjects > 0) then
 		{
 				{
@@ -245,12 +243,12 @@ ZFM_Mission_Remove_Mission_Marker ={
 	
 	_missionMarkers = _this select 0;
 	
-	diag_log(format["ZFM_MISSION_REMOVE_MISSION_MARKER params %1",_this]);
+	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Remove_Mission_Marker[246]",[[_this]]] call ZFM_Language_Log;
 
 		if(typeName _missionMarkers == "ARRAY") then
 		{
-			diag_log(format["ZFM_MISSION_REMOVE_MISSION_MARKER MARKERS %1",_missionMarkers]);
-		
+			[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Remove_Mission_Marker[250]",[[_missionMarkers]]] call ZFM_Language_Log;
+
 			_missionMarkerOne = _missionMarkers select 0;
 			_missionMarkerTwo = _missionMarkers select 1;
 			
@@ -320,7 +318,7 @@ ZFM_Mission_Add ={
 	
 	_missionArray = _this select 0;
 	
-	diag_log(format["ZFM_MISSION_ADD NULL CHECK %1",_this]);
+	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Add [321]",[[_this]]] call ZFM_Language_Log;
 	
 	if(typeName ZFM_CURRENT_MISSIONS == "ARRAY" && typeName _missionArray == "ARRAY") then
 	{
@@ -328,13 +326,9 @@ ZFM_Mission_Add ={
 		_missionType = _missionArray select 1;
 		_canAdd = [] call ZFM_Mission_Can_Add;
 		
-		diag_log(format["ZFM_MISSION_ADD NULL CHECK - CAN ADD %1, MISSION TYPE",_canAdd,_missionType]);
-		
 		if(_canAdd) then
 		{
-			diag_log(format["ZFM_CURRENT_MISSIONS - %1 AND %2",ZFM_CURRENT_MISSIONS,count ZFM_CURRENT_MISSIONS]);
-			
-		
+			[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Add[333]",[[ZFM_CURRENT_MISSIONS,count ZFM_CURRENT_MISSIONS]]] call ZFM_Language_Log;
 			// Todo: Count by mission type
 			ZFM_CURRENT_MISSIONS set[(count ZFM_CURRENT_MISSIONS),[(count ZFM_CURRENT_MISSIONS)] + _missionArray]
 		};
@@ -391,7 +385,7 @@ ZFM_Mission_GetMissionByID ={
 	{
 		_missionsCount = count ZFM_CURRENT_MISSIONS;
 		
-		diag_log(format["GETMISSIONBYID COUNT %1, MISSIONID %2",_missionsCount,_missionID]);
+		[25,"INFORMATION","ZFM_Mission::ZFM_Mission_GetMissionByID[390]",[[_missionsCount,_missionID]]] call ZFM_Language_Log;
 		
 		if(_missionID <= _missionsCount) then
 		{
@@ -399,8 +393,7 @@ ZFM_Mission_GetMissionByID ={
 		};
 	};
 	
-	diag_log(format["%1",_returnMission]);
-	
+	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_GetMissionByID[398]",[[_returnMission]]] call ZFM_Language_Log;
 	
 	_returnMission
 };
@@ -422,58 +415,43 @@ ZFM_Mission_Set ={
 	_missionID = _this select 0;
 	_missionVariableType = _this select 1;
 	_missionVariable = _this select 2;
-	
-	diag_log(format["_missionVariableType %1, _missionVariable %2,_missionVariableType %3",_missionVariableType,_missionVariable,_missionVariableType]);
-	
+
+	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_GetMissionByID[421]",[[_missionVariableType,_missionVariable,_missionVariableType]]] call ZFM_Language_Log;
 	_missionArray = [_missionID] call ZFM_Mission_GetMissionByID;
-	
-	diag_log(format["BEGINNING MISSIONARRAY %1, MISSION ID %2",_missionArray,_missionID]);
-	
+	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_GetMissionByID[423]",[[_missionArray]]] call ZFM_Language_Log;
+
 	switch(_missionVariableType) do
 	{
-		default {
-			diag_log("Something wrong with the cases");
-		};
-	
 		case ZFM_MISSION_VARIABLE_MISSION_TYPE: {
-			diag_log("Mission type fired");
 			_missionArray set[1,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_TITLE: {
-			diag_log("Mission title fired");
 			_missionArray set[2,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_HUMANITY_TYPE: {
-			diag_log("Humanity type fired");
 			_missionArray set[3,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_LOOTSHARE_TYPE: {
-			diag_log("Loot share type fired");
 			_missionArray set[4,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_UNITS: {
-			diag_log("Units fired");
 			_currentUnits = _missionArray select 5;
 			_missionArray set [5,_currentUnits];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_UNITS_TOTAL: {
-			diag_log("Units fired");
 			_missionArray set[6,_missionVariable];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_UNITS_KILLED: {
-			diag_log("Units killed fired");
 			_missionArray set[7,(_missionArray select 7) +1];
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_OBJECTS: {
-			diag_log("Mission objects fired");
-			diag_log(format["CURRENTOBJECTS %1",_missionArray]);
 			_currentObjects = _missionArray select 8;
 		
 			if(typeName _missionVariable != "ARRAY") then
@@ -486,12 +464,9 @@ ZFM_Mission_Set ={
 			};
 			
 			_missionArray set [8,_currentObjects];
-			diag_log(format["CURRENTOBJECTS UPDATED %1, %2",_missionArray,_missionID]);
-			
 			ZFM_CURRENT_MISSIONS set [_missionID,_missionArray];
 		};	
 		case ZFM_MISSION_VARIABLE_MISSION_PARTICIPANTS: {
-			diag_log("Participants fired");
 			_missionArray set[9,(_missionArray select 9)+[_missionVariable]];
 			ZFM_CURRENT_MISSIONS set[_missionID,_missionArray];
 		};		
@@ -502,7 +477,6 @@ ZFM_Mission_Set ={
 			ZFM_CURRENT_MISSIONS set[_missionID,_missionArray];
 		};
 		case ZFM_MISSION_VARIABLE_MISSION_MARKERS: {
-			diag_log("MISSION MARKERS");
 			_missionArray set[11,_missionVariable];
 			ZFM_CURRENT_MISSIONS set[_missionID,_missionArray];
 		};	
@@ -522,10 +496,8 @@ ZFM_Mission_Generate_New ={
 
 	// Crash mission should pass to generateMission, then 
 	_missionArray = [ZFM_MISSION_METHOD_RANDOM,_missionID] call ZFM_Mission_GenerateMission; // Return MissionArray
-	diag_log(format["MISSION ARRAY FROM GENERATEMISSION %1",_missionArray]);
+	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Generate_New [501]",[[_missionArray]]] call ZFM_Language_Log;
 	[_missionArray] call ZFM_Mission_Add;
-	
-	diag_log(format["MISSION ARRAY FROM STACK %1",ZFM_CURRENT_MISSIONS]);	
 };
 
 /*
@@ -536,46 +508,41 @@ ZFM_Mission_Generate_New ={
 ZFM_Mission_Handler_Start ={
 	private ["_continueExecution"];
 
-	diag_log("MISSION HANDLER STARTED");
-	
-	if(ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS == 0) exitWith {diag_log(format["%1 %2 - Maximum concurrent missions is set to 0. You do want missions, right?",ZFM_NAME,ZFM_VERSION])};
-	if((count ZFM_CURRENT_MISSIONS) >0 || ZFM_MISSIONS_MISSION_HANDLER_STARTED) exitWith {diag_log(format["%1 %2 - Mission handler is already running. Exiting..",ZFM_NAME,ZFM_VERSION])};
+	[35,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [511]"] call ZFM_Language_Log;
 
-	diag_log("MISSION HANDLER PASSED CHECK");
-	
+	if(ZFM_MISSIONS_MAXIMUM_CONCURRENT_MISSIONS == 0) exitWith {[4,"ERROR","ZFM_Mission::ZFM_Mission_Handler_Start [501]"] call ZFM_Language_Log};
+	if((count ZFM_CURRENT_MISSIONS) >0 || ZFM_MISSIONS_MISSION_HANDLER_STARTED) exitWith {[5,"ERROR","ZFM_Mission::ZFM_Mission_Generate_New [501]"] call ZFM_Language_Log};
+
 	_continueExecution = true;
 	
 	while{_continueExecution} do
 	{
-		diag_log("MISSION HANDLER LOOP STARTED");
+		[36,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [520]"] call ZFM_Language_Log;
+		[37,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [521]"] call ZFM_Language_Log;
+		[38,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [522]",[count playableUnits]] call ZFM_Language_Log;
 		
-		diag_log(format["COUNT PLAYABLE UNITS",(count playableUnits)]);
-		
+
 		if(!ZFM_MISSIONS_START_MISSIONS_WHILE_SERVER_EMPTY && (count playableUnits) ==0) then
 		{
-			diag_log(format["%1 %2 - Nobody is on the server and ZFM_MISSIONS_START_WHILE_SERVER_EMPTY is set to TRUE. Waiting until a player joins.",ZFM_NAME,ZFM_VERSION]);
+			[6,"ERROR","ZFM_Mission::ZFM_Mission_Handler_Start [527]"] call ZFM_Language_Log
 			waitUntil{(count playableUnits) != 0};
 		};
 
-		diag_log(format["START TYPE %1,RANDOM %2",ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE,ZFM_MISSION_START_TYPE_TIMED_RANDOM]);
+		[39,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [531]",[ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE,ZFM_MISSION_START_TYPE_TIMED_RANDOM]] call ZFM_Language_Log;
 		
 		if(ZFM_MISSIONS_DEFAULT_MISSION_START_TYPE == ZFM_MISSION_START_TYPE_TIMED_RANDOM) then
 		{
-			diag_log("TIMED RANDOM FIRED");
-		
 			// sets and gets the ZFM_CAN_CREATE_NEW_MISSION variable
 			_canAdd = [] call ZFM_Mission_Can_Add;
 			
-			diag_log(format["CAN ADD %1",_canAdd]);
-			
+			[40,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [538]",[_canAdd]] call ZFM_Language_Log;
+		
 			// If we can't, then wait!
 			if(!_canAdd) then
 			{
-				diag_log(format["WAITING UNTIL %1",_canAdd]);
+				[40,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [543]",[_canAdd]] call ZFM_Language_Log;
 				waitUntil{ZFM_CAN_CREATE_NEW_MISSION};
 			};
-			
-			diag_log(format["BEFORE ARRAY %1",ZFM_CURRENT_MISSIONS]);
 			
 			// calls to start a new mission..
 			[(count ZFM_CURRENT_MISSIONS)] call ZFM_Mission_Generate_New;
@@ -588,8 +555,8 @@ ZFM_Mission_Handler_Start ={
 			// Get the rounded amount 
 			_minutesToWait = (ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN + (round random _minutesRandSeed))*60;
 			
-			diag_log(format["WAITING %1 SECONDS",_minutesToWait]);
-			
+			[41,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [543]",[_minutesToWait]] call ZFM_Language_Log;
+
 			// Sleep for the specified interval in minutes
 			sleep (_minutesToWait);
 			
@@ -608,7 +575,7 @@ ZFM_Mission_GenerateMission ={
 	_missionMethod = _this select 0;
 	_missionID = _this select 1;
 	
-	diag_log(format["%1 %2 - ZFM_Mission.sqf::ZFM_GenerateMission - Executed. Mission method %1",ZFM_Name,ZFM_Version,_missionMethod]);
+	[43,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [578]",[_missionMethod]] call ZFM_Language_Log;
 
 	// Array passed to generator function.
 	_missionGenArray = [];
@@ -634,8 +601,8 @@ ZFM_Mission_GenerateMission ={
 			_missionUnits = [_missionDifficulty] call ZFM_GenerateRandomUnits;
 			
 			// Lessee..
-			diag_log(format["LOOTMODE: %1, TYPE %2, VARIABLES: %3, UNITS %4",_lootMode,_missionType,_missionVariables,_missionUnits]);
-			
+			[44,"INFORMATION","ZFM_Mission::ZFM_Mission_Handler_Start [604]",[_lootMode,_missionType,_missionVariables,_missionUnits]] call ZFM_Language_Log;
+	
 			// Create the dynamic mission title
 			_missionTitle = [ZFM_MISSION_TYPE_CRASH,_missionVariables,_difficulty] call ZFM_GenerateMissionTitle;
 			
