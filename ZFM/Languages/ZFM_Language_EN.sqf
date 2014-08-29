@@ -66,7 +66,7 @@ ZFM_INFORMATION_STRINGS = [
 	"Mission Handler - Waiting %1 seconds for next loop.", //26
 	"Mission Generation - Executed by method %1", //27
 	"Mission Generation - Loot Mode [%1], Type [%2], Variables [%3], Units [%4]", //28
-
+	
 	// Crash missions
 	"Crashed %1", //29
 	"%1 [Difficulty: %2]", //30

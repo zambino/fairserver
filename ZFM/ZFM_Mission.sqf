@@ -524,7 +524,7 @@ ZFM_Mission_Handler_Start ={
 
 		if(!ZFM_MISSIONS_START_MISSIONS_WHILE_SERVER_EMPTY && (count playableUnits) ==0) then
 		{
-			[6,"ERROR","ZFM_Mission::ZFM_Mission_Handler_Start [527]"] call ZFM_Language_Log
+			[6,"ERROR","ZFM_Mission::ZFM_Mission_Handler_Start [527]"] call ZFM_Language_Log;
 			waitUntil{(count playableUnits) != 0};
 		};
 

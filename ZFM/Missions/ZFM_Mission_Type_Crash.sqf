@@ -412,11 +412,21 @@ ZFM_ExecuteCrashMission ={
 ZFM_Mission_Type_Crash_GenerateMissionTitle = {
 	private["_missionType","_crashVehicleType","_difficulty"];
 
+	_vehicleName = _this select 0;
+	_heroOrBandit = _this select 1;
+
 	// The place the vehicle was on the way to.
 	_OTWT_G = ZFM_CRASH_MISSION_OTWT_GROUP call BIS_fnc_selectRandom;
 	_OTWT_P = ZFM_CRASH_MISSION_OTWT_PLACE call BIS_fnc_selectRandom;
+	_OTWT_A = ZFM_CRASH_MISSION_OTWT_ACTION call BIS_fnc_selectRandom;
+	_OTWT_OUTPUT = format[_OTWT_G,_vehicleName, _OTWT_P] + " " + _OTWT_A + ". ";
+	_OTWT_C = ZFM_CRASH_MISSION_OTWT_CONSEQUENCE call BIS_fnc_selectRandom;
+	_OTWT_CC = ZFM_CRASH_MISSION_OTWT_CONSEQUENCE_CONCLUSION call BIS_fnc_selectRandom;
+	_OTWT_G = call compile format["ZFM_CRASH_MISSION_OTWT_BG_NAMES_%1",_heroOrBandit];
+	_OTWT_GW = _OTWT_G call BIS_fnc_selectRandom;
+	_OTWT_OUTPUT = _OTWT_OUTPUT + format[_OTWT_CC,_OTWT_GW] + ".";
 
-	//The 
+	diag_log(format["OUTPUT %1",_OTWT_OUTPUT]);
 };
 
 

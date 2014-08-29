@@ -70,6 +70,10 @@ waitUntil{initialized};
 */
 
 
+["Mi17","HERO"] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
+
+
+
 // Remove
 ZFM_Layouts_Array =[
 	[
