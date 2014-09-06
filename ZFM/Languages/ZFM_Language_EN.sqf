@@ -74,7 +74,8 @@ ZFM_INFORMATION_STRINGS = [
 	"MissionType CRASH - Crash location found.", //32
 	"MissionType CRASH - Vehicle crashed has replacement model. Replacing model with non-burning model.", //33
 	"MissionType CRASH - Crash marker has been created at %1", //34
-
+	"MissionType CRASH - Manual locations set, but manual locations are empty. Skipping..",
+	"MissionType CRASH - Excluding Mission with Co-ordinates [%1], creating new set of co-ordinates",
 	// Crash dynamic stuff
 	"A %1 %2 %3 %4. %5" //35
 ];
@@ -277,4 +278,19 @@ ZFM_CRASH_MISSION_OTWT_BG_NAMES_BANDIT =[
 	"Jack-offs",
 	"Cum guzzlers",
 	"Gang members"
+];
+
+ZFM_CRASH_MISSION_CRASH_EXPS =[
+	"Crashed",
+	"Downed",
+	"Buggered",
+	"Schruted",
+	"Fucked",
+	"Destroyed",
+	"Bum-fucked",
+	"Annihilated",
+	"Molested",
+	"Burned",
+	"Incinerated",
+	"Intercepted"
 ];

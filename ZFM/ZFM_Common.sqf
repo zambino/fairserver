@@ -275,3 +275,48 @@ ZFM_Common_CheckExistingAI = {
 		[8,"INFORMATION","ZFM_Common::ZFM_Common_CheckExistingAI"] call ZFM_Language_Log;
 	};
 };
+
+/*
+*	ZFM_Common_GetModelName
+*
+*	Taken from DyZ code. DZE_getModelName. 
+*/
+ZFM_Common_GetModelName={
+    _objInfo = toArray(str(_this));
+    _lenInfo = count _objInfo - 1;
+    _objName = [];
+    _i = 0;
+    // determine where the object name starts
+    {
+            if (58 == _objInfo select _i) exitWith {};
+            _i = _i + 1;
+    } forEach _objInfo;
+    _i = _i + 2; // skip the ": " part
+    for "_k" from _i to _lenInfo do {
+            _objName = _objName + [_objInfo select _k];
+    };
+    _objName = toLower(toString(_objName));
+    _objName
+};
+
+ZFM_Common_ClearTrees ={
+	private["_location","_radiusIn","_trees","_objName","_findNearestTree"];
+	_location = _this select 0;
+	_radiusIn = _this select 1;
+
+	_trees = ["t_picea2s_snow.p3d","b_corylus.p3d","t_quercus3s.p3d","t_larix3s.p3d","t_pyrus2s.p3d","str_briza_kriva.p3d","dd_borovice.p3d","les_singlestrom_b.p3d","les_singlestrom.p3d","smrk_velky.p3d","smrk_siroky.p3d","smrk_maly.p3d","les_buk.p3d","str krovisko vysoke.p3d","str_fikovnik_ker.p3d","str_fikovnik.p3d","str vrba.p3d","hrusen2.p3d","str dub jiny.p3d","str lipa.p3d","str briza.p3d","p_akat02s.p3d","jablon.p3d","p_buk.p3d","str_topol.p3d","str_topol2.p3d","p_osika.p3d","t_picea3f.p3d","t_picea2s.p3d","t_picea1s.p3d","t_fagus2w.p3d","t_fagus2s.p3d","t_fagus2f.p3d","t_betula1f.p3d","t_betula2f.p3d","t_betula2s.p3d","t_betula2w.p3d","t_alnus2s.p3d","t_acer2s.p3d","t_populus3s.p3d","t_quercus2f.p3d","t_sorbus2s.p3d","t_malus1s.p3d","t_salix2s.p3d","t_picea1s_w.p3d","t_picea2s_w.p3d","t_ficusb2s_ep1.p3d","t_populusb2s_ep1.p3d","t_populusf2s_ep1.p3d","t_amygdalusc2s_ep1.p3d","t_pistacial2s_ep1.p3d","t_pinuse2s_ep1.p3d","t_pinuss3s_ep1.p3d","t_prunuss2s_ep1.p3d","t_pinusn2s.p3d","t_pinusn1s.p3d","t_pinuss2f.p3d","t_poplar2f_dead_pmc.p3d","misc_torzotree_pmc.p3d","misc_burnspruce_pmc.p3d","brg_cocunutpalm8.p3d","brg_umbrella_acacia01b.p3d","brg_jungle_tree_canopy_1.p3d","brg_jungle_tree_canopy_2.p3d","brg_cocunutpalm4.p3d","brg_cocunutpalm3.p3d","palm_01.p3d","palm_02.p3d","palm_03.p3d","palm_04.p3d","palm_09.p3d","palm_10.p3d","brg_cocunutpalm2.p3d","brg_jungle_tree_antiaris.p3d","brg_cocunutpalm1.p3d","str habr.p3d","t_carpinus2s.p3d","t_fraxinus2s.p3d","t_fraxinus2w.p3d","t_larix3f.p3d","t_stub_picea.p3d"];
+
+	_findNearestTree = [];
+
+	// Get the nearest trees.
+	{
+        if("" == typeOf _x) then {
+                if (alive _x) then {
+                        _objName = _x call ZFM_Common_GetModelName;
+                        if (_objName in _trees) then {
+                                _x setDamage 1; // DIE, TREE!!
+                        };
+                };
+        };
+	} foreach nearestObjects [_location, [], _radiusIn];
+};

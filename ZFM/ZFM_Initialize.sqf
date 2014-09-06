@@ -20,6 +20,7 @@ if(!isServer) exitWith { diag_log("ZFM: This shouldn't be run by anything other 
 *	Global variables have been removed to prevent manipulation of ZFM includes.
 */
 
+
 // Common includes and constants come first
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Constants.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Common_Config.sqf";
@@ -30,6 +31,7 @@ call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Language.s
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Units_Config.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Loot_Config.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Layout_Config.sqf";
+call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Type_Crash_Config.sqf";
 
 // Other Functions
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Units.sqf";
@@ -43,36 +45,23 @@ call ZFM_Common_DoMissionBootStrap;							// Bootstraps supported missions (cras
 call ZFM_Common_DoDayZBootStrap;							// Bootstraps Epoch/Overpoch etc.
 call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
 
+[4,"INFORMATION","ZFM_Initialize.sqf::execVM"] call ZFM_Language_Log;
+waitUntil{initialized};
+
+[] call ZFM_Mission_Type_Crash_Create_Crash;
 
 /*
 *	ZFM Initialize
 *
 *	Waits for all the other server functions to start before ZFM begins.
 */
-[4,"INFORMATION","ZFM_Initialize.sqf::execVM"] call ZFM_Language_Log;
-waitUntil{initialized};
-
 /*
-	ZFM_Includes_Mission_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
-	call compile preprocessFileLineNumbers ZFM_Includes_Mission_Config;
-	ZFM_Includes_Loot_Config = "\z\addons\dayz_server\ZFM\Config\ZFM_Loot_Config.sqf";
-	call compile preprocessFileLineNumbers ZFM_Includes_Loot_Config;
-	ZFM_Includes_Layout_Config = "\z\addons\dayz_server\ZFM\ZFM_Layout_Config.sqf";
-	call compile preprocessFileLineNumbers ZFM_Includes_Layout_Config;
-	ZFM_Includes_Mission = "\z\addons\dayz_server\ZFM\ZFM_Mission.sqf";
-	call compile preprocessFileLineNumbers ZFM_Includes_Mission;
-	ZFM_Includes_Mission_Functions = "\z\addons\dayz_server\ZFM\ZFM_Mission_Functions.sqf";
-	call compile preprocessFileLineNumbers ZFM_Includes_Mission_Functions;
-	ZFM_Includes_Loot = "\z\addons\dayz_server\ZFM\ZFM_Loot.sqf";
-	call compile preprocessFileLineNumbers ZFM_Includes_Loot;
-	ZFM_Includes_Layout = "\z\addons\dayz_server\ZFM\ZFM_Layout.sqf";
-	call compile preprocessFileLineNumbers ZFM_Includes_Layout;
-*/
 
+_outyPutY = ["Mi17","HERO","EASY"] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
+[5,"INFORMATION","ZFM_Initialize.sqf::outPutY",[_outyPutY]] call ZFM_Language_Log;
 
-["Mi17","HERO"] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
-
-
+_outPutCrah = [[1201,1200,0]] call ZFM_Mission_Type_Crash_CheckCrashExclusion;
+[5,"INFORMATION","ZFM_Initialize.sqf::outPutCrah",[_outPutCrah]] call ZFM_Language_Log;
 
 // Remove
 ZFM_Layouts_Array =[
@@ -85,7 +74,8 @@ ZFM_Layouts_Array =[
 	[0,[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[["COMMANDER","SNIPER","HEAVY","HEAVY"],"WAR_MACHINE",ZFM_GROUP_EAST,1]],0]
 ];
 
-[ZFM_Layouts_Array,[0,1],[4600,10160,0],20] call ZFM_Layout_Parse;
+[ZFM_Layouts_Array,[0,1],[4600,10160,0],20] call ZFM_Layout_Parse;*/
+
 
 /*
 *	Main (Minimal) init for ZFM
