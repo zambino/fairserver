@@ -578,3 +578,6 @@ ZFM_UNIT_EQUIPMENT_HEAVY_WAR_MACHINE =[
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],				// Doesn't really matter.
 	["ItemBandage","ItemBandage","ItemPainkiller","ItemKnife","ItemFlashlight"]
 ];
+
+
+ZFM_UNIT_TYPE_CRASH_PERMVEHICLES_EASY =[]; // Don't give them away..

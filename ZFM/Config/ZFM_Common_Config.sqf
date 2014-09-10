@@ -61,6 +61,13 @@ ZFM_DIFFICULTY_TEXT_TYPES =[
  ];	
 
 /*
+*	ZFM_HIVE_MAX_RETRIES
+*
+*	Times to retry reading from hive. 
+*/
+ZFM_HIVE_MAX_RETRIES = 3;
+
+/*
 *	ZFM_MISSION_TYPE_INCLUDE_DIR
 *
 *	Full location of the include directory for missions.

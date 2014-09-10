@@ -320,3 +320,153 @@ ZFM_Common_ClearTrees ={
         };
 	} foreach nearestObjects [_location, [], _radiusIn];
 };
+
+ZFM_Common_CheckPercentageChanceSuccess ={
+	private["_chanceFromOneHundred","_randomChance","_pass"];
+	_chanceFromOneHundred = _this select 0;
+	_randomChance = round random 100;
+	_pass = false;
+
+	if(_chanceFromOneHundred <= _randomChance) then
+	{
+		_pass = true;
+	};
+
+	_pass
+
+};
+
+
+/*
+*	ZFM_Common_Hive_CreateVehicle
+*
+*	Creates a vehicle and communicates the new vehicle to the hive, to be stored. 
+*/
+ZFM_Common_Hive_CreateVehicle ={
+	private["_vehicleClass","_return","_vehiclePosition","_objectInstance","_objectClass","_return","_query","_uID","_dzPos","_fuel"];
+
+	_vehicleClass = _this select 0;
+	_vehiclePosition = _this select 1;
+
+	_return = false;
+	_result = false; 
+
+	// Create the Vehicle!
+	_objectInstance = createVehicle[_vehicleClass,_vehiclePosition,[],0,"CAN_COLLIDE"];
+
+	// The ARMA location is an array with 3 elements, the DZ is a 2-element array; 0 = direction, 1 = position (3-elem array)
+	_dzPos = [(getDir _objectInstance),(getPos _objectInstance)];
+
+	// Get the UID of the object 
+	_uID = _dzPos call dayz_objectUID3;
+
+	// Prepares a 308 query for the hive. 
+	// If we look at EpochHive - handlers[308] = boost::bind(&HiveExtApp::objectPublish,this,_1);
+	// 1 = className, 2= damage, 3= characterID, 4=WorldSpace, 5=inventory, 6=hitPoints, 7= fuel, 8= uniqueID
+	_query = format["CHILD:308:%1:%2:%3:%4:%5:%6:%7:%8:%9:", dayZ_instance, _vehicleClass, 0, 0, _dzPos, [], [], 1, _uID];
+
+	// Write this to the hive. 
+	_query call server_hiveWrite;
+
+	[5,"INFORMATION","ZFM_Common::ZFM_Common_Hive_CreateVehicle [347]",[_query,_objectInstance]] call ZFM_Language_Log;
+
+	// Call this monstrous thing..
+	PVDZE_serverObjectMonitor set [count PVDZE_serverObjectMonitor,_objectInstance];
+
+
+	// Prepare the query again, baby <3
+	_query = format["CHILD:388:%1:",_uID];
+
+	// Prepare a 388 query for the hive so we can get the object ID from SQL
+	// EpochHive - handlers[388] = boost::bind(&HiveExtApp::objectReturnId,this,_1);
+	// 1 = UID
+	for [{_x =0},{_x <= ZFM_HIVE_MAX_RETRIES},{_x = _x +1} ] do
+	{
+		_result = _query call server_hiveReadWrite;
+
+		[5,"INFORMATION","ZFM_Common::ZFM_Common_Hive_CreateVehicle [361]",[_query,_result]] call ZFM_Language_Log;
+
+		if((_result select 0) == "PASS") then
+		{
+			_objectInstance setVariable["ObjectID",(_result select 1),true];
+			_objectInstance setVariable["lastUpdate",time];
+			_objectInstance setVariable["CharacterID","0",true];
+
+			[5,"INFORMATION","ZFM_Common::ZFM_Common_Hive_CreateVehicle [369]",[_result]] call ZFM_Language_Log;
+
+			_fuel = 0.1 + (round random .9);
+			_objectInstance setFuel _fuel;
+			_objectInstance setDamage 0;
+			_objectInstance setVelocity[0,0,1];
+			_objectInstance call fnc_veh_ResetEH;
+
+			_return = true;
+
+			_x = ZFM_HIVE_MAX_RETRIES; // Hey ho, let's go.
+		}
+		else
+		{
+			[5,"INFORMATION","ZFM_Common::ZFM_Common_Hive_CreateVehicle HIVE RETRY",[_result]] call ZFM_Language_Log;
+		};
+	};
+
+	// Hive read/write completely failed.
+	if(_return) then
+	{
+		[5,"INFORMATION","ZFM_Common::ZFM_Common_Hive_CreateVehicle HIVE CREATE SUCCESS",[_vehicleClass,_result]] call ZFM_Language_Log;
+	}
+	else
+	{
+		[5,"INFORMATION","ZFM_Common::ZFM_Common_Hive_CreateVehicle HIVE CREATE FAILURE",[_vehicleClass,_result]] call ZFM_Language_Log;
+		deleteVehicle _objectInstance;
+	};
+};
+
+
+ /*
+ *	ZCR_Item_Is_Weapon
+ *	
+ *	With a given classname, tells you if it is a weapon or not.
+ *	TODO: Move to ZCR.
+ */
+ZCR_Item_Is_Weapon ={
+	private["_class","_isWeapon"];
+	_class = _this select 0;
+	_isWeapon = false;
+
+	if(isClass(configFile >> "CfgWeapons" >> _class)) then
+ 	{
+ 			_isWeapon = true;
+ 	};
+
+ 	_isWeapon
+};
+
+ /*
+ *	ZCR_Item_Get_Type
+ *
+ *	Gets the type of the item based on the classname given.
+ *	TODO: Move to ZCR
+ */
+ ZCR_Item_Get_Type ={
+ 	private["_class"];
+ 	_class = _this select 0;
+ 	_type = "none";
+
+ 	if(typeName _class == "STRING") then
+ 	{
+ 		if(isClass(configFile >> "CfgWeapons" >> _class)) then
+ 		{
+ 			_type = "weapon";
+ 		};
+ 		if(isClass(configFile >> "CfgVehicles" >> _class)) then
+ 		{
+ 			_type = "backpack";
+ 		};
+ 		if(isClass(configFile >> "CfgMagazines" >> _class)) then
+ 		{
+ 			_type = "magazine";
+ 		};
+	};
+	_type
+};

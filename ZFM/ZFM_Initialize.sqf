@@ -48,7 +48,13 @@ call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
 [4,"INFORMATION","ZFM_Initialize.sqf::execVM"] call ZFM_Language_Log;
 waitUntil{initialized};
 
-[] call ZFM_Mission_Type_Crash_Create_Crash;
+
+[[4600,10160,0],"EASY"] call ZFM_Mission_Type_Crash_Create_Layout;
+
+
+
+//[[4600,10160,0],"EASY"] call ZFM_Mission_Type_Crash_Create_Layout;
+//[] call ZFM_Mission_Type_Crash_Create_Crash;
 
 /*
 *	ZFM Initialize

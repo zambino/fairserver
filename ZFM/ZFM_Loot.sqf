@@ -10,53 +10,6 @@
 
  
 
- /*
- *	ZCR_Item_Is_Weapon
- *	
- *	With a given classname, tells you if it is a weapon or not.
- *	TODO: Move to ZCR.
- */
-ZCR_Item_Is_Weapon ={
-	private["_class","_isWeapon"];
-	_class = _this select 0;
-	_isWeapon = false;
-
-	if(isClass(configFile >> "CfgWeapons" >> _class)) then
- 	{
- 			_isWeapon = true;
- 	};
-
- 	_isWeapon
-};
-
- /*
- *	ZCR_Item_Get_Type
- *
- *	Gets the type of the item based on the classname given.
- *	TODO: Move to ZCR
- */
- ZCR_Item_Get_Type ={
- 	private["_class"];
- 	_class = _this select 0;
- 	_type = "none";
-
- 	if(typeName _class == "STRING") then
- 	{
- 		if(isClass(configFile >> "CfgWeapons" >> _class)) then
- 		{
- 			_type = "weapon";
- 		};
- 		if(isClass(configFile >> "CfgVehicles" >> _class)) then
- 		{
- 			_type = "backpack";
- 		};
- 		if(isClass(configFile >> "CfgMagazines" >> _class)) then
- 		{
- 			_type = "magazine";
- 		};
-	};
-	_type
-};
 
 /*
 *	ZFM)Loot_Contents_Append_Magazines

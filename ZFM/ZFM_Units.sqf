@@ -52,19 +52,19 @@ ZFM_Units_GenerateRandomUnits ={
 	switch(_difficulty) do 
 	{
 		case "DEADMEAT": {
-			_maxBound = 20;
+			_maxBound = 14;
 		};
 		case "EASY": {
-			_maxBound = 22;
+			_maxBound = 15;
 		};
 		case "MEDIUM": {
-			_maxBound = 28;
+			_maxBound = 16;
 		};
 		case "HARD": {
-			_maxBound = 30;
+			_maxBound = 18;
 		};
 		case "WAR_MACHINE": {
-			_maxBound = 34;
+			_maxBound = 20;
 		};
 	};
 	

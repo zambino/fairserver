@@ -299,6 +299,200 @@ private ["_vehicleClass"];
 
 
 /*
+*	ZFM_Mission_Type_Crash_Create
+*
+*	Main function for creating and executing the crash mission. Either dynamic or user-created.
+*/
+ZFM_Mission_Type_Crash_Create ={
+
+	// Oh we're close.
+	// Create the crash, create the layout, create the marker, clear away trees then we're done. Return as mission array row.
+
+};
+
+ZFM_Mission_Type_Crash_GenerateObjectList_Item ={
+	private["_difficulty","_objects","_outputList","_thisItem"];
+	_difficulty = _this select 0;
+	_numberItems = _this select 1;
+
+	_outputList =[];
+
+	// Get the relevant object thing.
+	_objects = call compile format["ZFM_CRASH_MISSION_LAYOUT_OBJECTS_%1",_difficulty];
+
+	for [{_x =1},{_x <= _numberItems},{_x = _x +1} ] do
+	{
+		_thisItem = _objects call BIS_fnc_selectRandom;
+		_outputList = _outputList + [_thisItem];
+	};
+
+	_outputList
+};
+
+/*
+*	ZFM_Mission_Type_Crash_GenerateRandomUnitGroup_Item
+*
+*	Generates a unit group item for use in a layout array.
+*/
+ZFM_Mission_Type_Crash_GenerateRandomUnitGroup_Item ={
+	private["_difficulty","_unitList","_outputArray"];
+	_difficulty = _this select 0;
+
+	// Get the array of text types 
+	_unitList = [_difficulty] call ZFM_Units_GenerateRandomUnits;
+
+	// Return the array that will be shown in the layout!
+	[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[_unitList,_difficulty,ZFM_GROUP_EAST,1]]
+};
+
+/*
+*	ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item_Multi
+*
+*	Generates multiple loot crate array items.
+*/
+ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item_Multi ={
+	private["_difficulty","_numCrates","_thisItem","_outputArray"];
+	_difficulty = _this select 0;
+	_numCrates = _this select 1;
+
+	_outputArray = [];
+
+	for [{_x =1},{_x <= _numCrates},{_x = _x +1} ] do
+	{
+		_thisItem = [_difficulty] call ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item;
+		_outputArray = _outputArray + _thisItem;
+	};
+
+	_outputArray
+};
+
+/*
+*	ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item
+*
+*	Generates an array for use in a layout array.
+*/
+ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item ={
+	private["_difficulty","_outputArray","_itemTypes","_lootClass","_thisItem"];
+	_difficulty = _this select 0;
+	_outputArray = [];
+	_numberItemTypes = round random ((count ZFM_LOOT_CONTENT_TEXT_TYPES)-1);
+
+	// Get a random Loot crate class..
+	_lootClass = ZFM_Loot_Crates call BIS_fnc_selectRandom;
+
+	// Pre-prepared for the text types.
+	_itemTypes = [];
+
+	// Adds the text types to the array. (i.e. Pistols, Machineguns, etc. )
+	for [{_x =1},{_x <= _numberCrates},{_x = _x +1} ] do
+	{
+		_thisItem = ZFM_LOOT_CONTENT_TEXT_TYPES call BIS_fnc_selectRandom;
+		_itemTypes = _itemTypes + [_thisItem];
+	};
+
+	// Return the array that will be shown in the layout.
+	[ZFM_LAYOUT_OBJECT_LOOT,0,[_difficulty,_lootClass,_itemTypes]]
+
+};
+
+/*
+*	ZFM_Mission_Type_Crash_Create_Layout
+*
+*	Creates a layout for the crash using the layout compositor.
+*/
+ZFM_Mission_Type_Crash_Create_Layout ={
+	private["_crashLocation","_difficulty","_nearBuildings","_numUnits","_thisRow","_numLootCrates","_objectsPerRow","_generatedUnits","_generatedCrates","_generatedObjects","_generatedAll","_generatedCount","_continue"];
+
+	_crashLocation  = _this select 0;
+	_difficulty = _this select 1;
+	_nearBuildings = _this select 2;
+
+	// How many units are there? 
+	_numUnits = call compile format["ZFM_CRASH_MISSION_NUMBER_UNITS_%1",_difficulty];
+
+	// How many loot crates do we have?
+	_numLootCrates = call compile format["ZFM_CRASH_MISSION_NUMBER_LOOT_CRATES_%1",_difficulty];
+
+	// Get the layout
+	_layoutTemplate = call compile format["ZFM_CRASH_MISSION_LAYOUT_%1",_difficulty];
+
+	// Here are the units..
+	_generatedUnits = [_difficulty] call ZFM_Mission_Type_Crash_GenerateRandomUnitGroup_Item;
+
+	// Now we generate the loot crates
+	_generatedCrates = [_difficulty,_numLootCrates] call ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item_Multi;
+
+	if(_nearBuildings) then {
+
+		// How many objects to be added?
+		_numObjects =  call compile format["ZFM_CRASH_MISSION_NUMBER_OBJECTS_%1",_difficulty];
+
+		// Now we have the objects we've generated.
+		_generatedObjects = [_difficulty,_numObjects] call ZFM_Mission_Type_Crash_GenerateObjectList_Item;
+	};
+
+	// Place them all into a super-array of items which we will then start to assign to the layout.
+	_generatedAll = _generatedUnits + _generatedCrates + _generatedObjects;
+
+	_generatedCount = count _generatedAll;
+
+	// Get the height of the layout array
+	_layoutHeight = (count _layoutTemplate)-1;
+
+	// Get the width.
+	_layoutWidth = count (_layoutTemplate select 0);
+
+	// Okay, I hate having to use a new loop, but I think the randomness is justified to make people look
+	// At the mission and think "Hm, not seen this one before!" and that's important for me.
+	for [{_x =0},{_x <= _generatedCount-1},{_x = _x +1} ] do
+	{
+		// Get the item for this row.
+		_thisRow = _generatedAll select _x;
+	
+		_randomRow = round random _layoutHeight;
+		_randomCol = round random _layoutWidth;
+
+		// Okay, now we generate a random row and position
+		_selectedRow = _layoutTemplate select _randomRow;
+		_selectedItem = _selectedRow select _randomCol;
+
+		// Make sure it's a replaceable element.
+		if(typeName _selectedItem == "SCALAR" && _seletedItem == 0) then {
+			// Set the item in the row to the item in the array.
+			_selectedRow set[_randomCol,_thisRow];
+
+			// JJ: Rewrite this so that each row is cached rather than repacked count(x) times
+			_layoutTemplate set[_x,_selectedRow]; // Repacked back into the array..
+		}
+		else
+		{
+			_continue = true;
+
+			while{_continue} do
+			{
+				_randomRow = round random _layoutHeight;
+				_randomCol = round random _layoutWidth;
+
+				// Okay, now we generate a random row and position
+				_selectedRow = _layoutTemplate select _randomRow;
+				_selectedItem = _selectedRow select _randomCol;
+
+
+				if(typeName _selectedItem == "SCALAR" && _selectedItem ==0) then
+				{
+					_selectedRow set[_randomCol,_thisRow];
+					_layoutTemplate set[_x,_selectedRow]; 
+					_continue = false; // Exit, we missed the center.
+				};
+			};
+		};
+	};
+
+	_layoutTemplate
+};
+
+
+/*
 *	ZFM_Mission_Type_Crash_Create_Crash
 *
 *	Creates the crash for the crash mission.
@@ -465,7 +659,7 @@ ZFM_Mission_Type_Crash_Create_CrashVehicle_Object ={
 				_outputPos = getPos _createdVehicle;
 
 				// Clear trees from the nearby area..
-				[_outputPos,100] call ZFM_Common_ClearTrees;
+				[_outputPos,5] call ZFM_Common_ClearTrees;
 
 				_outputPos = [_createdVehicle,_outputPos];
 			};
@@ -510,7 +704,7 @@ ZFM_Mission_Type_Crash_Create_CrashVehicle_Object ={
 				_outputPos = getPos _createdVehicle;
 
 				// Clear trees from the nearby area..
-				[_outputPos,20] call ZFM_Common_ClearTrees;
+				[_outputPos,5] call ZFM_Common_ClearTrees;
 
 				_outputPos = [_createdVehicle,_outputPos];
 			};
