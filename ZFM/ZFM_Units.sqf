@@ -44,7 +44,7 @@ ZFM_Units_DoBootStrap = {
 */
 ZFM_Units_GenerateRandomUnits ={
 
-	private ["_difficulty","_maxBound","_generatedUnits","_x","_initRandSeed","_newType"];
+	private ["_difficulty","_maxBound","_generatedUnits","_x","_initRandSeed","_newType","_unitTypes"];
 	_difficulty = _this select 0;
 
 	_generatedUnits = [];
@@ -68,18 +68,11 @@ ZFM_Units_GenerateRandomUnits ={
 		};
 	};
 	
-	// TODO: Units like commander / gunner / etc in squads will be delayed until a later stage
-	_initRandSeed = (round random _maxBound);
-	
-	// We don't want just ONE unit, do we? 
-	if(_initRandSeed < ZFM_MINIMUM_AI_PER_MISSION) then 
+	_unitTypes = ZFM_UNIT_TYPES_TEXT; // Cache it.
+
+	for [{_x =1},{_x <= _maxBound},{_x = _x +1} ] do
 	{
-		_initRandSeed = ZFM_MINIMUM_AI_PER_MISSION; 
-	};
-	
-	for [{_x =0},{_x <= _initRandSeed-1},{_x = _x +1} ] do
-	{
-		_newType = ZFM_AI_TYPES call BIS_fnc_selectRandom;
+		_newType = _unitTypes call BIS_fnc_selectRandom;
 		_generatedUnits = _generatedUnits + [_newType];
 	};
 	

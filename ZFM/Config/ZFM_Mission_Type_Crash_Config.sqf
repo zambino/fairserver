@@ -49,21 +49,21 @@ ZFM_CRASH_MISSION_LAYOUT_OBJECTS_MEDIUM =[
 	"Land_tent_east",
 	"CampEast",
 	"Camp",
-	"Barrack2",
+	"Barrack2"
 ];
 ZFM_CRASH_MISSION_LAYOUT_OBJECTS_HARD =[
 	"Land_CamoNet_EAST",
 	"Land_tent_east",
 	"CampEast",
 	"Camp",
-	"Barrack2",
+	"Barrack2"
 ];
 ZFM_CRASH_MISSION_LAYOUT_OBJECTS_WAR_MACHINE =[
 	"Land_CamoNet_EAST",
 	"Land_tent_east",
 	"CampEast",
 	"Camp",
-	"Barrack2",
+	"Barrack2"
 ];
 
 ZFM_CRASH_MISSION_LAYOUT_DEADMEAT =[

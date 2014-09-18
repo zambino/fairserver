@@ -89,6 +89,7 @@ ZFM_Layout_Create_Object ={
 
 		if(_className == ZFM_LAYOUT_OBJECT_UNIT_GROUP) then
 		{
+			diag_log(format["CALLING UNIT GROUP CREATION %1",_this]);
 			if(typeName _classParameters == "ARRAY") then
 			{
 				_createdObject = [(_classParameters select 0),(_classParameters select 1),(_classParameters select 2),_outputLoc,(_classParameters select 3)] call ZFM_Units_Create_Unit_Group;
@@ -213,6 +214,8 @@ ZFM_Layout_Parse ={
 								// Get the item from the array..
 								_rowItem = _row select _y;
 							
+								diag_log(format["LAYOUT ROW ITEM %1",_rowItem]);
+
 								if(typeName _rowItem == "ARRAY") then
 								{
 									if((count _rowItem) == 3) then

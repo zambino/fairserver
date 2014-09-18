@@ -17,7 +17,6 @@ ZFM_Loot_Crates =[
 	"RIFLES",
 	"PISTOLS",
 	"TOOLS",
-	"BACKPACKS",
 	"BUILDINGSUPPLIES",
 	"MEDICAL"
  ];
