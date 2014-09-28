@@ -326,10 +326,10 @@ ZFM_Mission_Type_Crash_GenerateObjectList_Item ={
 	{
 		_thisItem = _objects call BIS_fnc_selectRandom;
 		_outputList = _outputList + [[_thisItem,0,[]]];
-		diag_log(format["OBJECT OUTPUT LOOP %1",_outputList]);
+		//diag_log(format["OBJECT OUTPUT LOOP %1",_outputList]);
 	};
 
-	diag_log(format["OBJECT OUTPUT LOOPOUT %1",_outputList]);
+	//diag_log(format["OBJECT OUTPUT LOOPOUT %1",_outputList]);
 
 	_outputList
 };
@@ -368,11 +368,11 @@ ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item_Multi ={
 	{
 		_thisItem = [_difficulty] call ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item;
 
-		diag_log(format["TEH CRATE ITEM IZ %1",_thisItem]);
+		//diag_log(format["TEH CRATE ITEM IZ %1",_thisItem]);
 
 		_outputArray = _outputArray + [_thisItem];
 
-		diag_log(format["MULTIPLE CRATESLOOT %1 [%2]",_outputArray,_numCrates]);			
+		//diag_log(format["MULTIPLE CRATESLOOT %1 [%2]",_outputArray,_numCrates]);			
 
 	};
 
@@ -428,16 +428,18 @@ ZFM_Mission_Type_Crash_Create_Layout ={
 	// How many loot crates do we have?
 	_numLootCrates = call compile format["ZFM_CRASH_MISSION_NUMBER_LOOT_CRATES_%1",_difficulty];
 
+	diag_log(format["LOOTCRATES - NUMBER = %1",_numLootCrates]);
+
 	// Get the layout
 	_layoutTemplate = call compile format["ZFM_CRASH_MISSION_LAYOUT_%1",_difficulty];
 
 	// Here are the units..
 	_generatedUnits = [_difficulty] call ZFM_Mission_Type_Crash_GenerateRandomUnitGroup_Item;
 
-	diag_log(format["GENERATED UNITS %1",_generatedUnits]);
-
 	// Now we generate the loot crates
 	_generatedCrates = [_difficulty,_numLootCrates] call ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item_Multi;
+
+	diag_log(format["LOOTCRATES - NUMBER = %1",_generatedCrates]);
 
 	_generatedObjects = [];
 
@@ -464,8 +466,9 @@ ZFM_Mission_Type_Crash_Create_Layout ={
 	} forEach _generatedAll;
 
 
-
 	_generatedCount = count _generatedAll;
+
+	diag_log(format["GENERATEDCOUNT %1",_generatedCount]);
 
 	// Get the height of the layout array
 	_layoutHeight = (count _layoutTemplate)-1;
@@ -487,7 +490,8 @@ ZFM_Mission_Type_Crash_Create_Layout ={
 		_selectedRow = _layoutTemplate select _randomRow;
 		_selectedItem = _selectedRow select _randomCol;
 
-		diag_log(format["RANDOM ROW %1, RANDOM COL %2, SELECTEDROW %3, SELECTEDITEM %4",_randomRow,_randomCol,_selectedRow,_selectedItem]);
+
+		diag_log(format["GENERATED THIS ROW %1",_thisRow]);
 
 
 		if(typeName _selectedItem == "SCALAR") then
@@ -497,6 +501,10 @@ ZFM_Mission_Type_Crash_Create_Layout ={
 
 				// JJ: Rewrite this so that each row is cached rather than repacked count(x) times
 				_layoutTemplate set[_x,_selectedRow]; // Repacked back into the array..
+
+				// Take it out of the fingy fong so it isn't re-used
+				_generatedAll set[_x,0];
+
 		}
 		else
 		{
@@ -515,13 +523,16 @@ ZFM_Mission_Type_Crash_Create_Layout ={
 				{
 					_selectedRow set[_randomCol,_thisRow];
 					_layoutTemplate set[_x,_selectedRow]; 
+					_generatedAll set[_x,0];
 					_continue = false; // Exit, we missed the center.
 				};
 			};
 		};
 	};
 
-	diag_log(format["LAYOUT %1",_layoutTemplate]);
+	{
+		diag_log(format["LAYOUTTEMPLATE %1",_x]);
+	} forEach _layoutTemplate;
 
 	_layoutTemplate
 };

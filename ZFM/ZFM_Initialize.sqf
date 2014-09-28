@@ -50,7 +50,7 @@ waitUntil{initialized};
 
 
 _tehLayout = [[4600,10160,0],"WAR_MACHINE",false] call ZFM_Mission_Type_Crash_Create_Layout;
-//[_tehLayout,[2,2],[4600,10160,0],10] call ZFM_Layout_Parse;
+[_tehLayout,[2,2],[4600,10160,0],10] call ZFM_Layout_Parse;
 
 
 //[[4600,10160,0],"EASY"] call ZFM_Mission_Type_Crash_Create_Layout;
