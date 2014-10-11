@@ -298,244 +298,166 @@ private ["_vehicleClass"];
 };
 
 
-/*
-*	ZFM_Mission_Type_Crash_Create
-*
-*	Main function for creating and executing the crash mission. Either dynamic or user-created.
-*/
-ZFM_Mission_Type_Crash_Create ={
-
-	// Oh we're close.
-	// Create the crash, create the layout, create the marker, clear away trees then we're done. Return as mission array row.
-
-
-
-};
-
-ZFM_Mission_Type_Crash_GenerateObjectList_Item ={
-	private["_difficulty","_objects","_outputList","_thisItem","_x"];
-	_difficulty = _this select 0;
-	_numberItems = _this select 1;
-
-	_outputList =[];
-
-	// Get the relevant object thing.
-	_objects = call compile format["ZFM_CRASH_MISSION_LAYOUT_OBJECTS_%1",_difficulty];
-
-	for [{_x =1},{_x <= _numberItems},{_x = _x +1} ] do
-	{
-		_thisItem = _objects call BIS_fnc_selectRandom;
-		_outputList = _outputList + [[_thisItem,0,[]]];
-		//diag_log(format["OBJECT OUTPUT LOOP %1",_outputList]);
-	};
-
-	//diag_log(format["OBJECT OUTPUT LOOPOUT %1",_outputList]);
-
-	_outputList
-};
-
-/*
-*	ZFM_Mission_Type_Crash_GenerateRandomUnitGroup_Item
-*
-*	Generates a unit group item for use in a layout array.
-*/
-ZFM_Mission_Type_Crash_GenerateRandomUnitGroup_Item ={
-	private["_difficulty","_unitList","_outputArray"];
-	_difficulty = _this select 0;
-
-	// Get the array of text types 
-	_unitList = [_difficulty] call ZFM_Units_GenerateRandomUnits;
-
-	// Return the array that will be shown in the layout!
-	[[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[_unitList,_difficulty,ZFM_GROUP_EAST,1]]]
-};
-
-/*
-*	ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item_Multi
-*
-*	Generates multiple loot crate array items.
-*/
-ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item_Multi ={
-	private["_difficulty","_numCrates","_thisItem","_outputArray","_x"];
-	_difficulty = _this select 0;
-	_numCrates = _this select 1;
-
-	_outputArray = [];
-
-	diag_log(format["MULTI %1",_this]);
-
-	for [{_x =1},{_x <= _numCrates},{_x = _x +1} ] do
-	{
-		_thisItem = [_difficulty] call ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item;
-
-		//diag_log(format["TEH CRATE ITEM IZ %1",_thisItem]);
-
-		_outputArray = _outputArray + [_thisItem];
-
-		//diag_log(format["MULTIPLE CRATESLOOT %1 [%2]",_outputArray,_numCrates]);			
-
-	};
-
-	diag_log(format["MULTIPLE CRATES %1 [%2]",_outputArray,_numCrates]);
-
-	_outputArray
-};
-
-/*
-*	ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item
-*
-*	Generates an array for use in a layout array.
-*/
-ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item ={
-	private["_difficulty","_outputArray","_numberItemTypes","_itemTypes","_lootClass","_thisItem","_x"];
-	_difficulty = _this select 0;
-	_outputArray = [];
-	_numberItemTypes = round random ((count ZFM_LOOT_CONTENT_TEXT_TYPES)-1);
-
-	// Get a random Loot crate class..
-	_lootClass = ZFM_Loot_Crates call BIS_fnc_selectRandom;
-
-	// Pre-prepared for the text types.
-	_itemTypes = [];
-
-	// Adds the text types to the array. (i.e. Pistols, Machineguns, etc. )
-	for [{_x =1},{_x <= _numberItemTypes},{_x = _x +1} ] do
-	{
-		_thisItem = ZFM_LOOT_CONTENT_TEXT_TYPES call BIS_fnc_selectRandom;
-		_itemTypes = _itemTypes + [_thisItem];
-	};
-
-	// Return the array that will be shown in the layout.
-	[ZFM_LAYOUT_OBJECT_LOOT,0,[_difficulty,_lootClass,_itemTypes]]
-
-};
-
-/*
-*	ZFM_Mission_Type_Crash_Create_Layout
-*
-*	Creates a layout for the crash using the layout compositor.
-*/
-ZFM_Mission_Type_Crash_Create_Layout ={
-	private["_crashLocation","_x","_selectedItem","_randomRow","_randomCol","_difficulty","_nearBuildings","_numUnits","_thisRow","_numLootCrates","_objectsPerRow","_generatedUnits","_generatedCrates","_generatedObjects","_generatedAll","_generatedCount","_continue"];
-
-	_crashLocation  = _this select 0;
-	_difficulty = _this select 1;
-	_nearBuildings = _this select 2;
-
-	// How many units are there? 
-	_numUnits = call compile format["ZFM_CRASH_MISSION_NUMBER_UNITS_%1",_difficulty];
-
-	// How many loot crates do we have?
-	_numLootCrates = call compile format["ZFM_CRASH_MISSION_NUMBER_LOOT_CRATES_%1",_difficulty];
-
-	diag_log(format["LOOTCRATES - NUMBER = %1",_numLootCrates]);
-
-	// Get the layout
-	_layoutTemplate = call compile format["ZFM_CRASH_MISSION_LAYOUT_%1",_difficulty];
-
-	// Here are the units..
-	_generatedUnits = [_difficulty] call ZFM_Mission_Type_Crash_GenerateRandomUnitGroup_Item;
-
-	// Now we generate the loot crates
-	_generatedCrates = [_difficulty,_numLootCrates] call ZFM_Mission_Type_Crash_GenerateRandomLootCrate_Item_Multi;
-
-	diag_log(format["LOOTCRATES - NUMBER = %1",_generatedCrates]);
-
-	_generatedObjects = [];
-
-	if(!_nearBuildings) then {
-
-		// How many objects to be added?
-		_numObjects =  call compile format["ZFM_CRASH_MISSION_NUMBER_OBJECTS_%1",_difficulty];
-
-		// Now we have the objects we've generated.
-		_generatedObjects = [_difficulty,_numObjects] call ZFM_Mission_Type_Crash_GenerateObjectList_Item;
-	};
-
-	// Place them all into a super-array of items which we will then start to assign to the layout.
-	_generatedAll = _generatedUnits + _generatedCrates;
-
-	if(!_nearBuildings) then
-	{
-		_generatedAll = _generatedAll + [_generatedObjects];
-	};
-
-
-	{
-		diag_log(format["GENERATED ALL %1",_x]);
-	} forEach _generatedAll;
-
-
-	_generatedCount = count _generatedAll;
-
-	diag_log(format["GENERATEDCOUNT %1",_generatedCount]);
-
-	// Get the height of the layout array
-	_layoutHeight = (count _layoutTemplate)-1;
-
-	// Get the width.
-	_layoutWidth = count (_layoutTemplate select 0)-1;
-
-	// Okay, I hate having to use a new loop, but I think the randomness is justified to make people look
-	// At the mission and think "Hm, not seen this one before!" and that's important for me.
-	for [{_x =0},{_x <= _generatedCount-1},{_x = _x +1} ] do
-	{
-		// Get the item for this row.
-		_thisRow = _generatedAll select _x;
+ZFM_Mission_Type_Crash_DoCreate ={
 	
-		_randomRow = round random (_layoutHeight-1);
-		_randomCol = round random (_layoutWidth-1);
+	/*
+		Get the number of units based on difficulty
+		Get the number of loot crates
+		Get the position of the crash
+		Clear away the trees..
+		Fuck a goat
+	*/
 
-		// Okay, now we generate a random row and position
-		_selectedRow = _layoutTemplate select _randomRow;
-		_selectedItem = _selectedRow select _randomCol;
+	["EASY",false] call ZFM_Mission_Type_Crash_Generate_Layout;
+};
 
 
-		diag_log(format["GENERATED THIS ROW %1",_thisRow]);
+
+ZFM_Mission_Type_Crash_Generate_Layout_Objects ={
+	private["_difficulty","_numberofObjects","_output","_addItem"];
+
+	_output = [];
+
+	// Step zero - How many objects? 
+	_numberOfObjects = call compile format["ZFM_CRASH_MISSION_NUMBER_OBJECTS_%1",_difficulty];
+	_lootObjects = call compile format["ZFM_CRASH_MISSION_LAYOUT_OBJECTS_%1",_difficulty];
+
+	for [{_x =0},{_x <= _numberofObjects},{_x = _x +1} ] do
+	{
+		_addItem = _lootObjects call BIS_fnc_selectRandom;
+		_output = _output + [[_addItem,0,[]]];
+	};
+
+	_output
+};
+
+ZFM_Mission_Type_Crash_Generate_Layout_Units ={
+	private["_difficulty"];
+};
+
+ZFM_Mission_Type_Crash_Generate_Layout_Crates ={
+	private["_difficulty"];
+};
 
 
-		if(typeName _selectedItem == "SCALAR") then
+/*
+*	Take 2 - Using foreach and multiple instances. Concatenated shit doesn't work. 
+*/
+ZFM_Mission_Type_Crash_Generate_Layout = {
+	private["_difficulty","_unitHeroOrBandit","_generatedItemRow","_generatedItemItem","_layoutWidth","_layoutHeight","_generatedX","_generatedY","_numberOfObjects","_stepCount","_numberOfLootCrates","_numberOfUnits","_steps","_activeCount"];
+
+	_difficulty = _this select 0;
+	_unitHeroOrBandit = _this select 1;
+
+	// Step zero - How many objects? 
+	_numberOfObjects = call compile format["ZFM_CRASH_MISSION_NUMBER_OBJECTS_%1",_difficulty];
+
+	// Step one - How many loot crates?
+	_numberOfLootCrates = call compile format["ZFM_CRASH_MISSION_NUMBER_LOOT_CRATES_%1",_difficulty];
+
+	// Step two, how many units? 
+	_numberOfUnits = call compile format["ZFM_CRASH_MISSION_NUMBER_UNITS_%1",_difficulty];
+
+	// Get the layout for this difficulty
+	_thisLayout = call compile format["ZFM_CRASH_MISSION_LAYOUT_%1",_difficulty];
+
+	_generatedObjects = [_difficulty] call ZFM_Mission_Type_Crash_Generate_Layout_Objects;
+	_generatedUnits = [_difficulty] call ZFM_Mission_Type_Crash_Generate_Layout_Units;
+	_generatedLootCrates = [_difficulty] call ZFM_Mission_Type_Crash_Generate_Layout_Crates;
+
+	diag_log(format["_numberOfObjects %1",_numberOfObjects]);
+	diag_log(format["_numberOfLootCrates %1",_numberOfLootCrates]);
+	diag_log(format["_numberOfUnits %1",_numberOfUnits]);
+
+	_steps = ["_numberofObjects","_numberOfLootCrates","_numberOfUnits"];
+
+	// Which step?
+	_step = 0;
+
+	// Switch this to loop them all, starting with 
+	_activeCount = _numberOfObjects;
+
+
+	// Get the width and height
+	_layoutWidth = count (_thisLayout select 0)-1;
+	_layoutHeight = count(_thisLayout)-1;
+
+
+	// Firstly, we need to generate the objects. 
+	for [{_x =0},{_x <= _activeCount},{_x = _x +1} ] do
+	{
+		
+		_finishedGeneration = true;
+
+		_generatedX = 0;
+		_generatedY = 0;
+		_generatedItemRow = objNull;
+		_generatedItemItem = objNull;
+
+		_addItem = ["Camp",0,[]];
+
+		while{_finishedGeneration} do
 		{
-				// Set the item in the row to the item in the array.
-				_selectedRow set[_randomCol,_thisRow];
+			// Generate the X position and Y position
+			_generatedX = round random _layoutWidth;
+			_generatedY = round random _layoutHeight;
 
-				// JJ: Rewrite this so that each row is cached rather than repacked count(x) times
-				_layoutTemplate set[_x,_selectedRow]; // Repacked back into the array..
+			// Get the item
+			_generatedItemRow = _thisLayout select _generatedY;
+			_generatedItemItem = _generatedItemRow select _generatedX;
 
-				// Take it out of the fingy fong so it isn't re-used
-				_generatedAll set[_x,0];
-
-		}
-		else
-		{
-			_continue = true;
-
-			while{_continue} do
+			if(typeName _generatedItemItem == "SCALAR") then
 			{
-				_randomRow = round random _layoutHeight;
-				_randomCol = round random _layoutWidth;
-
-				// Okay, now we generate a random row and position
-				_selectedRow = _layoutTemplate select _randomRow;
-				_selectedItem = _selectedRow select _randomCol;
-
-				if(typeName _selectedItem == "SCALAR") then
+				switch(_step) do
 				{
-					_selectedRow set[_randomCol,_thisRow];
-					_layoutTemplate set[_x,_selectedRow]; 
-					_generatedAll set[_x,0];
-					_continue = false; // Exit, we missed the center.
+					case 0: {
+						_addItem = _generatedObjects select _x;
+					};
+
+					case 1 :{
+						_addItem = _generatedLootCrates select _x;
+					};
+
+					case 2: {
+						_addItem = _generatedUnits select _x;
+					};
+
 				};
+
+				_finishedGeneration = false; //  Exit the loop, we found it!
+				_generatedItemRow set[_generatedX,_addItem];
+				_thisLayout set[_generatedY,_generatedItemRow];
+			};
+
+		};
+
+		if(_x == _activeCount) then
+		{
+			_step = _step +1;
+
+			if(_step <= 2) then 
+			{
+				// Get the name of the variable
+				_stepCount = call compile format["%1",(_steps select _step)];
+
+				diag_log(format["AT END OF STEP! %1, %2",(_steps select _step),_stepCount]);
+
+				_activeCount = _stepCount;
+				_x = 0;
+			}
+			else
+			{
+				_x = _activeCount; // Get outta that loop, toots.
 			};
 		};
 	};
 
 	{
-		diag_log(format["LAYOUTTEMPLATE %1",_x]);
-	} forEach _layoutTemplate;
+		diag_log(format["LAYOUT ## %1",_x]);
+	}foreach _thisLayout;
 
-	_layoutTemplate
 };
+
 
 
 /*

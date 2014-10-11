@@ -125,6 +125,7 @@ ZFM_Common_DoMissionBootStrap ={
 				if(_iRow in ZFM_MISSION_TYPES_SUPPORTED) then
 				{
 					_includePath = ZFM_MISSION_TYPE_INCLUDE_DIR + format[ZFM_MISSION_TYPE_INCLUDE_NAME,_iRow];
+
 					[2,"INFORMATION","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Language_Log;
 					//["MissionBootStrap IncludePath is %1","ZFM_Common::ZFM_Common_DoMissionBootStrap",[_includePath]] call ZFM_Common_Log;
 					call compile preprocessFileLineNumbers _includePath;

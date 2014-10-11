@@ -12,10 +12,10 @@
  *
  *	The AI Groups.. ;-)
  */
- ZFM_GROUP_EAST = objNull;
- ZFM_GROUP_WEST = objNull;
- ZFM_GROUP_CIVILIAN = objNull;
- ZFM_GROUP_RESISTANCE = objNull;
+ZFM_GROUP_EAST = objNull;
+ZFM_GROUP_WEST = objNull;
+ZFM_GROUP_CIVILIAN = objNull;
+ZFM_GROUP_RESISTANCE = objNull;
  
 ZFM_AI_TYPE_SNIPER = "1x101010";
 ZFM_AI_TYPE_RIFLEMAN = "1x101011";

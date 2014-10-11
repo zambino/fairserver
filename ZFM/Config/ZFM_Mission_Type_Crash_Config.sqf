@@ -42,7 +42,13 @@ ZFM_CRASH_MISSION_USE_HIVE_VEHICLES = true;
 ZFM_CRASH_MISSION_HIVE_VEHICLE_PERCENTAGE_CHANCE = 10; 
 
 
-ZFM_CRASH_MISSION_LAYOUT_OBJECTS_DEADMEAT =["Land_A_tent","ACamp","Hedgehog","Land_obstacle_prone","Body","GraveCross1","GraveCross2","Grave"];
+ZFM_CRASH_MISSION_LAYOUT_OBJECTS_DEADMEAT =[
+"Land_A_tent",
+"ACamp",
+"Hedgehog",
+"Land_obstacle_prone",
+"Body","GraveCross1","GraveCross2","Grave"
+];
 ZFM_CRASH_MISSION_LAYOUT_OBJECTS_EASY =["Land_A_tent","ACamp","Hedgehog","Land_obstacle_prone","Body","GraveCross1","GraveCross2","Grave"];
 ZFM_CRASH_MISSION_LAYOUT_OBJECTS_MEDIUM =[
 	"Land_CamoNet_EAST",
@@ -67,46 +73,47 @@ ZFM_CRASH_MISSION_LAYOUT_OBJECTS_WAR_MACHINE =[
 ];
 
 ZFM_CRASH_MISSION_LAYOUT_DEADMEAT =[
-	[0,0,0,0,0],
-	[0,0,0,0,0],
-	[0,0,1,0,0],	
-	[0,0,0,0,0],
-	[0,0,0,0,0]
+[0,0,0,0,0],
+[0,0,0,0,0],
+[0,0,1,0,0],	
+[0,0,0,0,0],
+[0,0,0,0,0]
 ];
 ZFM_CRASH_MISSION_LAYOUT_EASY =[
-	[0,0,0,0,0],
-	[0,0,0,0,0],
-	[0,0,1,0,0],	
-	[0,0,0,0,0],
-	[0,0,0,0,0]
+[0,0,0,0,0],
+[0,0,0,0,0],
+[0,0,1,0,0],	
+[0,0,0,0,0],
+[0,0,0,0,0]
 ];
 ZFM_CRASH_MISSION_LAYOUT_MEDIUM =[
-	[0,0,0,0,0],
-	[0,0,0,0,0],
-	[0,0,1,0,0],	
-	[0,0,0,0,0],
-	[0,0,0,0,0]
+[0,0,0,0,0],
+[0,0,0,0,0],
+[0,0,1,0,0],	
+[0,0,0,0,0],
+[0,0,0,0,0]
 ];
 ZFM_CRASH_MISSION_LAYOUT_HARD =[
-	[0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0],	
-	[0,0,0,1,1,0,0,0],
-	[0,0,0,1,1,0,0,0],
-	[0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0]
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],	
+[0,0,0,1,1,0,0,0],
+[0,0,0,1,1,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0]
 ];
 ZFM_CRASH_MISSION_LAYOUT_WAR_MACHINE =[
-	[0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0],	
-	[0,0,0,1,1,0,0,0],
-	[0,0,0,1,1,0,0,0],
-	[0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0]
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],	
+[0,0,0,1,1,0,0,0],
+[0,0,0,1,1,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0]
 ];
+
 
 ZFM_CRASH_MISSION_USE_MANUAL_CRASH_LOCATIONS = false; // Why use cotton when you have silk?
 

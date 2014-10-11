@@ -18,6 +18,7 @@ ZFM_Language_DoBootStrap ={
 			if(ZFM_DEFAULT_LANGUAGE in ZFM_LANGUAGES_SUPPORTED) then
 			{
 				_includePath = ZFM_LANGUAGE_INCLUDE_DIR + format[ZFM_LANGUAGE_INCLUDE_NAME,ZFM_DEFAULT_LANGUAGE];
+
 				["IncludePath is %1","ZFM_Language::ZFM_Language_BootStrap","INFORMATION",[_includePath]] call ZFM_Common_Log;
 				call compile preprocessFileLineNumbers _includePath;
 			};

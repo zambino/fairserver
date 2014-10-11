@@ -20,6 +20,8 @@ if(!isServer) exitWith { diag_log("ZFM: This shouldn't be run by anything other 
 *	Global variables have been removed to prevent manipulation of ZFM includes.
 */
 
+// Moving this causes crashes with Arma20a and MALLOC crashes. Fucking heisenbug! AAAAA
+waitUntil{initialized};
 
 // Common includes and constants come first
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Constants.sqf";
@@ -39,61 +41,19 @@ call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Loot.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Layout.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Mission.sqf";
 
-//Dnyamic includes. (Based on enabled mission types)
+//Dnyamic includes. (Based on enabled mission types) -- Includes the files for use. 
 call ZFM_Language_DoBootStrap;								// Bootsraps language (EN,NL,DE,FR)
 call ZFM_Common_DoMissionBootStrap;							// Bootstraps supported missions (crash,etc)
 call ZFM_Common_DoDayZBootStrap;							// Bootstraps Epoch/Overpoch etc.
 call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
 
 [4,"INFORMATION","ZFM_Initialize.sqf::execVM"] call ZFM_Language_Log;
-waitUntil{initialized};
 
 
-_tehLayout = [[4600,10160,0],"WAR_MACHINE",false] call ZFM_Mission_Type_Crash_Create_Layout;
-[_tehLayout,[2,2],[4600,10160,0],10] call ZFM_Layout_Parse;
+// Fucking heisenbug. Anyway
+["EASY",false] call ZFM_MISSION_Type_Crash_Generate_Layout;
 
 
-//[[4600,10160,0],"EASY"] call ZFM_Mission_Type_Crash_Create_Layout;
-//[] call ZFM_Mission_Type_Crash_Create_Crash;
-
-/*
-*	ZFM Initialize
-*
-*	Waits for all the other server functions to start before ZFM begins.
-*/
-/*
-
-_outyPutY = ["Mi17","HERO","EASY"] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
-[5,"INFORMATION","ZFM_Initialize.sqf::outPutY",[_outyPutY]] call ZFM_Language_Log;
-
-_outPutCrah = [[1201,1200,0]] call ZFM_Mission_Type_Crash_CheckCrashExclusion;
-[5,"INFORMATION","ZFM_Initialize.sqf::outPutCrah",[_outPutCrah]] call ZFM_Language_Log;
-
-// Remove
-ZFM_Layouts_Array =[
-	[
-		[ZFM_LAYOUT_OBJECT_LOOT,0,["EASY","TKSpecialWeapons_EP1",["MACHINEGUNS","SNIPERS"]]],
-		[ZFM_LAYOUT_OBJECT_LOOT,0,["WAR_MACHINE","TKSpecialWeapons_EP1",["BUILDINGSUPPLIES","TOOLS"]]],
-		[ZFM_LAYOUT_OBJECT_LOOT,0,["HARD","TKSpecialWeapons_EP1",["PISTOLS","SNIPERS"]]]
-	],
-	[0,0,0],
-	[0,[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[["COMMANDER","SNIPER","HEAVY","HEAVY"],"WAR_MACHINE",ZFM_GROUP_EAST,1]],0]
-];
-
-[ZFM_Layouts_Array,[0,1],[4600,10160,0],20] call ZFM_Layout_Parse;*/
-
-
-/*
-*	Main (Minimal) init for ZFM
-*/
-
-// Declared universally so that ALL AI are put under its spell, rather than one group.
-
-// DEBUGGING - Uncomment to enable BootStrap
-// DEBUGGING - Uncomment to enable BootStrap
-// DEBUGGING - Uncomment to enable BootStrap
-// DEBUGGING - Uncomment to enable BootStrap
-//[] call ZFM_Common_DoBootStrap;
 
 // Run the main mission handler -- this loops and waits for mission events to start/finish
 //[] call ZFM_Mission_Handler_Start;

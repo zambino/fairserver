@@ -448,7 +448,7 @@ ZFM_UNIT_EQUIPMENT_SNIPER_EASY =[
 ];
 ZFM_UNIT_EQUIPMENT_SNIPER_MEDIUM =[
 	"Soldier_Sniper_PMC_DZ", 														// Skin
-	["SVD_CAMO","DMR_DZ","m107","SVD_des_EP1","SCAR_H_LNG_Sniper_SD","vil_M21","RH_mistsp"],										// Snipers from FixedLoot. (Random pick)
+	["SVD_CAMO","DMR_DZ","SVD_des_EP1","SCAR_H_LNG_Sniper_SD","vil_M21","RH_mistsp"],										// Snipers from FixedLoot. (Random pick)
 	3,																				// Boundary for the maximum number of magazines
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU"],				// Backpacks from FixedLoot (Random pick)
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]	
@@ -462,7 +462,7 @@ ZFM_UNIT_EQUIPMENT_SNIPER_HARD =[
 ];
 ZFM_UNIT_EQUIPMENT_SNIPER_WAR_MACHINE =[
 	"GUE_Soldier_Sniper_DZ",
-	["KSVK_DZE","DMR_DZ","m107","FHQ_RSASS_TAN","FHQ_MSR_DESERT","FHQ_XM2010_DESERT","m107_SKN"],				// Will always have an awesome sniper rifle..
+	["KSVK_DZE","DMR_DZ","FHQ_RSASS_TAN","FHQ_MSR_DESERT","FHQ_XM2010_DESERT","m107_SKN"],				// Will always have an awesome sniper rifle..
 	5,
 	["DZ_ALICE_Pack_EP1","DZ_TK_Assault_Pack_EP1","DZ_British_ACU","DZ_LargeGunBag_EP1"],				// Doesn't really matter.
 	["ItemBandage","ItemBandage", "ItemPainkiller","ItemKnife","ItemFlashlight"]
