@@ -51,7 +51,7 @@ call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
 
 
 // Fucking heisenbug. Anyway
-["EASY",false] call ZFM_MISSION_Type_Crash_Generate_Layout;
+[] call ZFM_Mission_Type_Crash_DoCreate;
 
 
 

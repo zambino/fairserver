@@ -92,6 +92,7 @@ ZFM_Layout_Create_Object ={
 			diag_log(format["CALLING UNIT GROUP CREATION %1",_this]);
 			if(typeName _classParameters == "ARRAY") then
 			{
+				// _unitsArray, _difficulty, _side,_spawnAt,_missionID
 				_createdObject = [(_classParameters select 0),(_classParameters select 1),(_classParameters select 2),_outputLoc,(_classParameters select 3)] call ZFM_Units_Create_Unit_Group;
 				_createdObject
 			};

@@ -299,7 +299,7 @@ private ["_vehicleClass"];
 
 
 ZFM_Mission_Type_Crash_DoCreate ={
-	
+	private["_layout","_difficulty"];
 	/*
 		Get the number of units based on difficulty
 		Get the number of loot crates
@@ -307,15 +307,16 @@ ZFM_Mission_Type_Crash_DoCreate ={
 		Clear away the trees..
 		Fuck a goat
 	*/
-
-	["EASY",false] call ZFM_Mission_Type_Crash_Generate_Layout;
+	_difficulty = ZFM_DIFFICULTY_TEXT_TYPES call BIS_fnc_selectRandom;
+	_layout = [_difficulty,false] call ZFM_Mission_Type_Crash_Generate_Layout;
+	[_layout,[2,2],[4600,10160,0],10] call ZFM_Layout_Parse;
 };
 
 
 
 ZFM_Mission_Type_Crash_Generate_Layout_Objects ={
 	private["_difficulty","_numberofObjects","_output","_addItem"];
-
+	_difficulty = _this select 0;
 	_output = [];
 
 	// Step zero - How many objects? 
@@ -332,11 +333,39 @@ ZFM_Mission_Type_Crash_Generate_Layout_Objects ={
 };
 
 ZFM_Mission_Type_Crash_Generate_Layout_Units ={
-	private["_difficulty"];
+	private["_difficulty","_unitList","_outputArray"];
+	_difficulty = _this select 0;
+	_numberUnits = _this select 1;
+	
+	// Get the array of text types
+	_unitList = [_difficulty,_numberUnits] call ZFM_Units_GenerateRandomUnits;
+
+	// Return the array that will be shown in the layout!
+	[[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[_unitList,_difficulty,ZFM_GROUP_EAST,1]]]
 };
 
 ZFM_Mission_Type_Crash_Generate_Layout_Crates ={
-	private["_difficulty"];
+	private["_difficulty","_outputArray","_numberItemTypes","_itemTypes","_lootClass","_thisItem","_x"];
+	_difficulty = _this select 0;
+
+	_outputArray = [];
+
+	_numberItemTypes = round random ((count ZFM_LOOT_CONTENT_TEXT_TYPES)-1);
+
+	// Get a random Loot crate class..
+	_lootClass = ZFM_Loot_Crates call BIS_fnc_selectRandom;
+
+	// Pre-prepared for the text types.
+	_itemTypes = [];
+
+	// Adds the text types to the array. (i.e. Pistols, Machineguns, etc. )
+	for [{_x =1},{_x <= _numberItemTypes},{_x = _x +1}] do
+	{
+		_thisItem = ZFM_LOOT_CONTENT_TEXT_TYPES call BIS_fnc_selectRandom;
+		_itemTypes = _itemTypes + [_thisItem];
+	};
+	// Return the array that will be shown in the layout.
+	[ZFM_LAYOUT_OBJECT_LOOT,0,[_difficulty,_lootClass,_itemTypes]]
 };
 
 
@@ -344,7 +373,7 @@ ZFM_Mission_Type_Crash_Generate_Layout_Crates ={
 *	Take 2 - Using foreach and multiple instances. Concatenated shit doesn't work. 
 */
 ZFM_Mission_Type_Crash_Generate_Layout = {
-	private["_difficulty","_unitHeroOrBandit","_generatedItemRow","_generatedItemItem","_layoutWidth","_layoutHeight","_generatedX","_generatedY","_numberOfObjects","_stepCount","_numberOfLootCrates","_numberOfUnits","_steps","_activeCount"];
+	private["_difficulty","_numUnits","_unitHeroOrBandit","_generatedItemRow","_generatedItemItem","_thisItem","_layoutWidth","_layoutHeight","_generatedX","_generatedY","_numberOfObjects","_stepCount","_numberOfLootCrates","_numberOfUnits","_steps","_activeCount"];
 
 	_difficulty = _this select 0;
 	_unitHeroOrBandit = _this select 1;
@@ -356,13 +385,14 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 	_numberOfLootCrates = call compile format["ZFM_CRASH_MISSION_NUMBER_LOOT_CRATES_%1",_difficulty];
 
 	// Step two, how many units? 
-	_numberOfUnits = call compile format["ZFM_CRASH_MISSION_NUMBER_UNITS_%1",_difficulty];
+	_numUnits = call compile format["ZFM_CRASH_MISSION_NUMBER_UNITS_%1",_difficulty];
+	_numberOfUnits = 1;
 
 	// Get the layout for this difficulty
 	_thisLayout = call compile format["ZFM_CRASH_MISSION_LAYOUT_%1",_difficulty];
-
+	
 	_generatedObjects = [_difficulty] call ZFM_Mission_Type_Crash_Generate_Layout_Objects;
-	_generatedUnits = [_difficulty] call ZFM_Mission_Type_Crash_Generate_Layout_Units;
+	_generatedUnits = [_difficulty,_numUnits] call ZFM_Mission_Type_Crash_Generate_Layout_Units;
 	_generatedLootCrates = [_difficulty] call ZFM_Mission_Type_Crash_Generate_Layout_Crates;
 
 	diag_log(format["_numberOfObjects %1",_numberOfObjects]);
@@ -377,15 +407,15 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 	// Switch this to loop them all, starting with 
 	_activeCount = _numberOfObjects;
 
-
 	// Get the width and height
 	_layoutWidth = count (_thisLayout select 0)-1;
 	_layoutHeight = count(_thisLayout)-1;
 
 
 	// Firstly, we need to generate the objects. 
-	for [{_x =0},{_x <= _activeCount},{_x = _x +1} ] do
+	for [{_x =0},{_x <= _activeCount-1},{_x = _x +1} ] do
 	{
+		diag_log(format["ACTIVECOUNT %1",_activeCount]);
 		
 		_finishedGeneration = true;
 
@@ -399,41 +429,50 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 		while{_finishedGeneration} do
 		{
 			// Generate the X position and Y position
-			_generatedX = round random _layoutWidth;
-			_generatedY = round random _layoutHeight;
+			_generatedX = round(random _layoutWidth);
+			_generatedY = round(random _layoutHeight);
 
+			diag_log(format["GENERATEDX %1",_generatedX]);
+			diag_log(format["GENERATEDY %1",_generatedY]);
+			diag_log(format["STEP %1",_step]);
+			
 			// Get the item
 			_generatedItemRow = _thisLayout select _generatedY;
-			_generatedItemItem = _generatedItemRow select _generatedX;
+			//_generatedItemItem = _generatedItemRow select _generatedX;
 
-			if(typeName _generatedItemItem == "SCALAR") then
+			if(format["%1",(_generatedItemRow select _generatedX)] != "" && typeName (_generatedItemRow select _generatedX) == "SCALAR") then
 			{
 				switch(_step) do
 				{
 					case 0: {
-						_addItem = _generatedObjects select _x;
+						_addItem = _generatedObjects call BIS_fnc_selectRandom;
+						_generatedItemRow set[_generatedX,_addItem];
+						_thisLayout set[_generatedY,_generatedItemRow];
+						_finishedGeneration = false;
 					};
 
 					case 1 :{
-						_addItem = _generatedLootCrates select _x;
+						_addItem = _generatedLootCrates call BIS_fnc_selectRandom;
+						_generatedItemRow set[_generatedX,_addItem];
+						_thisLayout set[_generatedY,_generatedItemRow];
+						_finishedGeneration = false;
 					};
 
 					case 2: {
-						_addItem = _generatedUnits select _x;
+						_addItem = _generatedUnits select 0;
+						_generatedItemRow set[_generatedX,_addItem];
+						_thisLayout set[_generatedY,_generatedItemRow];
+						_finishedGeneration = false;
 					};
-
 				};
-
-				_finishedGeneration = false; //  Exit the loop, we found it!
-				_generatedItemRow set[_generatedX,_addItem];
-				_thisLayout set[_generatedY,_generatedItemRow];
 			};
-
 		};
 
-		if(_x == _activeCount) then
+		if(_x == (_activeCount-1)) then
 		{
 			_step = _step +1;
+			
+			diag_log(format["STEP INCREMENTING %1",_step]);
 
 			if(_step <= 2) then 
 			{
@@ -454,8 +493,10 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 
 	{
 		diag_log(format["LAYOUT ## %1",_x]);
-	}foreach _thisLayout;
-
+	} forEach _thisLayout;
+	
+	
+	_thisLayout
 };
 
 
