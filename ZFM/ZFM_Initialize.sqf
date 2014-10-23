@@ -49,7 +49,6 @@ call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
 
 [4,"INFORMATION","ZFM_Initialize.sqf::execVM"] call ZFM_Language_Log;
 
-
 // Fucking heisenbug. Anyway
 [] call ZFM_Mission_Type_Crash_DoCreate;
 

@@ -299,17 +299,52 @@ private ["_vehicleClass"];
 
 
 ZFM_Mission_Type_Crash_DoCreate ={
-	private["_layout","_difficulty"];
-	/*
-		Get the number of units based on difficulty
-		Get the number of loot crates
-		Get the position of the crash
-		Clear away the trees..
-		Fuck a goat
-	*/
-	_difficulty = ZFM_DIFFICULTY_TEXT_TYPES call BIS_fnc_selectRandom;
+	private["_layout","_difficulty","_heroOrBandit","_returnArray"];
+	
+	// Allow some flexibility in generation.
+	switch(count(_this)) do
+	{
+		case 1: {
+			_difficulty = _this select 0;
+			_heroOrBandit = ZFM_CRASH_MISSION_ALIGNMENT_TYPES call BIS_fnc_selectRandom;
+		};
+		
+		case 2: {
+			_difficulty = _this select 0;
+			_heroOrBandit = _this select 1;
+		};
+		
+		default{
+			_difficulty = ZFM_DIFFICULTY_TEXT_TYPES call BIS_fnc_selectRandom;
+			_heroOrBandit = ZFM_CRASH_MISSION_ALIGNMENT_TYPES call BIS_fnc_selectRandom;
+		};
+	};
+	
+	_returnArray = [] call ZFM_Mission_Type_Crash_Create_Crash;
+	_vehicleClass = _returnArray select 0;
+	_difficulty = _returnArray select 1;
+	_location = _returnArray select 2;
+	_marker = _returnArray select 3;
+	_missionText = _returnArray select 4;
+	
+	_centerPos = [];
+	switch(_difficulty) do
+	{
+		case "DEADMEAT";
+		case "EASY";
+		case "MEDIUM": {
+			_centerPos = [2,2];
+		};
+		case "HARD";
+		case "WAR_MACHINE": {
+			_centerPos = [3,3];
+		};
+		
+	};
 	_layout = [_difficulty,false] call ZFM_Mission_Type_Crash_Generate_Layout;
-	[_layout,[2,2],[4600,10160,0],10] call ZFM_Layout_Parse;
+	[_layout,_centerPos,_location,20] call ZFM_Layout_Parse;
+
+	[nil,nil,rTitleText,format["%1 [Difficulty: %2]",_missionText,_difficulty],"PLAIN",60] call RE;
 };
 
 
@@ -344,14 +379,11 @@ ZFM_Mission_Type_Crash_Generate_Layout_Units ={
 	[[ZFM_LAYOUT_OBJECT_UNIT_GROUP,0,[_unitList,_difficulty,ZFM_GROUP_EAST,1]]]
 };
 
-ZFM_Mission_Type_Crash_Generate_Layout_Crates ={
-	private["_difficulty","_outputArray","_numberItemTypes","_itemTypes","_lootClass","_thisItem","_x"];
+
+ZFM_Mission_Type_Crash_Generate_Layout_Crates_Sub ={
+	private["_difficulty","_lootClass","_itemTypes","_x"];
 	_difficulty = _this select 0;
-
-	_outputArray = [];
-
-	_numberItemTypes = round random ((count ZFM_LOOT_CONTENT_TEXT_TYPES)-1);
-
+	
 	// Get a random Loot crate class..
 	_lootClass = ZFM_Loot_Crates call BIS_fnc_selectRandom;
 
@@ -364,8 +396,28 @@ ZFM_Mission_Type_Crash_Generate_Layout_Crates ={
 		_thisItem = ZFM_LOOT_CONTENT_TEXT_TYPES call BIS_fnc_selectRandom;
 		_itemTypes = _itemTypes + [_thisItem];
 	};
+	
 	// Return the array that will be shown in the layout.
-	[ZFM_LAYOUT_OBJECT_LOOT,0,[_difficulty,_lootClass,_itemTypes]]
+	[[ZFM_LAYOUT_OBJECT_LOOT,0,[_difficulty,_lootClass,_itemTypes]]]
+};
+
+ZFM_Mission_Type_Crash_Generate_Layout_Crates ={
+	private["_difficulty","_outputArray","_lootCrates","_numberItemTypes","_itemTypes","_lootClass","_thisItem","_x"];
+	_difficulty = _this select 0;
+
+	_outputArray = [];
+	
+	_numberLootCrates = call compile format["ZFM_CRASH_MISSION_NUMBER_LOOT_CRATES_%1",_difficulty];
+	_numberItemTypes = round random ((count ZFM_LOOT_CONTENT_TEXT_TYPES)-1);
+
+	for[{_x=1},{_x<=_numberLootCrates},{_x=_x+1}] do
+	{
+		_thisItem = [_difficulty] call ZFM_Mission_Type_Crash_Generate_Layout_Crates_Sub;
+		_outputArray = _outputArray + _thisItem;
+	};
+	
+	_outputArray
+
 };
 
 
@@ -405,15 +457,14 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 	_step = 0;
 
 	// Switch this to loop them all, starting with 
-	_activeCount = _numberOfObjects;
+	_activeCount = _numberOfObjects-1;
 
 	// Get the width and height
 	_layoutWidth = count (_thisLayout select 0)-1;
 	_layoutHeight = count(_thisLayout)-1;
 
-
 	// Firstly, we need to generate the objects. 
-	for [{_x =0},{_x <= _activeCount-1},{_x = _x +1} ] do
+	for [{_x =0},{_x <= _activeCount},{_x = _x +1} ] do
 	{
 		diag_log(format["ACTIVECOUNT %1",_activeCount]);
 		
@@ -446,6 +497,7 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 				{
 					case 0: {
 						_addItem = _generatedObjects call BIS_fnc_selectRandom;
+						diag_log(format["ADDITEM0 %1",_addItem]);
 						_generatedItemRow set[_generatedX,_addItem];
 						_thisLayout set[_generatedY,_generatedItemRow];
 						_finishedGeneration = false;
@@ -453,6 +505,7 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 
 					case 1 :{
 						_addItem = _generatedLootCrates call BIS_fnc_selectRandom;
+						diag_log(format["ADDITEM1 %1, LOOTCRATES %2",_addItem,_generatedLootCrates]);
 						_generatedItemRow set[_generatedX,_addItem];
 						_thisLayout set[_generatedY,_generatedItemRow];
 						_finishedGeneration = false;
@@ -460,6 +513,7 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 
 					case 2: {
 						_addItem = _generatedUnits select 0;
+						diag_log(format["ADDITEM2 %1",_addItem]);
 						_generatedItemRow set[_generatedX,_addItem];
 						_thisLayout set[_generatedY,_generatedItemRow];
 						_finishedGeneration = false;
@@ -468,7 +522,7 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 			};
 		};
 
-		if(_x == (_activeCount-1)) then
+		if(_x == _activeCount) then
 		{
 			_step = _step +1;
 			
@@ -507,7 +561,7 @@ ZFM_Mission_Type_Crash_Generate_Layout = {
 *	Creates the crash for the crash mission.
 */
 ZFM_Mission_Type_Crash_Create_Crash={
-	private["_vehicleClass","_difficulty","_location","_markerPre","_markerPrez","_marker","_returnArray"];
+	private["_vehicleClass","_difficulty","_location","_markerPre","_markerPrez","_marker","_returnArray","_missionText"];
 
 	_returnArray =[];
 
@@ -530,7 +584,9 @@ ZFM_Mission_Type_Crash_Create_Crash={
 			// Generate a marker for the crash
 			_marker = [_location select 1,_difficulty,(_markerPre + " " + _markerPrez)] call ZFM_Mission_Type_Crash_Create_Marker;	
 
-			_returnArray =[_vehicleClass,_difficulty,_location,_marker];
+			_missionText = [_markerPrez,(["HERO","BANDIT"] call BIS_fnc_selectRandom),_difficulty] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
+			
+			_returnArray =[_vehicleClass,_difficulty,_location,_marker,_missionText];
 
 		};
 
@@ -551,11 +607,13 @@ ZFM_Mission_Type_Crash_Create_Crash={
 				_markerPre = ZFM_CRASH_MISSION_CRASH_EXPS call BIS_fnc_selectRandom;
 				_markerPrez = [_vehicleClass] call ZFM_Mission_Type_Crash_GetFriendlyVehicleName;
 
+				_missionText = [_markerPrez,(["HERO","BANDIT"] call BIS_fnc_selectRandom),_difficulty] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
+						
 				// Generate a marker for the crash
 				_marker = [_location select 1,_difficulty,(_markerPre + " " + _markerPrez)] call ZFM_Mission_Type_Crash_Create_Marker;	
 
 				// Return it
-				_returnArray =[_vehicleClass,_difficulty,_location,_marker];			
+				_returnArray =[_vehicleClass,_difficulty,_location,_marker,_missionText];			
 			};
 		};
 
@@ -575,11 +633,14 @@ ZFM_Mission_Type_Crash_Create_Crash={
 				_markerPre = ZFM_CRASH_MISSION_CRASH_EXPS call BIS_fnc_selectRandom;
 				_markerPrez = [_vehicleClass] call ZFM_Mission_Type_Crash_GetFriendlyVehicleName;
 
+				_missionText = [_markerPrez,(["HERO","BANDIT"] call BIS_fnc_selectRandom),_difficulty] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
+					
+				
 				// Generate a marker for the crash
 				_marker = [_location select 1,_difficulty,(_markerPre + " " + _markerPrez)] call ZFM_Mission_Type_Crash_Create_Marker;	
 
 				// Return it
-				_returnArray =[_vehicleClass,_difficulty,_location,_marker];				
+				_returnArray =[_vehicleClass,_difficulty,_location,_marker,_missionText];				
 			};
 		};
 
@@ -599,11 +660,13 @@ ZFM_Mission_Type_Crash_Create_Crash={
 				_markerPre = ZFM_CRASH_MISSION_CRASH_EXPS call BIS_fnc_selectRandom;
 				_markerPrez = [_vehicleClass] call ZFM_Mission_Type_Crash_GetFriendlyVehicleName;
 
+				_missionText = [_markerPrez,(["HERO","BANDIT"] call BIS_fnc_selectRandom),_difficulty] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
+					
 				// Generate a marker for the crash
 				_marker = [_location select 1,_difficulty,(_markerPre + " " + _markerPrez)] call ZFM_Mission_Type_Crash_Create_Marker;	
 
 				// Return it
-				_returnArray =[_vehicleClass,_difficulty,_location,_marker];								
+				_returnArray =[_vehicleClass,_difficulty,_location,_marker,_missionText];								
 			};
 		};
 	};

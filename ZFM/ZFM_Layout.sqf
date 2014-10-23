@@ -152,6 +152,8 @@ ZFM_Layout_Parse ={
 	_arraySpacing = _this select 3;
 	_outputLoc = _centerLocation;
 	
+	diag_log(format["CENTERLOCATION %1",_centerLocation]);
+	
 	// Okay, first check -- are the two arrays actually arrays?
 	if(typeName _layout == "ARRAY" && typeName _centerPos == "ARRAY") then
 	{	
