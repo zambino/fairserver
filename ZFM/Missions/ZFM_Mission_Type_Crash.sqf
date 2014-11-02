@@ -299,7 +299,7 @@ private ["_vehicleClass"];
 
 
 ZFM_Mission_Type_Crash_DoCreate ={
-	private["_layout","_difficulty","_heroOrBandit","_returnArray"];
+	private["_layout","_outputArray","_difficulty","_heroOrBandit","_returnArray"];
 	
 	// Allow some flexibility in generation.
 	switch(count(_this)) do
@@ -319,7 +319,7 @@ ZFM_Mission_Type_Crash_DoCreate ={
 			_heroOrBandit = ZFM_CRASH_MISSION_ALIGNMENT_TYPES call BIS_fnc_selectRandom;
 		};
 	};
-	
+
 	_returnArray = [] call ZFM_Mission_Type_Crash_Create_Crash;
 	_vehicleClass = _returnArray select 0;
 	_difficulty = _returnArray select 1;
@@ -341,13 +341,27 @@ ZFM_Mission_Type_Crash_DoCreate ={
 		};
 		
 	};
+	
 	_layout = [_difficulty,false] call ZFM_Mission_Type_Crash_Generate_Layout;
-	[_layout,_centerPos,_location,20] call ZFM_Layout_Parse;
-
+	_outputArray = [_layout,_centerPos,_location,20] call ZFM_Layout_Parse;
 	[nil,nil,rTitleText,format["%1 [Difficulty: %2]",_missionText,_difficulty],"PLAIN",60] call RE;
+
+	_outputArray
+	
 };
 
+/*
+*	Because of the separation between "misison handler" and "mission type", a "process" step needs to be done.
+*/
+ZFM_Mission_Type_Crash_DoProcess ={
+	private["_missionID","_processData"];
 
+	diag_log(format["CRASH DOPROCESS %1,%2",_missionID,_processData]);
+};
+
+ZFM_Mission_Type_Crash_DoCheckCompleted ={
+	
+};
 
 ZFM_Mission_Type_Crash_Generate_Layout_Objects ={
 	private["_difficulty","_numberofObjects","_output","_addItem"];
@@ -577,6 +591,8 @@ ZFM_Mission_Type_Crash_Create_Crash={
 			//Generate the crash vehicle using object function
 			_location = [_vehicleClass] call ZFM_Mission_Type_Crash_Create_CrashVehicle_Object;
 
+			diag_log(format["CRASH CREATE WOO"]);
+			
 			// Get the pre-text for the marker.
 			_markerPre = ZFM_CRASH_MISSION_CRASH_EXPS call BIS_fnc_selectRandom;
 			_markerPrez = [_vehicleClass] call ZFM_Mission_Type_Crash_GetFriendlyVehicleName;
@@ -586,7 +602,7 @@ ZFM_Mission_Type_Crash_Create_Crash={
 
 			_missionText = [_markerPrez,(["HERO","BANDIT"] call BIS_fnc_selectRandom),_difficulty] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
 			
-			_returnArray =[_vehicleClass,_difficulty,_location,_marker,_missionText];
+			_returnArray =[_vehicleClass,_difficulty,_location select 1,_marker,_missionText];
 
 		};
 
@@ -603,6 +619,8 @@ ZFM_Mission_Type_Crash_Create_Crash={
 				//Generate the crash vehicle using object function
 				_location = [_vehicleClass] call ZFM_Mission_Type_Crash_Create_CrashVehicle_Object;
 
+				diag_log(format["LOCATION VEHICLECLASS YRAY1 %1",_location]);
+				
 				// Get the pre-text for the marker.
 				_markerPre = ZFM_CRASH_MISSION_CRASH_EXPS call BIS_fnc_selectRandom;
 				_markerPrez = [_vehicleClass] call ZFM_Mission_Type_Crash_GetFriendlyVehicleName;
@@ -613,7 +631,7 @@ ZFM_Mission_Type_Crash_Create_Crash={
 				_marker = [_location select 1,_difficulty,(_markerPre + " " + _markerPrez)] call ZFM_Mission_Type_Crash_Create_Marker;	
 
 				// Return it
-				_returnArray =[_vehicleClass,_difficulty,_location,_marker,_missionText];			
+				_returnArray =[_vehicleClass,_difficulty,_location select 1,_marker,_missionText];			
 			};
 		};
 
@@ -629,18 +647,19 @@ ZFM_Mission_Type_Crash_Create_Crash={
 				//Generate the crash vehicle using object function
 				_location = [_vehicleClass] call ZFM_Mission_Type_Crash_Create_CrashVehicle_Object;
 
+				diag_log(format["LOCATION VEHICLECLASS YRAY2 %1",_location]);
+				
 				// Get the pre-text for the marker.
 				_markerPre = ZFM_CRASH_MISSION_CRASH_EXPS call BIS_fnc_selectRandom;
 				_markerPrez = [_vehicleClass] call ZFM_Mission_Type_Crash_GetFriendlyVehicleName;
 
 				_missionText = [_markerPrez,(["HERO","BANDIT"] call BIS_fnc_selectRandom),_difficulty] call ZFM_Mission_Type_Crash_GenerateMissionTitle;
 					
-				
 				// Generate a marker for the crash
 				_marker = [_location select 1,_difficulty,(_markerPre + " " + _markerPrez)] call ZFM_Mission_Type_Crash_Create_Marker;	
 
 				// Return it
-				_returnArray =[_vehicleClass,_difficulty,_location,_marker,_missionText];				
+				_returnArray =[_vehicleClass,_difficulty,_location select 1,_marker,_missionText];				
 			};
 		};
 
@@ -656,6 +675,8 @@ ZFM_Mission_Type_Crash_Create_Crash={
 				//Generate the crash vehicle using object function
 				_location = _this select 2;
 
+				diag_log(format["LOCATION VEHICLECLASS YRAY3 %1",_location]);
+				
 				// Get the pre-text for the marker.
 				_markerPre = ZFM_CRASH_MISSION_CRASH_EXPS call BIS_fnc_selectRandom;
 				_markerPrez = [_vehicleClass] call ZFM_Mission_Type_Crash_GetFriendlyVehicleName;
@@ -681,7 +702,7 @@ ZFM_Mission_Type_Crash_Create_Crash={
 *	Creates the crash vehicle object, which then dutifully crashes. 
 */
 ZFM_Mission_Type_Crash_Create_CrashVehicle_Object ={
-	private["_vehicleClass","_location","_createdVehicle","_wreckClass","_outputPos"];
+	private["_vehicleClass","_location","_createdVehicle","_wreckClass","_outputPos","_continueLoop"];
 	_vehicleClass = _this select 0;
 
 	_outputPos =[];
@@ -694,36 +715,47 @@ ZFM_Mission_Type_Crash_Create_CrashVehicle_Object ={
 			{
 				_vehicleClass = _this select 0;
 
-				// Generate an appropriate location..
-				_location = [] call ZFM_Mission_Type_Crash_GenerateCrashLocation;
-				_location set[2,10000]; // Keep it in the air.
-
 				// Get the wreck that's going to replace it. 
 				_wreckClass = [_vehicleClass] call ZFM_Mission_Type_Crash_GetVehicleWreckClass;
-
-				// Okay, so we place the vehicle in the air.
-				_createdVehicle = createVehicle [_vehicleClass,_location,[],0,"FLY"]; 
-				_createdVehicle setVariable["ObjectID",-1];
-				_createdVehicle setVariable["ObjectUID",-1];
-										
-				while{alive _createdVehicle} do
+				_continueLoop = true;
+				
+				while{_continueLoop} do
 				{
-					// Bugfix -- To absolutely ensure it's going to explode and fall.
-					_createdVehicle setDamage 1;
+					// Generate an appropriate location..
+					_location = [] call ZFM_Mission_Type_Crash_GenerateCrashLocation;
+									
+					_location set[2,10000]; // Keep it in the air. AND
+
+					// Okay, so we place the vehicle in the air.
+					_createdVehicle = createVehicle [_vehicleClass,_location,[],0,"FLY"]; 
+					_createdVehicle setVariable["ObjectID",-1];
+					_createdVehicle setVariable["ObjectUID",-1];
+											
+					while{alive _createdVehicle} do
+					{
+						// Bugfix -- To absolutely ensure it's going to explode and fall.
+						_createdVehicle setDamage 1;
+						
+						// Wait then exit.
+						sleep 10;
+					};
+
+					// Get the position of the crash while it's burning..
+					_outputPos = getPos _createdVehicle;
 					
-					// Wait then exit.
-					sleep 10;
+					if(!surfaceIsWater _outputPos) then
+					{
+						_continueLoop = false;
+					};	
+					
 				};
-
-				// Get the position of the crash while it's burning..
-				_outputPos = getPos _createdVehicle;
-
+				
 				// Get rid of the vehicle that's currently burning, or what have you.
 				deleteVehicle _createdVehicle;
 
 				// Get on the floor!
 				_outputPos set[2,0];
-
+				
 				// Create the vehicle wreck
 				_createdVehicle = createVehicle[_wreckClass,_outputPos,[],0,"NONE"];
 

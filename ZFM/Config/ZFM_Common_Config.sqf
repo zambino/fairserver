@@ -35,7 +35,7 @@ ZFM_NAME = "FairMission System [ZFM]";
 *
 *	Used for logging. Set manually when releases are made.
 */
-ZFM_VERSION = "v0.4.3";
+ZFM_VERSION = "v0.4.8";
 
 /*
 *	ZFM_ERROR_TYPES

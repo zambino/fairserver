@@ -55,7 +55,6 @@ ZFM_MISSIONS_MISSION_HANDLER_STARTED = false;
 ZFM_Mission_Handle_JIP = {
 	private["_missionsCount","_row","_crashVehicle","_markerPos","_difficulty","_crash"];
 	
-
 	if(count ZFM_CURRENT_MISSIONS != 0) then
 	{
 		// Find out how many missions there are
@@ -491,13 +490,69 @@ ZFM_Mission_Set ={
 	At the moment, just a wrapper function for ZFM_GenerateMission..
 */
 ZFM_Mission_Generate_New ={
-	private["_missionArray","_title","_units","_unitsTotal","_newMission"];
+	private["_missionArray","_missionFunctionOutput","_missionFunctionProcess","_title","_units","_unitsTotal","_newMission"];
 	_missionID = _this select 0;
 
+	// Okay, so the count of the mission array will be passed as the missionID. 
+	// So, what type of mission are we generating?
+	// Mission init type for now is always random. Manually-defined missions will be a beta feature.
+	_missionType = ZFM_MISSION_TYPES call BIS_fnc_selectRandom;
+
+	// Start to generate the items for the mission array
+	_missionID = count ZFM_CURRENT_MISSIONS;
+	
+	// Set the array as empty, first off. We need to ensure the mission is in the stack first and we have an ID. 
+	ZFM_CURRENT_MISSIONS set[_missionID,[
+		_missionID,
+		_missionType,
+		[]
+	]];
+	
+	// We have an id, but the ID is kept by the handler.  
+	// I think easier is to just have the mission type pass back to the handler.
+	_missionFunctionOutput = call compile format["ZFM_Mission_Type_%1_DoCreate",_missionType];
+	_missionFunctionOutput = call _missionFunctionOutput;
+	
+	
+	// To pass the mission ID back to the mission, we have a "process" step.
+	_missionFunctionProcess = call compile format["ZFM_Mission_Type_%1_DoProcess",_missionType];
+	diag_log(format["MISSIONIDIDID %1, %2",_missionID,_missionFunctionOutput]);
+	_missionFunctionProcess = [_missionID,_missionFunctionOutput] spawn _missionFunctionProcess;
+	
+	
+	
+	// Need to add into layout : return units created & return objects created.
+	// Then call a mission completion function which clears them out. Boom.
+	
+	/*
+	*	0 = Mission ID 
+	*	1 = Mission type
+	*	2 = Mission title
+	*	3 = Humanity type - (Per unit kill or shared amount)
+	*	4 = LootShare type - (Spawn with crash or spawn per person)
+	*	5 = Units - An array containing the objects for the units.
+	*	6 = Units total - An integer containing the total number of units
+	*	7 = Units killed = An integer containing the total number of units killed
+	*	8 = Mission objects = An array containing objects for the mission, which are removed after the mission ends to preserve performance.
+	*	9 = Mission participants = An array containing just the names of the people participating in the mission
+	*	10 = Participants->Kills = An array containing the names of the people who have killed AI, and how many they killed.
+	*	11 = Markers = Contains the markers for the mission
+	*	12 = CrashVehicle Type
+	*	13 = Crash location
+	*	14 = Difficulty
+	*   15 = Status
+*/
+	
 	// Crash mission should pass to generateMission, then 
-	_missionArray = [ZFM_MISSION_METHOD_RANDOM,_missionID] call ZFM_Mission_GenerateMission; // Return MissionArray
-	[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Generate_New [501]",[[_missionArray]]] call ZFM_Language_Log;
-	[_missionArray] call ZFM_Mission_Add;
+	//_missionArray = [ZFM_MISSION_METHOD_RANDOM,_missionID] call ZFM_Mission_GenerateMission; // Return MissionArray
+	//[25,"INFORMATION","ZFM_Mission::ZFM_Mission_Generate_New [501]",[[_missionArray]]] call ZFM_Language_Log;
+	//[_missionArray] call ZFM_Mission_Add;
+	
+	
+	
+	
+	
+	
 };
 
 /*
@@ -564,6 +619,7 @@ ZFM_Mission_Handler_Start ={
 		
 	};
 };
+
 
 /*
 *	ZFM_GenerateMission

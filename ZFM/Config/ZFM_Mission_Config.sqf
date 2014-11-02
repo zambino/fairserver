@@ -7,8 +7,6 @@
 	as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
  */
  
- ZFM_MINIMUM_AI_PER_MISSION = 8;
- ZFM_MINIMUM_LOOT_CONTAINERS_PER_MISSION = 2;
  ZFM_MAXIMUM_MISSIONS = 3;
  
  ZFM_HUMANITY_FOR_BANDIT_KILLS = true;
@@ -23,5 +21,5 @@ ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MIN = 15; // Minutes
 ZFM_MISSIONS_MINIMUM_TIME_BETWEEN_MISSIONS_MAX = 45; // Minutes (Means randomly, missions will fire between 15 and 45 minutes)
 
 ZFM_MISSION_TYPES =[
-	ZFM_MISSION_TYPE_CRASH
+	"Crash"
  ];

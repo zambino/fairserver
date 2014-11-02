@@ -33,6 +33,7 @@ call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\ZFM_Language.s
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Units_Config.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Loot_Config.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Layout_Config.sqf";
+call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Config.sqf";
 call compile preprocessFileLineNumbers "\z\addons\dayz_server\ZFM\Config\ZFM_Mission_Type_Crash_Config.sqf";
 
 // Other Functions
@@ -49,10 +50,8 @@ call ZFM_Units_DoBootStrap;									// Bootstraps units / centers
 
 [4,"INFORMATION","ZFM_Initialize.sqf::execVM"] call ZFM_Language_Log;
 
-// Fucking heisenbug. Anyway
-[] call ZFM_Mission_Type_Crash_DoCreate;
-
-
+// Run main mission handler loop - loops, waits & checks for started/finished events.
+call ZFM_Mission_Generate_New;
 
 // Run the main mission handler -- this loops and waits for mission events to start/finish
 //[] call ZFM_Mission_Handler_Start;

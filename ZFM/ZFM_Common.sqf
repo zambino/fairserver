@@ -423,6 +423,50 @@ ZFM_Common_Hive_CreateVehicle ={
 	};
 };
 
+/*
+*	ZCR_String_SubString
+*
+*	Variable substring function. Thanks to KillzoneKid for original code, which I expanded. 
+*/
+ZCR_String_SubString ={	
+	private["_input","_start","_length","_output","_outLen"];
+
+	if(typeName _this == "ARRAY") then
+	{
+		if(count (_this) >=2) then
+		{
+			switch(count _this) do 
+			{
+				case 2: {
+					_input = _this select 0;
+					_output = toArray(_input);
+					_outLen = count(_output);
+					_start = _this select 1;
+					_length = _outLen - _start;
+				};
+				
+				case 3: {
+					_input = _this select 0;
+					_output = toArray(_input);
+					_outLen = count(_output);
+					_start = _this select 1;
+					_length = _this select 2;
+					
+					if((_start + _length) > _outLen) then
+					{
+						_length = _outLen - (_start + _length);
+					};
+				};
+			};
+			
+			_output resize -(_outLen-_start);
+			_output resize _length;
+			toString _output
+		};
+	};
+};
+
+
 
  /*
  *	ZCR_Item_Is_Weapon

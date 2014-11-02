@@ -112,7 +112,13 @@ ZFM_Layout_Create_Object ={
 			};
 		};
 
+	}
+	else
+	{
+		_createdObject = "NOTHING";
+		_createdObject
 	};
+	
 };
 
 /*
@@ -145,14 +151,15 @@ ZFM_Layout_Scout ={
 };
 
 ZFM_Layout_Parse ={
-	private["_layout","_centerFound","_width","_layoutCount","_outputLoc","_outputX","_outputY","_offsetX","_offsetY","_offsetDiffX","_offsetDiffY","_centerPos","_arraySpacing","_centerPosX","_centerPosY","_x","_y","_row","_rowCount","_rowItem","_className","_orientation","_classParameters","_created"];
+	private["_layout","_centerFound","_width","_outputObject","_outputArray","_layoutCount","_outputLoc","_outputX","_outputY","_offsetX","_offsetY","_offsetDiffX","_offsetDiffY","_centerPos","_arraySpacing","_centerPosX","_centerPosY","_x","_y","_row","_rowCount","_rowItem","_className","_orientation","_classParameters","_created"];
 	_layout = _this select 0;
 	_centerPos = _this select 1;
 	_centerLocation = _this select 2;
 	_arraySpacing = _this select 3;
 	_outputLoc = _centerLocation;
+
 	
-	diag_log(format["CENTERLOCATION %1",_centerLocation]);
+	_outputArray = [];
 	
 	// Okay, first check -- are the two arrays actually arrays?
 	if(typeName _layout == "ARRAY" && typeName _centerPos == "ARRAY") then
@@ -276,8 +283,12 @@ ZFM_Layout_Parse ={
 
 										_outputLoc = [_outputX,_outputY,(_centerLocation select 2)];
 										[22,"INFORMATION","ZFM_Layout::ZFM_Layout_Parse",[_x,_y,_outputLoc,_className,_orientation,_classParameters]] call ZFM_Language_Log;
-										[_outputLoc,_className,_orientation,_classParameters] call ZFM_Layout_Create_Object;
+										_outputObject = [_outputLoc,_className,_orientation,_classParameters] call ZFM_Layout_Create_Object;
 										
+										if(format["%1",([_outputLoc,_className,_orientation,_classParameters] call ZFM_Layout_Create_Object)] != "") then
+										{
+											_outputArray = _outputArray + [_outputObject];										
+										};
 									};
 								};
 							};
@@ -289,4 +300,7 @@ ZFM_Layout_Parse ={
 			};
 		};
 	};
+	
+	_outputArray
+	
 };
