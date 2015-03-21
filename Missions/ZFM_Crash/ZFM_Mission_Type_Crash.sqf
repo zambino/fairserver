@@ -17,10 +17,20 @@ ZFM_Mission_Type_Crash_Installed = true;
 // Global variables..
 ZFM_MISSION_TYPE_CRASH_MISSION_STATUS = "NOT_STARTED";
 
-/*
-*	Implements _IntroText from ZFM_Missions
-*/
-ZFM_Mission_Type_Crash_IntroText ={
+
+ZFM_Mission_Type_Crash_Initialize ={
+	diag_log("CRASH INIT CALLED");
+	true
+};
+
+
+ZFM_Mission_Type_Crash_Start ={
+	diag_log("CRASH START CALLED");
+	true	
+};
+
+
+ZFM_Mission_Type_Crash_Display ={
 	
 };
 
@@ -407,7 +417,7 @@ ZFM_Mission_Type_Crash_Create_Crash_Title ={
 *
 *	Called by ZFM_Missions.sqf; tells the defined mission that the mission start has been called.
 */
-ZFM_Mission_Type_Crash_Start ={
+ZFM_Mission_Type_Crash_StartOld ={
 	private["_difficulty","_crashVehicle","_crashLocation","_unitTypes"];
 
 	// Random difficulty to begin with..
@@ -528,6 +538,6 @@ ZFM_MISSION_TYPE_CRASH_MISSION_STATUS = "NOT_STARTED";
 *	Simple function that returns the current state of the mission status.
 */
 ZFM_Mission_Type_Crash_Status ={
-	ZFM_MISSION_TYPE_CRASH_MISSION_STATUS
+	"ACTIVE"
 };
 ZFM_Mission_Type_Crash_End ={};
