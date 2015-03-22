@@ -538,6 +538,8 @@ ZFM_MISSION_TYPE_CRASH_MISSION_STATUS = "NOT_STARTED";
 *	Simple function that returns the current state of the mission status.
 */
 ZFM_Mission_Type_Crash_Status ={
-	"ACTIVE"
+	diag_log(_this);
+	"FUCK"
 };
+
 ZFM_Mission_Type_Crash_End ={};

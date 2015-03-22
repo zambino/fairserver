@@ -429,7 +429,7 @@ ZFM_Kernel_Examine_Stack = {
 		  			if(typeName _functionCall == "CODE") then 
 		  			{
 			  			// Call it as we want to know what the return value is
-			  			_return = [] call _functionCall;
+			  			_return = [_x,_item] call _functionCall;
 			  			
 			  			// Returns true to say "All MY INIT IS DONE!"
 			  			if(_return) then 
@@ -447,7 +447,7 @@ ZFM_Kernel_Examine_Stack = {
 
 		  		case "INITIALIZED" :{
 		  			_functionCall = call compile format["ZFM_Mission_Type_%1_Start",_type];
-		  			_return = [] call _functionCall;
+		  			_return = [_x,_item] call _functionCall;
 
 		  			if(_return) then
 		  			{
@@ -461,27 +461,33 @@ ZFM_Kernel_Examine_Stack = {
 		  		};
 
 				default {
+
+					// If the mission has expired, we do nothing with it. 
 					if(_status == "EXPIRED") exitWith {
 						format["Kernel Stack: Mission Type %1 with ID %2 has expired. Nothing to action.",_type,_x];
 					};
 
+					// Call back to the Status function to find out how the mission is doing..
 					_functionCall = call compile format["ZFM_Mission_Type_%1_Status",_type];
-					_return = [] call _functionCall;
+					_return = [_x,_item] call _functionCall;
 
-					diag_log(_return);
-
-					switch(_return) do
+					// 
+					if(_return != _status && _return in ["ACTIVE","IDLE","ENDED"]) then
 					{
-						case "ACTIVE" :{
-							diag_log("ACTIVE");
-						};
-						case "IDLE": {
-							diag_log("INACTIVE");
-						};
-						case "ENDED": {
-							diag_log("ENDED");
-						};
+						format["Kernel Stack: Mission Type %1 with ID %2 status changed from %3 to %4",_type,_x,_status,_return] call ZFM_Common_Debug;
+						[_x,_return] call ZFM_Kernel_Set_Stack_Item_Status;
+					}
+					else
+					{
+						format["Kernel Stack: Mission Type %1 and ID %2 status request from %3 to invalid status %4 ignored.",_type,_x,_status,_return] call ZFM_Common_Debug;
 					};
+
+					// Reselect as we updated the
+					_type = _item select 0;
+				  	_status = _item select 1;
+
+				  	// Updates the 
+					format["Kernel Stack: Mission Type %1 and ID %2 has status of %3",_type,_x,_status] call ZFM_Common_Debug;
 
 				};
 
@@ -525,37 +531,11 @@ ZFM_Kernel_Start ={
 	[] spawn ZFM_Kernel_TimeOut;
 
 	// Loop it.
-	while{_continue } do
+	while{_continue} do
 	{
 		[] call ZFM_Kernel_Examine_Stack;
-		sleep 5;
-
-
-
-		
-/*
-		_numMissions = count ZFM_KERNEL_STACK;
-
-		if(_numMissions == ZFM_TRACKING_KERNEL_CACHE_NUM_MISSIONS) then
-		{
-			// Debug log new mission waiting..
-			format["Kernel waiting for a new mission to be added. %1 missions in stack.",_numMissions] call ZFM_Common_Debug;
-			sleep 20; // Wait for the stack to update.
-		}
-		else
-		{
-			// Debug log new item.
-			format["Kernel discovered new item in stack. Initialisation of mission starting.."] call ZFM_Common_Debug;			
-			ZFM_TRACKING_KERNEL_CACHE_NUM_MISSIONS = _numMissions;
-
-			[] spawn ZFM_Kernel_
-
-			// Run the mission init function
-			sleep 20; // Wait for stack to update.
-		};*/
+		sleep 10;
 	};
-	
-	
 };
 
 /*
