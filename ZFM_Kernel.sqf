@@ -280,8 +280,10 @@ ZFM_Kernel_AddNewMission ={
 	_missionType = _this select 0;
 	_missionParameters = _this select 1;
 	_missionUnits = _this select 2;
-	_missionObjects = _this select 3;
+	_missionVehicles = _this select 3;
 	_missionMarkers = _this select 4;
+	_missionTriggers = if(count _this == 6) then { _this select 5} else { [] };
+	_missionLoot = if(count _this == 7) then { _this select 6} else { [] };
 
 	// Get the start time as tickTime (ms)
 	_startTime = diag_tickTime;
@@ -296,10 +298,14 @@ ZFM_Kernel_AddNewMission ={
 		"CREATED",
 		_startTime,
 		_expireTime,
-		_missionParameters,
-		_missionUnits,
-		_missionObjects,
-		_missionMarkers
+		[
+			_missionParameters,
+			_missionUnits,
+			_missionVehicles,
+			_missionMarkers,
+			_missionTriggers,
+			_missionLoot
+		]
 	];
 
 	// Insert a new mission into the mission array.
@@ -397,18 +403,17 @@ ZFM_Kernel_TimeOut = {
 	};
 };
 
+
 /*
 *	ZFM_Kernel_Verify_Modules
 *
 *	Verifies any mission items waiting to be executed.
 */
 ZFM_Kernel_Examine_Stack = {
-	private["_functionCall","_return"];
-
+	private["_functionCall","_return","_params","_stackItem","_status","_type","_functionCall"];
 
   	for [{_x=0},{_x<=count ZFM_KERNEL_STACK-1},{_x=_x+1}] do
   	{
-
   		diag_log(format["STACK IS %1",ZFM_KERNEL_STACK]);
   		_item = (ZFM_KERNEL_STACK select _x);
 
@@ -419,18 +424,46 @@ ZFM_Kernel_Examine_Stack = {
 
 			// Status of the stack item.
 		  	_status = _item select 1;
-		  	diag_log(format["TYPE %1 STATUS %2",_type,_status]);
 
 		  	switch(_status) do
 		  	{
+		  		/*
+				*	HOOKS:
+				*
+				*	All excluding "status" must return an array with the format:
+				*
+				*	[
+				*		RETURN_VALUE		(bool),
+						[
+							Parameters,
+							Units,
+							Vehicles,
+							Markers,
+							Triggers,
+							etc.	
+						]
+				*	]
+		  		*/
 		  		case "CREATED":{
 		  			_functionCall = call compile format["ZFM_Mission_Type_%1_Initialize",_type];
 
 		  			if(typeName _functionCall == "CODE") then 
 		  			{
 			  			// Call it as we want to know what the return value is
-			  			_return = [_x,_item] call _functionCall;
+			  			_returnArray = [_x,_item] call _functionCall;
 			  			
+			  			// Get the return value first..
+			  			_return = _returnArray select 0;
+			  			_params = _returnArray select 1;
+
+			  			// Don't reset it if the array isn't set properly. Why bother?
+			  			if((count _params) == 6) then 
+						{
+				  			_stackItem = ZFM_KERNEL_STACK select _x;
+				  			_stackItem set[4,_params];
+				  			ZFM_KERNEL_STACK set[_x,_stackItem];
+						};	
+
 			  			// Returns true to say "All MY INIT IS DONE!"
 			  			if(_return) then 
 			  			{
@@ -447,7 +480,21 @@ ZFM_Kernel_Examine_Stack = {
 
 		  		case "INITIALIZED" :{
 		  			_functionCall = call compile format["ZFM_Mission_Type_%1_Start",_type];
-		  			_return = [_x,_item] call _functionCall;
+			  		
+			  		// Call it as we want to know what the return value is
+		  			_returnArray = [_x,_item] call _functionCall;
+		  			
+		  			// Get the return value first..
+		  			_return = _returnArray select 0;
+		  			_params = _returnArray select 1;
+
+		  			// Don't reset it if the array isn't set properly. Why bother?
+		  			if((count _params) == 6) then 
+					{
+			  			_stackItem = ZFM_KERNEL_STACK select _x;
+			  			_stackItem set[4,_params];
+			  			ZFM_KERNEL_STACK set[_x,_stackItem];
+					};	
 
 		  			if(_return) then
 		  			{
@@ -469,7 +516,20 @@ ZFM_Kernel_Examine_Stack = {
 
 					// Call back to the Status function to find out how the mission is doing..
 					_functionCall = call compile format["ZFM_Mission_Type_%1_Status",_type];
-					_return = [_x,_item] call _functionCall;
+
+		  			_returnArray = [_x,_item] call _functionCall;
+
+		  			// Get the return value first..
+		  			_return = _returnArray select 0;
+		  			_params = _returnArray select 1;
+
+		  			// Don't reset it if the array isn't set properly. Why bother?
+		  			if((count _params) == 6) then 
+					{
+			  			_stackItem = ZFM_KERNEL_STACK select _x;
+			  			_stackItem set[4,_params];
+			  			ZFM_KERNEL_STACK set[_x,_stackItem];
+					};	
 
 					// 
 					if(_return != _status && _return in ["ACTIVE","IDLE","ENDED"]) then
@@ -508,6 +568,19 @@ ZFM_Kernel_Set_Stack_Item_Status = {
 	ZFM_KERNEL_STACK set[_stackID,_kernelItem];
 };
 
+/*
+*	ZFM_Kernel_Monitor
+*	
+*	Monitors the stack and adds missions where appropriate.
+*/
+ZFM_Kernel_Monitor ={
+
+	
+
+
+	diag_log(format["MOULES %1",ZFM_KERNEL_ENABLED_MODULES]);
+};
+
 
 /*
 *	ZFM_Kernel_Start
@@ -530,11 +603,15 @@ ZFM_Kernel_Start ={
 	// Start up the second running process to do cleanup on the array 
 	[] spawn ZFM_Kernel_TimeOut;
 
+	// Start up the third running process that monitors 
+	[] spawn ZFM_Kernel_Monitor;
+
 	// Loop it.
 	while{_continue} do
 	{
+		// Check for new missions and progressing missions..
 		[] call ZFM_Kernel_Examine_Stack;
-		sleep 10;
+		sleep 30; // Longer sleeps, better performance; shorter, worse performance better updates
 	};
 };
 

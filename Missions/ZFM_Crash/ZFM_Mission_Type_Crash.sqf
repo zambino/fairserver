@@ -2,31 +2,29 @@
 *	ZFM_Mission_Type_Crash
 *
 *	Created by: 	Jordan Ashley Craw (ZamboniBambino)
-*	Date:		February 2015
-*	Desc:		Main crash mission.
+*	Date:			February 2015
+*	Desc:			Main crash mission.
 *
 *	Features:
 *	It will blow yo' mind. Yo.
 *
 */
 
-// Workaround required in all modules:
+// Workaround required in all modules to tell if they've been installed.
 ZFM_Mission_Type_Crash_Installed = true;
-
-
-// Global variables..
-ZFM_MISSION_TYPE_CRASH_MISSION_STATUS = "NOT_STARTED";
+ZFM_Mission_Type_Crash_MinMissions = 2;
+ZFM_Mission_Type_Crash_MaxMissions = 4;
 
 
 ZFM_Mission_Type_Crash_Initialize ={
-	diag_log("CRASH INIT CALLED");
-	true
+	diag_log(format["CRASH INIT %1",_this]);
+	[true,[]]
 };
 
 
 ZFM_Mission_Type_Crash_Start ={
-	diag_log("CRASH START CALLED");
-	true	
+	diag_log(format["CRASH START %1",_this]);
+	[true,[]]
 };
 
 
@@ -539,7 +537,7 @@ ZFM_MISSION_TYPE_CRASH_MISSION_STATUS = "NOT_STARTED";
 */
 ZFM_Mission_Type_Crash_Status ={
 	diag_log(_this);
-	"FUCK"
+	["ACTIVE",[]]
 };
 
 ZFM_Mission_Type_Crash_End ={};
