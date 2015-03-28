@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 ZFM_CONFIGURE_ENABLE_DEBUG_MESSAGES = true;							// Enable debugging messages?
-ZFM_CONFIGURE_MOD_TYPE = "OverpochA2"; 								// Mod type you're using - "OverpochA2", "EpochA2", "EpochA3"
+ZFM_CONFIGURE_MOD_TYPE = "ARMA3_VANILLA"; 								// Mod type you're using - "OverpochA2", "EpochA2", "EpochA3"
 
 /*
 *	Instance settings
@@ -42,3 +42,4 @@ ZFM_CONFIGURE_INSTALL_LOCATION ="";
 
 ZFM_KERNEL_MONITOR_MINIMUM_MISSIONS = 2;
 ZFM_KERNEL_MONITOR_MAXIMUM_MISSIONS = 6;
+ZFM_KERNEL_MONITOR_MISSION_TIME = 30;

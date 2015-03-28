@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 *	Generates a random location that is spawn-friendly.
 */
 ZFM_Common_Location_Generate_Random ={
-	[[(round random 25000),(round random 25000),0],1000,1000,0,0] call BIS_fnc_findSafePos;
+	[[(round random 25000),(round random 25000),0],100,100,100,0,0,0] call BIS_fnc_findSafePos;
 };
 
 ZFM_Common_Location_Generate_Random_Road ={

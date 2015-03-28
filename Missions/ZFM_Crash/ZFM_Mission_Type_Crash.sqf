@@ -15,34 +15,81 @@ ZFM_Mission_Type_Crash_Installed = true;
 ZFM_Mission_Type_Crash_MinMissions = 2;
 ZFM_Mission_Type_Crash_MaxMissions = 4;
 
+/*
+*	ARMA3_VANILLA
+*/
+ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_LAND_ARMA3_VANILLA =[
+	"B_MRAP_01_F",
+	"B_MRAP_01_gmg_F",
+	"B_MRAP_01_hmg_F",
+	"B_Quadbike_01_F",
+	"B_Truck_01_transport_F",
+	"B_Truck_01_covered_F",
+	"B_G_Offroad_01_F",
+	"B_G_Offroad_01_armed_F",
+	"B_G_Quadbike_01_F",
+	"B_Truck_01_mover_F",
+	"B_Truck_01_box_F",
+	"B_G_Van_01_transport_F",
+	"O_MRAP_02_F",
+	"O_MRAP_02_hmg_F",
+	"O_MRAP_02_gmg_F",
+	"O_Quadbike_01_F",
+	"O_Truck_02_covered_F",
+	"O_Truck_02_transport_F",
+	"O_G_Offroad_01_F",
+	"O_G_Offroad_01_armed_F",
+	"O_G_Quadbike_01_F",
+	"O_G_Van_01_transport_F",
+	"I_MRAP_03_F",
+	"I_MRAP_03_hmg_F",
+	"I_MRAP_03_gmg_F",
+	"I_Quadbike_01_F",
+	"I_Truck_02_covered_F",
+	"I_Truck_02_transport_F",
+	"I_G_Offroad_01_F",
+	"I_G_Offroad_01_armed_F",
+	"I_G_Quadbike_01_F",
+	"I_G_Van_01_transport_F",
+	"C_Offroad_01_F",
+	"C_Quadbike_01_F",
+	"C_Hatchback_01_F",
+	"C_Hatchback_01_sport_F",
+	"C_SUV_01_F",
+	"C_Van_01_transport_F",
+	"C_Van_01_box_F"
+];
 
-ZFM_Mission_Type_Crash_Initialize ={
-	diag_log(format["CRASH INIT %1",_this]);
-	[true,[]]
-};
+ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_AIR_ARMA3_VANILLA =[
+	"B_Heli_Light_01_F",
+	"B_Heli_Light_01_armed_F",
+	"B_Heli_Attack_01_F",
+	"B_Heli_Transport_01_F",
+	"B_Heli_Transport_01_camo_F",
+	"O_Heli_Light_02_F",
+	"O_Heli_Light_02_unarmed_F",
+	"O_Heli_Attack_02_F",
+	"O_Heli_Attack_02_black_F",
+	"I_Heli_Transport_02_F",
+	"I_Heli_light_03_F",
+	"I_Heli_light_03_unarmed_F",
+	"B_UAV_01_F",
+	"B_UAV_02_F",
+	"B_UAV_02_CAS_F",
+	"O_UAV_01_F",
+	"O_UAV_02_F",
+	"O_UAV_02_CAS_F",
+	"I_UAV_01_F",
+	"I_UAV_02_F",
+	"I_UAV_02_CAS_F"
+];
 
 
-ZFM_Mission_Type_Crash_Start ={
-	diag_log(format["CRASH START %1",_this]);
-	[true,[]]
-};
-
-
-ZFM_Mission_Type_Crash_Display ={
-	
-};
-
-
-// Crash mission generates its units each time, so we leave these empty, to be filled.
-ZFM_Mission_Type_Crash_Units =[];
-ZFM_Mission_Type_Crash_Vehicles =[];
-ZFM_Mission_Type_Crash_Layout=[];
-ZFM_Mission_Type_Crash_Trigger=[];
 
 /*
-*	Land vehicles which can crash or be abandoned.
+*	ARMA2_OVERPOCH
 */
-ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_LAND =[
+ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_LAND_ARMA2_OVERPOCH =[
 	"HMMWV_M2",
 	"HMMWV_M2_USArmy",
 	"HMMWV_Mk19",
@@ -83,10 +130,7 @@ ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_LAND =[
 	"HMMWV_M2_DZ"
 ];
 
-/*
-*	Air vehicles which can crash or run aground, whatever. 
-*/
-ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_AIR =[
+ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_AIR_ARMA2_OVERPOCH =[
 	"Mi17_Ins",
 	"Mi17_CDF",
 	"Mi17_Civilian",
@@ -114,6 +158,11 @@ ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_AIR =[
 	"CH_47F_EP1",
 	"UH1H_TK_EP1"
 ];
+
+/*
+*
+*/
+
 
 ZFM_MiSSION_TYPE_CRASH_GROUP_NAMES_HERO_DEADMEAT ={
 	"clueless vigilantes",
@@ -363,6 +412,106 @@ ZFM_MISSION_TYPE_CRASH_ACTIONS_RECOVER_NAMES =[
 	"are ready to kick ass",
 	"are ready to kick it"
 ];
+
+ZFM_Mission_Type_Crash_Initialize ={
+	//Parameters
+
+	// Units
+
+	// Vehicles
+
+	// Markers
+
+	// Triggers
+
+	// Loot
+	
+	// Generate a random difficulty..
+	_difficulty = ZFM_DEFINES_DIFFICULTIES call BIS_fnc_selectRandom;
+
+	// Generate a crash location..
+	_crashSuperClass = ["AIR"] call BIS_fnc_selectRandom;
+
+	// Side to use..
+	_banditOrHero = [EAST,WEST] call BIS_fnc_selectRandom;
+
+	// Crash vehicles available
+	_crashVehicles = call compile format["ZFM_MiSSION_TYPE_CRASH_CRASH_VEHICLES_%1_%2",_crashSuperClass,ZFM_CONFIGURE_MOD_TYPE];
+
+	// Crash vehicle we have chosen
+	_crashVehicle = _crashVehicles call BIS_fnc_selectRandom;
+
+	switch(_crashSuperClass) do
+	{
+		case "AIR": {
+			diag_log("AIR CRASH");
+
+			// Spawn a location that the heli or plane will start at..
+			_spawnStartingLocation = call ZFM_Common_Location_Generate_Random;
+			
+			// Spawn a location that the heli or plane will move to.
+			// Note: Crash location is random as players could shoot it down.
+			_spawnMoveToLocation = call ZFM_Common_Location_Generate_Random;
+			
+			// Sub-crash type
+			_crashType = ["LANDING","CRASHLANDING","AIRFIGHT","NORMAL"] call BIS_fnc_selectRandom;
+
+			[
+				_spawnStartingLocation,
+				_spawnMoveToLocation,
+				_crashVehicle,
+				_banditOrHero,
+				_crashType
+			] call ZFM_Vehicles_Generate_Crash_Air;
+
+
+			["FUCK IT YEAH","",_spawnMoveToLocation] call ZFM_Markers_Create_Marker;
+
+
+			titleText["LET DAT CRASH GO BOOM YO","PLAIN DOWN",10];
+		};
+
+		case "LAND" :{
+			diag_log("LAND CRASH");
+			titleText["LET DAT CRASH GO BOOM YO","PLAIN DOWN",10];
+		};
+	};
+
+
+	_parameters = [
+
+
+		// Difficulty
+		// Crashlocation
+		// Crashtype
+
+	];
+
+
+
+
+
+	diag_log(format["CRASH INIT %1",_this]);
+	[true,[]]
+};
+
+
+ZFM_Mission_Type_Crash_Start ={
+	diag_log(format["CRASH START %1",_this]);
+	[true,[]]
+};
+
+
+ZFM_Mission_Type_Crash_Display ={
+	
+};
+
+
+// Crash mission generates its units each time, so we leave these empty, to be filled.
+ZFM_Mission_Type_Crash_Units =[];
+ZFM_Mission_Type_Crash_Vehicles =[];
+ZFM_Mission_Type_Crash_Layout=[];
+ZFM_Mission_Type_Crash_Trigger=[];
 
 /*
 *	ZFM_Mission_Type_Crash_Create_Crash_Title

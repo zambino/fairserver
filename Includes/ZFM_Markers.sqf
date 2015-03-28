@@ -41,16 +41,16 @@ ZFM_Markers_Create_Marker ={
 	_title = _this select 0;
 	_subtitle = _this select 1;
 	_position = _this select 2;
-	_type =_this select 3;
-	_titletype = _this select 4;
-	_subtitletype = _this select 5;
-	_shape = _this select 6;
-	_width = _this select 7;
-	_height = _this select 8;
-	_direction = _this select 9;
-	_colour = _this select 10;
-	_fillTexture = _this select 11;
-	_opacity = _this select 12;
+	_colour = if(count _this >=4) then { _this select 3 } else { "ColorGreen" };
+	_type = if(count _this >=5) then { _this select 4} else { "hd_destroy" };
+	_titletype = if(count _this >=6) then {_this select 5} else { _type };
+	_subtitletype = if(count _this >= 7) then { _this select 6 } else { _type };
+	_shape = if(count _this >= 8) then {_this select 7} else { "ELLIPSE" };
+	_width = if(count _this >= 9) then { _this select 8} else { 100 };
+	_height = if(count _this >=10) then { _this select 9} else { 100 };
+	_direction = if(count _this >=11) then { _this select 10 } else {  round (random 360) };
+	_colour = if(count _this >=12) then { _this select 11 } else { "ColorBlack" };
+	_fillTexture = if(count _this >= 13) then { _this select 12 } else { "Solid" };
 
 	// Create a marker for the colour and shape, then create one for the text.
 	_markerOneName = [30] call ZCR_PseudoUniqueString;
@@ -61,7 +61,6 @@ ZFM_Markers_Create_Marker ={
 	_markerOne setMarkerDir _direction;
 	_markerOne setMarkerColor _colour;
 	_markerOne setMarkerBrush _fillTexture;
-	_markerOne setMarkerAlpha _opacity;
 
 	// Create a marker for the text..
  	_markerTwoName = [30] call ZCR_PseudoUniqueString;
@@ -70,11 +69,14 @@ ZFM_Markers_Create_Marker ={
  	_markerTwo setMarkerType _subtitletype;
  	_markerTwo setMarkerText _subtitle;
 
- 	_markerThreeName = [30] call ZCR_PseudoUniqueString;
- 	_markerThree = createMarker[_markerThreeName,_position];
- 	_markerThree setMarkerColor "ColorBlack";
- 	_markerThree setMarkerType _titletype;
- 	_markerThree setMarkerText _title;
 
+ 	if(_subtitle != "") then
+ 	{
+	 	_markerThreeName = [30] call ZCR_PseudoUniqueString;
+	 	_markerThree = createMarker[_markerThreeName,_position];
+	 	_markerThree setMarkerColor "ColorBlack";
+	 	_markerThree setMarkerType _titletype;
+	 	_markerThree setMarkerText _title;
+ 	};
  	[_markerOne,_markerTwo]
 };

@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ZFM_NAME = "FairMission";
 ZFM_VERSION = "0.1.0";
 
-
 // The base installation for ZFM based in the PBO
 ZFM_DEFINES_INSTALL_LOCATION_BASE = "\z\addons\dayz_server\ZFM\";
 

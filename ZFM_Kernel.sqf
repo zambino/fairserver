@@ -194,7 +194,7 @@ ZFM_Kernel_ByType ={
 *	Tells us if we can add a new mission to the stack or not.
 */
 ZFM_Kernel_CanAddNewMission ={
-	((count ZFM_KERNEL_STACK) < ZFM_CONFIGURE_MISSIONS_ALLTYPES_MAX_CONCURRENT_MISSIONS)
+	((count ZFM_KERNEL_STACK) < ZFM_KERNEL_MONITOR_MAXIMUM_MISSIONS)
 };
 
 
@@ -278,19 +278,21 @@ ZFM_Kernel_MissionExists ={
 ZFM_Kernel_AddNewMission ={
 	private["_missionType","_missionExpireTimeMins","_missionParameters","_missionUnits","_missionObjects","_missionMarkers","_missionArray"];
 	_missionType = _this select 0;
-	_missionParameters = _this select 1;
-	_missionUnits = _this select 2;
-	_missionVehicles = _this select 3;
-	_missionMarkers = _this select 4;
-	_missionTriggers = if(count _this == 6) then { _this select 5} else { [] };
-	_missionLoot = if(count _this == 7) then { _this select 6} else { [] };
+	_missionTitle = _this select 1;
+	_missionSubTitle = _this select 2;
+	_missionParameters = _this select 3;
+	_missionUnits = _this select 4;
+	_missionVehicles = if(count _this ==6) then { _this select 5 } else { [] };
+	_missionMarkers = if(count _this == 7) then {_this select 6} else { [] };
+	_missionTriggers = if(count _this == 8) then { _this select 7} else { [] };
+	_missionLoot = if(count _this == 9) then { _this select 8} else { [] };
+
 
 	// Get the start time as tickTime (ms)
 	_startTime = diag_tickTime;
 
 	// Get the time this was supposed to start and add the expire time to it. 
-	_expireTime = _startTime + (ZFM_CONFIGURE_MISSIONS_ALLTYPES_EXPIRE_TIME*60000);
-
+	_expireTime = _startTime + (ZFM_KERNEL_MONITOR_MISSION_TIME*60000);
 
 	// Generate the mission array with all the vitamins required for a growing mission..
 	_missionArray = [
@@ -299,6 +301,8 @@ ZFM_Kernel_AddNewMission ={
 		_startTime,
 		_expireTime,
 		[
+			_missionTitle,
+			_missionSubTitle,
 			_missionParameters,
 			_missionUnits,
 			_missionVehicles,
@@ -315,8 +319,6 @@ ZFM_Kernel_AddNewMission ={
 	_inserted
 };
 
-
-
 ZFM_TRACKING_KERNEL_CACHE_NUM_MISSIONS = 0;
 
 
@@ -324,6 +326,8 @@ ZFM_TRACKING_KERNEL_CACHE_NUM_MISSIONS = 0;
 *	The next time a complete stack flush will occur.
 */
 ZFM_TRACKING_KERNEL_CLEAN_NEXT_FLUSH = 0;
+
+
 
 /*
 *	ZFM_Kernel_TimeOut
